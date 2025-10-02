@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Учет Шиномонтажа</title>
+    <title>Учет Шиномонтажа (v1.8)</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/CLyKKjZP/LOGO.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -53,14 +53,15 @@
         button:active, .button:active { transform: scale(0.98) translateY(1px); filter: brightness(0.9); box-shadow: 0 1px 5px rgba(0,0,0,0.2); }
         button.danger { background: var(--danger); } button.success { background: var(--success); } button.warning { background: var(--warning); }
         input[type="date"], input[type="search"], input[type="text"], input[type="number"], input[type="color"], input[type="tel"] { padding: 10px; background: var(--bg-input-dark); color: var(--text-dark); border: 2px solid var(--border-color-dark); font-size: 1em; border-radius: var(--border-radius); width: 100%; }
-        input:focus { outline: none; box-shadow: 0 0 15px var(--primary-light); border-color: var(--primary); }
+        input:focus { outline: none; box-shadow: 0 0 0 3px var(--primary-light); border-color: var(--primary); }
         .controls input { width: auto; flex-grow: 1; }
         .table-wrapper { overflow-x: auto; background: var(--bg-light); border-radius: var(--border-radius); padding: 5px; }
         table { width: 100%; border-collapse: collapse; }
-        tbody tr.row-enter { animation: rowSlideIn 0.4s ease-out forwards; }
+        tbody tr.row-enter { animation: rowSlideIn 0.4s ease-out forwards, newRowHighlight 1.5s ease-out .2s; }
         tbody tr.row-exit { animation: rowSlideOut 0.4s ease-in forwards; }
         @keyframes rowSlideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes rowSlideOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+        @keyframes newRowHighlight { from { background-color: var(--primary-light); } to { background-color: transparent; } }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color-dark); vertical-align: middle; white-space: nowrap; }
         th[data-sort-key] { cursor: pointer; user-select: none; }
         th[data-sort-key]:hover { background: var(--primary-hover); color: var(--bg-dark); }
@@ -120,6 +121,63 @@
         .modal-content p { margin-bottom: 20px; font-size: 1.2em; color: var(--text-dark); }
         .modal-actions { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;}
         body.animations-disabled * { animation: none !important; transition: none !important; }
+        
+        .number-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .number-input-wrapper input[type="number"] {
+            padding-right: 2rem;
+        }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+        .stepper-controls {
+            position: absolute;
+            right: 1px;
+            top: 1px;
+            bottom: 1px;
+            width: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .number-input-wrapper:hover .stepper-controls,
+        .number-input-wrapper input:focus + .stepper-controls {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .stepper-btn {
+            flex: 1;
+            background: var(--bg-input-dark);
+            border: none;
+            color: var(--text-muted-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .stepper-btn:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+        .stepper-up {
+            border-bottom: 1px solid var(--border-color-dark);
+            border-top-right-radius: var(--border-radius);
+        }
+        .stepper-down {
+            border-bottom-right-radius: var(--border-radius);
+        }
+
         @media (max-width: 768px) {
             body { padding: 10px; }
             .top-bar { flex-direction: column; align-items: center; text-align: center; }
@@ -179,7 +237,7 @@
     </div>
 
     <div class="tab-content" id="income">
-        <div class="controls"> <button id="addIncomeRowBtn">➕ Добавить доход</button> <input type="search" id="incomeSearch" placeholder="Поиск по услугам..." aria-label="Поиск по доходам"></div>
+        <div class="controls"> <button id="addIncomeRowBtn">➕ Добавить доход</button> <input type="search" id="incomeSearch" placeholder="Поиск по услугам, комментариям..." aria-label="Поиск по доходам"></div>
         <div class="table-wrapper"><table id="incomeTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none">Сумма</th><th scope="col" data-sort-key="count" aria-sort="none">Кол-во</th><th scope="col" data-sort-key="service" aria-sort="none">Услуга</th><th scope="col" data-sort-key="comment" aria-sort="none">Комментарий</th><th scope="col">Действия</th></tr></thead><tbody></tbody></table></div>
     </div>
 
@@ -196,7 +254,7 @@
     <div class="tab-content" id="debts">
         <div class="controls">
             <button id="addDebtRowBtn">➕ Добавить долг</button>
-            <input type="search" id="debtSearch" placeholder="Поиск по имени, комментарию..." aria-label="Поиск по долгам">
+            <input type="search" id="debtSearch" placeholder="Поиск по имени, телефону, комментарию..." aria-label="Поиск по долгам">
         </div>
         <div class="table-wrapper">
             <table id="debtsTable">
@@ -256,7 +314,7 @@ class TireServiceApp {
         this.data = {
             expenses: [], income: [], clients: [], debts: [], serviceTemplates: [],
             settings: {
-                version: "1.7",
+                version: "1.8",
                 theme: 'dark', currency: '₽', primaryColor: '#38BDF8', animations: true,
                 tableDensity: 'normal', fontSize: 'normal', confirmDelete: true, bestClientMetric: 'profit',
                 showPaidDebts: true,
@@ -282,11 +340,15 @@ class TireServiceApp {
     }
     
     uuid() {
-        if (crypto.randomUUID) {
+        if (crypto && crypto.randomUUID) {
             return crypto.randomUUID();
         }
-        const timestamp = Date.now().toString(16);
-        return `${'xxxxxxxx'.replace(/[x]/g, c => (Math.random() * 16 | 0).toString(16))}-${timestamp}`;
+        let dt = new Date().getTime();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = (dt + Math.random()*16)%16 | 0;
+            dt = Math.floor(dt/16);
+            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+        });
     }
 
     setupEventListeners() {
@@ -322,10 +384,10 @@ class TireServiceApp {
             this.sortTable(tableKey, sortKey);
         }));
 
-        get('#incomeSearch').addEventListener('input', this.debounce(e => { this.updateSetting('incomeFilter', e.target.value, false); this.filterTable('#incomeTable tbody', e.target.value, 3); }, 300));
-        get('#expensesSearch').addEventListener('input', this.debounce(e => { this.updateSetting('expensesFilter', e.target.value, false); this.filterTable('#expensesTable tbody', e.target.value, 3); }, 300));
+        get('#incomeSearch').addEventListener('input', this.debounce(e => { this.updateSetting('incomeFilter', e.target.value, false); this.filterTable('#incomeTable tbody', e.target.value, [3, 4]); }, 300));
+        get('#expensesSearch').addEventListener('input', this.debounce(e => { this.updateSetting('expensesFilter', e.target.value, false); this.filterTable('#expensesTable tbody', e.target.value, [3]); }, 300));
         get('#clientSearch').addEventListener('input', this.debounce(e => { this.updateSetting('clientsFilter', e.target.value, false); this.filterClientsTable(e.target.value); }, 300));
-        get('#debtSearch').addEventListener('input', this.debounce(e => { this.updateSetting('debtsFilter', e.target.value, false); this.filterTable('#debtsTable tbody', e.target.value, 2); }, 300));
+        get('#debtSearch').addEventListener('input', this.debounce(e => { this.updateSetting('debtsFilter', e.target.value, false); this.filterTable('#debtsTable tbody', e.target.value, [2, 3, 4]); }, 300));
 
         get('#exportDataBtn').addEventListener('click', () => this.exportData());
         get('#importFile').addEventListener('change', e => this.importData(e));
@@ -383,14 +445,18 @@ class TireServiceApp {
         });
     }
 
-    updateState(updater, recordHistory = true) {
-        updater(this.data);
+    saveData() {
         try {
             localStorage.setItem('tireServiceData', JSON.stringify(this.data));
         } catch(e) {
             console.error("Failed to save data to localStorage:", e);
             this.showNotification("Ошибка сохранения: Хранилище переполнено", "danger");
         }
+    }
+
+    updateState(updater, recordHistory = true) {
+        updater(this.data);
+        this.saveData();
         if (recordHistory) this.recordHistoryState();
         this.render();
     }
@@ -413,13 +479,13 @@ class TireServiceApp {
         
         const { incomeFilter, expensesFilter, clientsFilter, debtsFilter } = this.data.settings;
         get('#incomeSearch').value = incomeFilter || '';
-        this.filterTable('#incomeTable tbody', incomeFilter || '', 3);
+        this.filterTable('#incomeTable tbody', incomeFilter || '', [3, 4]);
         get('#expensesSearch').value = expensesFilter || '';
-        this.filterTable('#expensesTable tbody', expensesFilter || '', 3);
+        this.filterTable('#expensesTable tbody', expensesFilter || '', [3]);
         get('#clientSearch').value = clientsFilter || '';
         this.filterClientsTable(clientsFilter || '');
         get('#debtSearch').value = debtsFilter || '';
-        this.filterTable('#debtsTable tbody', debtsFilter || '', 2);
+        this.filterTable('#debtsTable tbody', debtsFilter || '', [2, 3, 4]);
     }
     
     recordHistoryState() {
@@ -464,8 +530,10 @@ class TireServiceApp {
     handleTableInput(event, tableKey) {
         const input = event.target;
         if (input.tagName !== 'INPUT') return;
+        
         const row = input.closest('tr');
         if (!row) return;
+
         const { id, subId } = row.dataset;
         const colIndex = input.closest('td').cellIndex;
         const keyMap = {
@@ -489,7 +557,7 @@ class TireServiceApp {
         }
 
         const key = keyMapToUse[colIndex];
-        if (key && targetObject[key] !== input.value) {
+        if (key) {
             let value = input.value;
             if (key === 'amount' && this.parseMoney(value) < 0) {
                 value = Math.abs(this.parseMoney(value)).toString();
@@ -501,7 +569,7 @@ class TireServiceApp {
                 this.applyTemplate(input.value, item, row);
             }
             
-            this.updateState(d => {}, false); 
+            this.saveData();
             this.updateAllCalculations();
             this.debouncedSave();
         }
@@ -515,7 +583,6 @@ class TireServiceApp {
                 const amountInput = row.cells[1].querySelector('input');
                 if (amountInput) amountInput.value = template.price;
             }
-            this.updateState(d => {}, false);
         }
     }
     
@@ -536,6 +603,30 @@ class TireServiceApp {
 
         const button = target.closest('button');
         if (!button) return;
+        
+        if (button.classList.contains('stepper-btn')) {
+            const wrapper = button.closest('.number-input-wrapper');
+            const input = wrapper.querySelector('input[type="number"]');
+            const isUp = button.classList.contains('stepper-up');
+            const step = 1;
+
+            let currentValue = this.parseMoney(input.value);
+            if (isNaN(currentValue)) currentValue = 0;
+
+            let newValue = isUp ? currentValue + step : currentValue - step;
+            
+            const min = parseFloat(input.min);
+            if (!isNaN(min) && newValue < min) {
+                newValue = min;
+            } else if (newValue < 0) {
+                 newValue = 0;
+            }
+            
+            input.value = newValue;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            return;
+        }
+
         const { subId } = row.dataset;
 
         if (button.classList.contains('btn-delete')) await this.deleteRow(tableKey, id, subId, row);
@@ -584,6 +675,17 @@ class TireServiceApp {
                 client.visits.push({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', plate: plate });
             }
         });
+    }
+
+    getNumberInputHTML(value, placeholder, min = 0, step = 1) {
+        return `
+            <div class="number-input-wrapper">
+                <input type="number" step="${step}" min="${min}" placeholder="${placeholder}" value="${value}">
+                <div class="stepper-controls">
+                    <button type="button" class="stepper-btn stepper-up" aria-label="Увеличить">▲</button>
+                    <button type="button" class="stepper-btn stepper-down" aria-label="Уменьшить">▼</button>
+                </div>
+            </div>`;
     }
     
     renderAllTables() {
@@ -639,7 +741,7 @@ class TireServiceApp {
             html += `
                 <tr data-id="${client.id}">
                     <td><input type="date" value="${client.date || ''}"></td>
-                    <td><input type="number" step="0.01" min="0" placeholder="0" value="${client.amount || ''}"></td>
+                    <td>${this.getNumberInputHTML(client.amount || '', '0', 0, 1)}</td>
                     <td><input type="tel" placeholder="+7..." value="${client.phone || ''}" pattern="\\+?[0-9\\s\\-()]+"></td>
                     <td><input type="text" placeholder="А000АА00" value="${client.plate || ''}" pattern="[А-Яа-яA-Za-z0-9]+"></td>
                     <td><input type="text" placeholder="Имя" value="${client.name || ''}"></td>
@@ -654,7 +756,7 @@ class TireServiceApp {
                 html += `
                 <tr class="sub-row" data-id="${client.id}" data-sub-id="${visit.id}">
                     <td><input type="date" value="${visit.date || ''}"></td>
-                    <td><input type="number" step="0.01" min="0" placeholder="0" value="${visit.amount || ''}"></td>
+                    <td>${this.getNumberInputHTML(visit.amount || '', '0', 0, 1)}</td>
                     <td></td>
                     <td><input type="text" placeholder="Гос номер" value="${visit.plate || ''}"></td>
                     <td></td><td></td>
@@ -665,14 +767,31 @@ class TireServiceApp {
         tbody.innerHTML = html;
     }
 
-    getIncomeRowHTML(item) { return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}"></td><td><input type="number" step="0.01" min="0" placeholder="0" value="${item.amount || ''}"></td><td><input type="number" min="1" value="${item.count || 1}" placeholder="1"></td><td><input type="text" placeholder="Услуга" value="${item.service || ''}" list="service-templates-datalist" data-template="true"></td><td><input type="text" placeholder="Комментарий" value="${item.comment || ''}"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td></tr>`; }
-    getExpenseRowHTML(item) { return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}"></td><td><input type="number" step="0.01" min="0" placeholder="0" value="${item.amount || ''}"></td><td><input type="number" min="1" value="${item.count || 1}" placeholder="1"></td><td><input type="text" placeholder="Описание" value="${item.description || ''}"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td></tr>`; }
+    getIncomeRowHTML(item) {
+        return `<tr data-id="${item.id}">
+            <td><input type="date" value="${item.date || ''}"></td>
+            <td>${this.getNumberInputHTML(item.amount || '', '0', 0, 1)}</td>
+            <td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1)}</td>
+            <td><input type="text" placeholder="Услуга" value="${item.service || ''}" list="service-templates-datalist" data-template="true"></td>
+            <td><input type="text" placeholder="Комментарий" value="${item.comment || ''}"></td>
+            <td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td>
+        </tr>`;
+    }
+    getExpenseRowHTML(item) {
+        return `<tr data-id="${item.id}">
+            <td><input type="date" value="${item.date || ''}"></td>
+            <td>${this.getNumberInputHTML(item.amount || '', '0', 0, 1)}</td>
+            <td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1)}</td>
+            <td><input type="text" placeholder="Описание" value="${item.description || ''}"></td>
+            <td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td>
+        </tr>`;
+    }
     getDebtRowHTML(item) {
         const isPaid = item.isPaid || false;
         return `
         <tr data-id="${item.id}" class="${isPaid ? 'paid-debt' : ''}">
             <td><input type="date" value="${item.date || ''}"></td>
-            <td><input type="number" step="0.01" min="0" placeholder="0" value="${item.amount || ''}"></td>
+            <td>${this.getNumberInputHTML(item.amount || '', '0', 0, 1)}</td>
             <td><input type="text" placeholder="Имя" value="${item.name || ''}"></td>
             <td><input type="tel" placeholder="+7..." value="${item.phone || ''}"></td>
             <td><input type="text" placeholder="Комментарий" value="${item.comment || ''}"></td>
@@ -745,7 +864,17 @@ class TireServiceApp {
         });
     }
 
-    filterTable(tbodySelector, searchTerm, textCellIndex) { const term = searchTerm.toLowerCase(); getAll(`${tbodySelector} tr`).forEach(row => { const cell = row.cells[textCellIndex]; if (cell) row.style.display = cell.querySelector('input').value.toLowerCase().includes(term) ? '' : 'none'; }); }
+    filterTable(tbodySelector, searchTerm, cellIndices) {
+        const term = searchTerm.toLowerCase();
+        getAll(`${tbodySelector} tr`).forEach(row => {
+            const rowText = cellIndices.map(index => {
+                const cell = row.cells[index];
+                const input = cell ? cell.querySelector('input') : null;
+                return input ? input.value.toLowerCase() : '';
+            }).join(' ');
+            row.style.display = rowText.includes(term) ? '' : 'none';
+        });
+    }
     
     filterClientsTable(term) {
         const lowerTerm = term.toLowerCase();
@@ -1072,5 +1201,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
 
