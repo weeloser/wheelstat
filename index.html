@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Учет Шиномонтажа</title>
+    <title>Учет Шиномонтажа (v1.7)</title>
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/CLyKKjZP/LOGO.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -24,7 +25,9 @@
         body:not(.animations-disabled) .result-card,
         body:not(.animations-disabled) .modal-content,
         body:not(.animations-disabled) .modal-overlay,
-        body:not(.animations-disabled) input {
+        body:not(.animations-disabled) input,
+        body:not(.animations-disabled) tr,
+        body:not(.animations-disabled) .icon {
             transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
         }
         body.light-theme { --bg-dark: #F9FAFB; --bg-light: #FFFFFF; --bg-card-dark: #FFFFFF; --bg-input-dark: #F3F4F6; --text-dark: #111827; --text-muted-dark: #6B7280; --border-color-dark: #E5E7EB; }
@@ -32,7 +35,7 @@
         .container { max-width: 1800px; margin: 0 auto; animation: fadeIn 0.8s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); color: var(--primary); }
+        h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); color: var(--primary); text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
         .history-controls button { background: var(--bg-light); color: var(--text-dark); border: none; width: 45px; height: 45px; font-size: 1.5em; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
         .history-controls button:hover:not(:disabled) { background: var(--primary); color: var(--text-light); transform: translateY(-3px) scale(1.1); }
         .history-controls button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; background: var(--bg-light); color: var(--text-dark); }
@@ -41,12 +44,13 @@
         .tab:hover { color: var(--primary); transform: translateY(-3px); }
         .tab.active { background: var(--primary); color: var(--bg-dark); box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); transform: translateY(-2px); }
         .tab .icon { width: 22px; height: 22px; stroke-width: 2; }
+        .tab:hover .icon { transform: scale(1.2) rotate(-5deg); }
         .tab-content { display: none; } .tab-content.active { display: block; animation: slideIn 0.5s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         .controls { background: var(--bg-light); padding: 15px; margin-bottom: 20px; border-radius: var(--border-radius); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         button, .button { padding: 10px 20px; background: var(--primary); color: var(--bg-dark); border: none; cursor: pointer; font-size: 1em; font-weight: 600; border-radius: var(--border-radius); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
-        button:hover, .button:hover { filter: brightness(1.2); transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        button:active, .button:active { transform: scale(0.98); filter: brightness(0.9); }
+        button:hover, .button:hover { filter: brightness(1.2); transform: scale(1.05) translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+        button:active, .button:active { transform: scale(0.98) translateY(1px); filter: brightness(0.9); box-shadow: 0 1px 5px rgba(0,0,0,0.2); }
         button.danger { background: var(--danger); } button.success { background: var(--success); } button.warning { background: var(--warning); }
         input[type="date"], input[type="search"], input[type="text"], input[type="number"], input[type="color"], input[type="tel"] { padding: 10px; background: var(--bg-input-dark); color: var(--text-dark); border: 2px solid var(--border-color-dark); font-size: 1em; border-radius: var(--border-radius); width: 100%; }
         input:focus { outline: none; box-shadow: 0 0 15px var(--primary-light); border-color: var(--primary); }
@@ -66,19 +70,30 @@
         thead { background: var(--primary); color: var(--bg-dark); position: sticky; top: 0; z-index: 1; }
         tbody tr:hover { background: var(--primary-light); }
         tbody tr.highlight { animation: highlight-row 2s ease-out; }
+        tr.paid-debt { opacity: 0.6; }
+        tr.paid-debt input { text-decoration: line-through; }
+        .status-cell { text-align: center; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--danger); transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .slider.round { border-radius: 34px; }
+        .slider.round:before { border-radius: 50%; }
         @keyframes highlight-row { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(251, 191, 36, 0.3); } }
         td input { max-width: 250px; }
         .actions-cell { display: flex; align-items: center; gap: 10px; min-width: 100px; }
         .btn-action { background: transparent; border: none; cursor: pointer; font-size: 1.5em; padding: 5px; color: var(--text-muted-dark); }
-        .btn-action:hover { transform: scale(1.2); box-shadow: none; color: var(--primary); }
+        .btn-action:hover { transform: scale(1.2) rotate(10deg); box-shadow: none; color: var(--primary); }
         .btn-delete:hover { color: var(--danger); } .btn-expand:hover { color: var(--success); } .btn-edit:hover { color: var(--warning); }
         .sub-row { background: rgba(56, 189, 248, 0.05); } .sub-row td:nth-child(3), .sub-row td:nth-child(5), .sub-row td:nth-child(6) { opacity: 0.5; }
         .summary-container { display: flex; flex-direction: column; gap: 30px; }
         .summary-category h2 { margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 10px; }
         .total-results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .result-card { background: var(--bg-card-dark); padding: 25px; border-radius: var(--border-radius); border-left: 5px solid var(--primary); animation: cardEnter 0.5s ease-out forwards; opacity: 0; }
+        .result-card { background: var(--bg-card-dark); padding: 25px; border-radius: var(--border-radius); border-left: 5px solid var(--primary); animation: cardEnter 0.5s ease-out forwards; opacity: 0; border-top: 1px solid transparent; border-right: 1px solid transparent; }
         @keyframes cardEnter { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .result-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .result-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: var(--primary); }
         .result-card .label { font-size: 1.1em; color: var(--text-muted-dark); margin-bottom: 10px; }
         .result-card .value { font-size: 2em; font-weight: 700; color: var(--text-dark); word-break: break-all; }
         .result-card .value.positive { color: var(--success); } .result-card .value.negative { color: var(--danger); }
@@ -129,6 +144,7 @@
         <div class="tab" data-tab="income" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Доходы</span></div>
         <div class="tab" data-tab="expenses" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg><span>Расходы</span></div>
         <div class="tab" data-tab="clients" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg><span>Клиенты</span></div>
+        <div class="tab" data-tab="debts" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg><span>Долги</span></div>
         <div class="tab" data-tab="settings" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0 3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>Настройки</span></div>
     </div>
     
@@ -147,15 +163,16 @@
                     <div class="result-card" style="animation-delay: 0s;"><div class="label">💰 Чистая прибыль</div><div class="value" id="totalProfit">0.00 ₽</div></div>
                     <div class="result-card" style="animation-delay: 0.1s;"><div class="label">📈 Общий доход</div><div class="value positive" id="totalIncome">0.00 ₽</div></div>
                     <div class="result-card" style="animation-delay: 0.2s;"><div class="label">📉 Общий расход</div><div class="value negative" id="totalExpenses">0.00 ₽</div></div>
+                    <div class="result-card" style="animation-delay: 0.3s;"><div class="label">💸 Общая сумма долгов</div><div class="value negative" id="totalDebt">0.00 ₽</div></div>
                 </div>
             </div>
             <div class="summary-category">
                 <h2>Клиенты (Инфо)</h2>
                 <div class="total-results-grid">
-                    <div class="result-card" style="animation-delay: 0.3s;"><div class="label">👥 Всего клиентов</div><div class="value" id="totalClients">0</div></div>
-                    <div class="result-card" style="animation-delay: 0.4s;"><div class="label">🚗 Всего посещений</div><div class="value" id="totalVisits">0</div></div>
-                    <div class="result-card" style="animation-delay: 0.5s;"><div class="label">📊 Средний чек</div><div class="value" id="avgClientCheck">0.00 ₽</div></div>
-                    <div class="result-card best-client" id="bestClientCard" style="animation-delay: 0.6s;"><div class="label">👑 Лучший клиент</div><div class="value" id="bestClientInfo">Нет данных</div></div>
+                    <div class="result-card" style="animation-delay: 0.4s;"><div class="label">👥 Всего клиентов</div><div class="value" id="totalClients">0</div></div>
+                    <div class="result-card" style="animation-delay: 0.5s;"><div class="label">🚗 Всего посещений</div><div class="value" id="totalVisits">0</div></div>
+                    <div class="result-card" style="animation-delay: 0.6s;"><div class="label">📊 Средний чек</div><div class="value" id="avgClientCheck">0.00 ₽</div></div>
+                    <div class="result-card best-client" id="bestClientCard" style="animation-delay: 0.7s;"><div class="label">👑 Лучший клиент</div><div class="value" id="bestClientInfo">Нет данных</div></div>
                 </div>
             </div>
         </div>
@@ -175,6 +192,29 @@
         <div class="controls"><button id="addClientRowBtn">➕ Добавить клиента</button><input type="search" id="clientSearch" placeholder="Поиск по дате, номеру, имени..." aria-label="Поиск по клиентам"></div>
         <div class="table-wrapper"><table id="clientsTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none">Сумма из заметки</th><th scope="col" data-sort-key="phone" aria-sort="none">Номер</th><th scope="col" data-sort-key="plate" aria-sort="none">Гос номер</th><th scope="col" data-sort-key="name" aria-sort="none">Имя</th><th scope="col">Кол-во посещений</th><th scope="col">Действия</th></tr></thead><tbody></tbody></table></div>
     </div>
+    
+    <div class="tab-content" id="debts">
+        <div class="controls">
+            <button id="addDebtRowBtn">➕ Добавить долг</button>
+            <input type="search" id="debtSearch" placeholder="Поиск по имени, комментарию..." aria-label="Поиск по долгам">
+        </div>
+        <div class="table-wrapper">
+            <table id="debtsTable">
+                <thead>
+                    <tr>
+                        <th scope="col" data-sort-key="date" aria-sort="none">Дата</th>
+                        <th scope="col" data-sort-key="amount" aria-sort="none">Сумма</th>
+                        <th scope="col" data-sort-key="name" aria-sort="none">Кто должен</th>
+                        <th scope="col" data-sort-key="phone" aria-sort-none">Телефон</th>
+                        <th scope="col" data-sort-key="comment" aria-sort="none">Комментарий</th>
+                        <th scope="col" data-sort-key="isPaid" aria-sort="none">Статус</th>
+                        <th scope="col">Действия</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 
     <div class="tab-content" id="settings">
         <div class="settings-page">
@@ -187,6 +227,7 @@
             <div class="setting-item"><label>Размер шрифта:</label><div class="setting-controls" id="font-size-switcher"><button data-size="small">Мелкий</button><button data-size="normal" class="active">Обычный</button><button data-size="large">Крупный</button></div></div>
             <div class="setting-item"><label>Подтверждение удаления:</label><div class="setting-controls" id="confirm-delete-switcher"><button data-confirm="on" class="active">Вкл</button><button data-confirm="off">Выкл</button></div></div>
             <div class="setting-item" title="При равенстве основного критерия, сортировка происходит по вторичному (Сумма -> Посещения, Посещения -> Сумма)"><label>Критерий "Лучшего клиента":</label><div class="setting-controls" id="best-client-metric-switcher"><button data-metric="profit" class="active">По сумме</button><button data-metric="visits">По посещениям</button></div></div>
+            <div class="setting-item"><label>Показывать погашенные долги:</label><div class="setting-controls" id="show-paid-debts-switcher"><button data-show="on" class="active">Вкл</button><button data-show="off">Выкл</button></div></div>
             <div class="setting-item"><label>Шаблоны услуг</label><div class="setting-controls" style="flex-direction: column; align-items: stretch; gap: 10px;"><div style="display: flex; gap: 10px; width:100%;"><input type="text" id="templateName" placeholder="Название" style="flex-grow: 1;"><input type="number" id="templatePrice" placeholder="Цена" style="width: 100px;" min="0"><button id="addServiceTemplateBtn">Добавить</button></div><div id="service-templates-list"></div></div></div>
             <div class="setting-item"><label>Управление данными</label><div class="setting-controls"><button class="warning" id="resetSettingsBtn">Сбросить настройки</button></div></div>
         </div>
@@ -213,16 +254,18 @@ class TireServiceApp {
     constructor() {
         this.MAX_HISTORY_STATES = 100;
         this.data = {
-            expenses: [], income: [], clients: [], serviceTemplates: [],
+            expenses: [], income: [], clients: [], debts: [], serviceTemplates: [],
             settings: {
-                version: "1.4",
+                version: "1.7",
                 theme: 'dark', currency: '₽', primaryColor: '#38BDF8', animations: true,
                 tableDensity: 'normal', fontSize: 'normal', confirmDelete: true, bestClientMetric: 'profit',
-                incomeFilter: '', expensesFilter: '', clientsFilter: '',
+                showPaidDebts: true,
+                incomeFilter: '', expensesFilter: '', clientsFilter: '', debtsFilter: '',
                 sort: {
                     income: {key: 'date', dir: 'desc'},
                     expenses: {key: 'date', dir: 'desc'},
-                    clients: {key: 'date', dir: 'desc'}
+                    clients: {key: 'date', dir: 'desc'},
+                    debts: {key: 'date', dir: 'desc'}
                 }
             }
         };
@@ -259,15 +302,18 @@ class TireServiceApp {
         get('#addIncomeRowBtn').addEventListener('click', () => this.addIncomeRow());
         get('#addExpenseRowBtn').addEventListener('click', () => this.addExpenseRow());
         get('#addClientRowBtn').addEventListener('click', () => this.addClientRow());
+        get('#addDebtRowBtn').addEventListener('click', () => this.addDebtRow());
         get('#addServiceTemplateBtn').addEventListener('click', () => this.addOrUpdateServiceTemplate());
         
         get('#incomeTable tbody').addEventListener('input', e => this.handleTableInput(e, 'income'));
         get('#expensesTable tbody').addEventListener('input', e => this.handleTableInput(e, 'expenses'));
         get('#clientsTable tbody').addEventListener('input', e => this.handleTableInput(e, 'clients'));
+        get('#debtsTable tbody').addEventListener('input', e => this.handleTableInput(e, 'debts'));
 
         get('#incomeTable tbody').addEventListener('click', e => this.handleTableClick(e, 'income'));
         get('#expensesTable tbody').addEventListener('click', e => this.handleTableClick(e, 'expenses'));
         get('#clientsTable tbody').addEventListener('click', e => this.handleTableClick(e, 'clients'));
+        get('#debtsTable tbody').addEventListener('click', e => this.handleTableClick(e, 'debts'));
         
         getAll('th[data-sort-key]').forEach(th => th.addEventListener('click', e => {
             const tableId = e.target.closest('table').id;
@@ -279,6 +325,7 @@ class TireServiceApp {
         get('#incomeSearch').addEventListener('input', this.debounce(e => { this.updateSetting('incomeFilter', e.target.value, false); this.filterTable('#incomeTable tbody', e.target.value, 3); }, 300));
         get('#expensesSearch').addEventListener('input', this.debounce(e => { this.updateSetting('expensesFilter', e.target.value, false); this.filterTable('#expensesTable tbody', e.target.value, 3); }, 300));
         get('#clientSearch').addEventListener('input', this.debounce(e => { this.updateSetting('clientsFilter', e.target.value, false); this.filterClientsTable(e.target.value); }, 300));
+        get('#debtSearch').addEventListener('input', this.debounce(e => { this.updateSetting('debtsFilter', e.target.value, false); this.filterTable('#debtsTable tbody', e.target.value, 2); }, 300));
 
         get('#exportDataBtn').addEventListener('click', () => this.exportData());
         get('#importFile').addEventListener('change', e => this.importData(e));
@@ -292,6 +339,7 @@ class TireServiceApp {
         get('#font-size-switcher').addEventListener('click', e => e.target.dataset.size && this.updateSetting('fontSize', e.target.dataset.size));
         get('#confirm-delete-switcher').addEventListener('click', e => e.target.dataset.confirm && this.updateSetting('confirmDelete', e.target.dataset.confirm === 'on'));
         get('#best-client-metric-switcher').addEventListener('click', e => e.target.dataset.metric && this.updateSetting('bestClientMetric', e.target.dataset.metric));
+        get('#show-paid-debts-switcher').addEventListener('click', e => e.target.dataset.show && this.updateSetting('showPaidDebts', e.target.dataset.show === 'on'));
         get('#resetSettingsBtn').addEventListener('click', () => this.resetSettings());
         
         get('#primaryColorPicker').addEventListener('input', this.debounce(e => this.updateSetting('primaryColor', e.target.value), 100));
@@ -363,13 +411,15 @@ class TireServiceApp {
         this.updateHistoryButtons();
         this.updateSortHeaders();
         
-        const { incomeFilter, expensesFilter, clientsFilter } = this.data.settings;
+        const { incomeFilter, expensesFilter, clientsFilter, debtsFilter } = this.data.settings;
         get('#incomeSearch').value = incomeFilter || '';
         this.filterTable('#incomeTable tbody', incomeFilter || '', 3);
         get('#expensesSearch').value = expensesFilter || '';
         this.filterTable('#expensesTable tbody', expensesFilter || '', 3);
         get('#clientSearch').value = clientsFilter || '';
         this.filterClientsTable(clientsFilter || '');
+        get('#debtSearch').value = debtsFilter || '';
+        this.filterTable('#debtsTable tbody', debtsFilter || '', 2);
     }
     
     recordHistoryState() {
@@ -422,6 +472,7 @@ class TireServiceApp {
             income: ['date', 'amount', 'count', 'service', 'comment'],
             expenses: ['date', 'amount', 'count', 'description'],
             clients: ['date', 'amount', 'phone', 'plate', 'name'],
+            debts: ['date', 'amount', 'name', 'phone', 'comment'],
             clientVisits: ['date', 'amount', null, 'plate']
         };
         
@@ -469,11 +520,23 @@ class TireServiceApp {
     }
     
     async handleTableClick(event, tableKey) {
-        const button = event.target.closest('button');
-        if (!button) return;
-        const row = button.closest('tr');
+        const target = event.target;
+        const row = target.closest('tr');
         if (!row) return;
-        const { id, subId } = row.dataset;
+        const { id } = row.dataset;
+
+        if (target.classList.contains('btn-status')) {
+            const item = this.data[tableKey].find(i => i.id === id);
+            if (item) {
+                item.isPaid = target.checked;
+                this.updateState(d => {}, true);
+            }
+            return;
+        }
+
+        const button = target.closest('button');
+        if (!button) return;
+        const { subId } = row.dataset;
 
         if (button.classList.contains('btn-delete')) await this.deleteRow(tableKey, id, subId, row);
         if (button.classList.contains('btn-expand')) this.expandClientRow(id);
@@ -482,6 +545,7 @@ class TireServiceApp {
     addIncomeRow() { this.updateState(data => { data.income.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', count: 1, service: '', comment: '' }); }); }
     addExpenseRow() { this.updateState(data => { data.expenses.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', count: 1, description: '' }); }); }
     addClientRow() { this.updateState(data => { data.clients.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', phone: '', plate: '', name: '', visits: [] }); }); }
+    addDebtRow() { this.updateState(data => { data.debts.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', name: '', phone: '', comment: '', isPaid: false }); }); }
 
     async deleteRow(tableKey, id, subId, rowElement) {
         if (this.data.settings.confirmDelete) {
@@ -523,11 +587,18 @@ class TireServiceApp {
     }
     
     renderAllTables() {
-        ['income', 'expenses', 'clients'].forEach(key => {
+        ['income', 'expenses', 'clients', 'debts'].forEach(key => {
             const sortState = this.data.settings.sort[key];
             if (sortState && sortState.key) {
                 this.data[key].sort((a, b) => {
                     const sortKey = sortState.key;
+                    
+                    if (sortKey === 'isPaid') {
+                        const valA = a.isPaid || false;
+                        const valB = b.isPaid || false;
+                        return sortState.dir === 'asc' ? (valA - valB) : (valB - valA);
+                    }
+
                     let valA = a[sortKey];
                     let valB = b[sortKey];
 
@@ -551,6 +622,8 @@ class TireServiceApp {
         this.renderTable('#incomeTable tbody', this.data.income, this.getIncomeRowHTML);
         this.renderTable('#expensesTable tbody', this.data.expenses, this.getExpenseRowHTML);
         this.renderClientsTable();
+        const debtsToRender = this.data.settings.showPaidDebts ? this.data.debts : this.data.debts.filter(d => !d.isPaid);
+        this.renderTable('#debtsTable tbody', debtsToRender, this.getDebtRowHTML);
     }
 
     renderTable(tbodySelector, data, rowRenderer) {
@@ -594,11 +667,25 @@ class TireServiceApp {
 
     getIncomeRowHTML(item) { return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}"></td><td><input type="number" step="0.01" min="0" placeholder="0" value="${item.amount || ''}"></td><td><input type="number" min="1" value="${item.count || 1}" placeholder="1"></td><td><input type="text" placeholder="Услуга" value="${item.service || ''}" list="service-templates-datalist" data-template="true"></td><td><input type="text" placeholder="Комментарий" value="${item.comment || ''}"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td></tr>`; }
     getExpenseRowHTML(item) { return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}"></td><td><input type="number" step="0.01" min="0" placeholder="0" value="${item.amount || ''}"></td><td><input type="number" min="1" value="${item.count || 1}" placeholder="1"></td><td><input type="text" placeholder="Описание" value="${item.description || ''}"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td></tr>`; }
+    getDebtRowHTML(item) {
+        const isPaid = item.isPaid || false;
+        return `
+        <tr data-id="${item.id}" class="${isPaid ? 'paid-debt' : ''}">
+            <td><input type="date" value="${item.date || ''}"></td>
+            <td><input type="number" step="0.01" min="0" placeholder="0" value="${item.amount || ''}"></td>
+            <td><input type="text" placeholder="Имя" value="${item.name || ''}"></td>
+            <td><input type="tel" placeholder="+7..." value="${item.phone || ''}"></td>
+            <td><input type="text" placeholder="Комментарий" value="${item.comment || ''}"></td>
+            <td class="status-cell"><label class="switch"><input type="checkbox" class="btn-status" ${isPaid ? 'checked' : ''}><span class="slider round"></span></label></td>
+            <td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td>
+        </tr>`;
+    }
 
     updateAllCalculations() {
         const totalIncome = this.data.income.reduce((sum, item) => sum + (this.parseMoney(item.amount) * (parseInt(item.count) || 1)), 0);
         const totalExpenses = this.data.expenses.reduce((sum, item) => sum + (this.parseMoney(item.amount) * (parseInt(item.count) || 1)), 0);
         const netProfit = totalIncome - totalExpenses;
+        const totalDebt = this.data.debts.reduce((sum, item) => sum + (!item.isPaid ? this.parseMoney(item.amount) : 0), 0);
         
         let totalVisits = 0;
         let totalFromNotes = 0;
@@ -613,6 +700,7 @@ class TireServiceApp {
         get('#totalIncome').textContent = this.renderMoney(totalIncome);
         get('#totalExpenses').textContent = this.renderMoney(totalExpenses);
         get('#totalProfit').textContent = this.renderMoney(netProfit);
+        get('#totalDebt').textContent = this.renderMoney(totalDebt);
         get('#totalClients').textContent = clientsData.length;
         get('#totalVisits').textContent = totalVisits;
         get('#avgClientCheck').textContent = this.renderMoney(totalVisits > 0 ? totalFromNotes / totalVisits : 0);
@@ -694,12 +782,12 @@ class TireServiceApp {
         });
     }
 
-
     validateData(data) {
         return data && typeof data === 'object' &&
                Array.isArray(data.income) &&
                Array.isArray(data.expenses) &&
                Array.isArray(data.clients) &&
+               Array.isArray(data.debts) &&
                typeof data.settings === 'object';
     }
     
@@ -720,6 +808,7 @@ class TireServiceApp {
             ...sanitizeItem(client),
             visits: Array.isArray(client.visits) ? client.visits.map(sanitizeItem) : []
         })) : [];
+        data.debts = Array.isArray(data.debts) ? data.debts.map(d => ({...sanitizeItem(d), isPaid: d.isPaid || false})) : [];
         data.serviceTemplates = Array.isArray(data.serviceTemplates) ? data.serviceTemplates : [];
         return data;
     }
@@ -769,6 +858,7 @@ class TireServiceApp {
                                 id: this.uuid(),
                                 visits: (client.visits || []).map(visit => ({ ...visit, id: this.uuid() }))
                             }));
+                            const newDebts = (parsed.debts || []).map(item => ({ ...item, id: this.uuid() }));
                             
                             const existingTemplateNames = new Set(data.serviceTemplates.map(t => t.name));
                             const newTemplates = (parsed.serviceTemplates || []).filter(t => !existingTemplateNames.has(t.name));
@@ -776,6 +866,7 @@ class TireServiceApp {
                             data.income.push(...newIncome);
                             data.expenses.push(...newExpenses);
                             data.clients.push(...newClients);
+                            data.debts.push(...newDebts);
                             data.serviceTemplates.push(...newTemplates);
                         });
                         this.showNotification('Данные объединены');
@@ -799,7 +890,7 @@ class TireServiceApp {
         if (await this.confirmAction({text: 'Вы уверены? Это действие необратимо.'})) {
             const settings = this.data.settings;
             this.updateState(data => {
-                data.expenses = []; data.income = []; data.clients = [];
+                data.expenses = []; data.income = []; data.clients = []; data.debts = [];
                 data.settings = settings;
             }); 
             this.showNotification('Все данные удалены (настройки сохранены)', 'danger');
@@ -855,11 +946,11 @@ class TireServiceApp {
         this.updateSettingsUI('#font-size-switcher', 'size', s.fontSize);
         this.updateSettingsUI('#confirm-delete-switcher', 'confirm', s.confirmDelete ? 'on' : 'off');
         this.updateSettingsUI('#best-client-metric-switcher', 'metric', s.bestClientMetric);
+        this.updateSettingsUI('#show-paid-debts-switcher', 'show', s.showPaidDebts ? 'on' : 'off');
     }
     
     updateSetting(key, value, recordHistory = true) {
         this.updateState(data => { data.settings[key] = value; }, recordHistory);
-        if (key === 'bestClientMetric') this.updateAllCalculations();
     }
     updateSettingsUI(containerId, dataAttr, value) { getAll(`${containerId} button`).forEach(btn => btn.classList.toggle('active', btn.dataset[dataAttr] == value)); }
     
@@ -960,7 +1051,7 @@ class TireServiceApp {
             th.classList.remove('sort-asc', 'sort-desc');
             th.setAttribute('aria-sort', 'none');
         });
-        ['income', 'expenses', 'clients'].forEach(key => {
+        ['income', 'expenses', 'clients', 'debts'].forEach(key => {
             const sortState = this.data.settings.sort[key];
             if (sortState && sortState.key) {
                 const header = get(`#${key}Table th[data-sort-key="${sortState.key}"]`);
@@ -981,3 +1072,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
