@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учет Шиномонтажа</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-dark: #111827; --bg-light: #1F2937; --bg-card-dark: #1F2937; --bg-card-light: #FFFFFF; --bg-input-dark: #374151; --bg-input-light: #F3F4F6;
+            --primary: #38BDF8; --primary-hover: #7DD3FC; --primary-light: rgba(56, 189, 248, 0.1);
+            --text-dark: #F9FAFB; --text-light: #111827; --text-muted-dark: #9CA3AF; --text-muted-light: #6B7280;
+            --danger: #F43F5E; --success: #34D399; --warning: #FBBF24; --border-color-dark: #374151; --border-color-light: #E5E7EB;
+            --border-radius: 12px; --transition-speed: 0.3s;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-dark); min-height: 100vh;
+            padding: 15px; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+        body:not(.animations-disabled) button,
+        body:not(.animations-disabled) .button,
+        body:not(.animations-disabled) .tab,
+        body:not(.animations-disabled) .result-card,
+        body:not(.animations-disabled) .modal-content,
+        body:not(.animations-disabled) .modal-overlay,
+        body:not(.animations-disabled) input {
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
+        }
+        body.light-theme { --bg-dark: #F9FAFB; --bg-light: #FFFFFF; --bg-card-dark: #FFFFFF; --bg-input-dark: #F3F4F6; --text-dark: #111827; --text-muted-dark: #6B7280; --border-color-dark: #E5E7EB; }
+        body.font-size-small { font-size: 14px; } body.font-size-large { font-size: 18px; }
+        .container { max-width: 1800px; margin: 0 auto; animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); color: var(--primary); }
+        .history-controls button { background: var(--bg-light); color: var(--text-dark); border: none; width: 45px; height: 45px; font-size: 1.5em; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+        .history-controls button:hover:not(:disabled) { background: var(--primary); color: var(--text-light); transform: translateY(-3px) scale(1.1); }
+        .history-controls button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; background: var(--bg-light); color: var(--text-dark); }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+        .tab { padding: 10px 20px; background: var(--bg-light); border: 2px solid transparent; color: var(--text-muted-dark); cursor: pointer; font-size: 1em; font-weight: 600; border-radius: var(--border-radius); display: flex; align-items: center; gap: 8px; }
+        .tab:hover { color: var(--primary); transform: translateY(-3px); }
+        .tab.active { background: var(--primary); color: var(--bg-dark); box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); transform: translateY(-2px); }
+        .tab .icon { width: 22px; height: 22px; stroke-width: 2; }
+        .tab-content { display: none; } .tab-content.active { display: block; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .controls { background: var(--bg-light); padding: 15px; margin-bottom: 20px; border-radius: var(--border-radius); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        button, .button { padding: 10px 20px; background: var(--primary); color: var(--bg-dark); border: none; cursor: pointer; font-size: 1em; font-weight: 600; border-radius: var(--border-radius); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        button:hover, .button:hover { filter: brightness(1.2); transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        button:active, .button:active { transform: scale(0.98); filter: brightness(0.9); }
+        button.danger { background: var(--danger); } button.success { background: var(--success); } button.warning { background: var(--warning); }
+        input[type="date"], input[type="search"], input[type="text"], input[type="number"], input[type="color"], input[type="tel"] { padding: 10px; background: var(--bg-input-dark); color: var(--text-dark); border: 2px solid var(--border-color-dark); font-size: 1em; border-radius: var(--border-radius); width: 100%; }
+        input:focus { outline: none; box-shadow: 0 0 15px var(--primary-light); border-color: var(--primary); }
+        .controls input { width: auto; flex-grow: 1; }
+        .table-wrapper { overflow-x: auto; background: var(--bg-light); border-radius: var(--border-radius); padding: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        tbody tr.row-enter { animation: rowSlideIn 0.4s ease-out forwards; }
+        tbody tr.row-exit { animation: rowSlideOut 0.4s ease-in forwards; }
+        @keyframes rowSlideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes rowSlideOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color-dark); vertical-align: middle; white-space: nowrap; }
+        th[data-sort-key] { cursor: pointer; user-select: none; }
+        th[data-sort-key]:hover { background: var(--primary-hover); color: var(--bg-dark); }
+        th.sort-asc::after { content: ' ▲'; font-size: 0.8em; }
+        th.sort-desc::after { content: ' ▼'; font-size: 0.8em; }
+        .table-density-compact td, .table-density-compact th { padding: 8px; } .table-density-spacious td, .table-density-spacious th { padding: 20px; }
+        thead { background: var(--primary); color: var(--bg-dark); position: sticky; top: 0; z-index: 1; }
+        tbody tr:hover { background: var(--primary-light); }
+        tbody tr.highlight { animation: highlight-row 2s ease-out; }
+        @keyframes highlight-row { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(251, 191, 36, 0.3); } }
+        td input { max-width: 250px; }
+        .actions-cell { display: flex; align-items: center; gap: 10px; min-width: 100px; }
+        .btn-action { background: transparent; border: none; cursor: pointer; font-size: 1.5em; padding: 5px; color: var(--text-muted-dark); }
+        .btn-action:hover { transform: scale(1.2); box-shadow: none; color: var(--primary); }
+        .btn-delete:hover { color: var(--danger); } .btn-expand:hover { color: var(--success); } .btn-edit:hover { color: var(--warning); }
+        .sub-row { background: rgba(56, 189, 248, 0.05); } .sub-row td:nth-child(3), .sub-row td:nth-child(5), .sub-row td:nth-child(6) { opacity: 0.5; }
+        .summary-container { display: flex; flex-direction: column; gap: 30px; }
+        .summary-category h2 { margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 10px; }
+        .total-results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .result-card { background: var(--bg-card-dark); padding: 25px; border-radius: var(--border-radius); border-left: 5px solid var(--primary); animation: cardEnter 0.5s ease-out forwards; opacity: 0; }
+        @keyframes cardEnter { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .result-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .result-card .label { font-size: 1.1em; color: var(--text-muted-dark); margin-bottom: 10px; }
+        .result-card .value { font-size: 2em; font-weight: 700; color: var(--text-dark); word-break: break-all; }
+        .result-card .value.positive { color: var(--success); } .result-card .value.negative { color: var(--danger); }
+        .result-card.best-client { grid-column: 1 / -1; border-color: var(--warning); cursor: pointer; }
+        .best-client .value { font-size: 1.2em; line-height: 1.6; } .best-client .highlight-text { color: var(--warning); font-weight: bold; }
+        .notification { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: var(--bg-dark); padding: 15px 25px; border-radius: var(--border-radius); font-weight: bold; animation: slideInUp 0.5s ease, slideOutDown 0.5s ease 2.5s; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+        @keyframes slideInUp { from { transform: translateY(100px) opacity(0); } to { transform: translateY(0) opacity(1); } }
+        @keyframes slideOutDown { from { transform: translateY(0) opacity(1); } to { transform: translateY(100px) opacity(0); } }
+        .settings-page { background: var(--bg-light); padding: 20px; border-radius: var(--border-radius); max-width: 800px; margin: 0 auto; }
+        .settings-page h2 { margin-bottom: 20px; color: var(--primary); }
+        .setting-item { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 25px; }
+        .setting-item > label { font-weight: bold; }
+        .setting-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+        .setting-controls button { background-color: var(--bg-dark); color: var(--text-dark); border: 2px solid transparent; }
+        .setting-controls button.active { border-color: var(--primary); }
+        #service-templates-list { width: 100%; display: flex; flex-direction: column; gap: 5px; }
+        .template-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-dark); padding: 8px; border-radius: 8px; width: 100%;}
+        .template-item span { flex-grow: 1; }
+        .template-item .template-actions { display: flex; gap: 5px;}
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--bg-light); padding: 30px; border-radius: var(--border-radius); text-align: center; max-width: 90%; width: 500px; }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .modal-content p { margin-bottom: 20px; font-size: 1.2em; color: var(--text-dark); }
+        .modal-actions { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;}
+        body.animations-disabled * { animation: none !important; transition: none !important; }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .top-bar { flex-direction: column; align-items: center; text-align: center; }
+            .controls { flex-direction: column; align-items: stretch; }
+            .tab { padding: 10px 15px; font-size: 0.9em; }
+            .tab .icon { width: 18px; height: 18px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-bar">
+        <h1>Учет Шиномонтажа</h1>
+        <div class="history-controls">
+            <button id="undoBtn" title="Отменить (Ctrl+Z)" aria-label="Отменить">↶</button>
+            <button id="redoBtn" title="Повторить (Ctrl+Y)" aria-label="Повторить">↷</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" data-tab="total" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><span>Общий результат</span></div>
+        <div class="tab" data-tab="income" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg><span>Доходы</span></div>
+        <div class="tab" data-tab="expenses" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg><span>Расходы</span></div>
+        <div class="tab" data-tab="clients" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg><span>Клиенты</span></div>
+        <div class="tab" data-tab="settings" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0 3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>Настройки</span></div>
+    </div>
+    
+    <div class="tab-content active" id="total">
+        <div class="controls">
+            <label for="importFile" class="button">📂 Импорт</label>
+            <input type="file" id="importFile" style="display:none" accept=".json">
+            <button class="success" id="exportDataBtn">💾 Экспорт</button>
+            <button class="warning" id="copySummaryBtn">📋 Копировать сводку</button>
+            <button class="danger" id="clearAllDataBtn">🗑️ Очистить все</button>
+        </div>
+        <div class="summary-container">
+            <div class="summary-category">
+                <h2>Сводка</h2>
+                <div class="total-results-grid">
+                    <div class="result-card" style="animation-delay: 0s;"><div class="label">💰 Чистая прибыль</div><div class="value" id="totalProfit">0.00 ₽</div></div>
+                    <div class="result-card" style="animation-delay: 0.1s;"><div class="label">📈 Общий доход</div><div class="value positive" id="totalIncome">0.00 ₽</div></div>
+                    <div class="result-card" style="animation-delay: 0.2s;"><div class="label">📉 Общий расход</div><div class="value negative" id="totalExpenses">0.00 ₽</div></div>
+                </div>
+            </div>
+            <div class="summary-category">
+                <h2>Клиенты (Инфо)</h2>
+                <div class="total-results-grid">
+                    <div class="result-card" style="animation-delay: 0.3s;"><div class="label">👥 Всего клиентов</div><div class="value" id="totalClients">0</div></div>
+                    <div class="result-card" style="animation-delay: 0.4s;"><div class="label">🚗 Всего посещений</div><div class="value" id="totalVisits">0</div></div>
+                    <div class="result-card" style="animation-delay: 0.5s;"><div class="label">📊 Средний чек</div><div class="value" id="avgClientCheck">0.00 ₽</div></div>
+                    <div class="result-card best-client" id="bestClientCard" style="animation-delay: 0.6s;"><div class="label">👑 Лучший клиент</div><div class="value" id="bestClientInfo">Нет данных</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="income">
+        <div class="controls"> <button id="addIncomeRowBtn">➕ Добавить доход</button> <input type="search" id="incomeSearch" placeholder="Поиск по услугам..." aria-label="Поиск по доходам"></div>
+        <div class="table-wrapper"><table id="incomeTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none">Сумма</th><th scope="col" data-sort-key="count" aria-sort="none">Кол-во</th><th scope="col" data-sort-key="service" aria-sort="none">Услуга</th><th scope="col" data-sort-key="comment" aria-sort="none">Комментарий</th><th scope="col">Действия</th></tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <div class="tab-content" id="expenses">
+        <div class="controls"><button id="addExpenseRowBtn">➕ Добавить расход</button><input type="search" id="expensesSearch" placeholder="Поиск по описанию..." aria-label="Поиск по расходам"></div>
+        <div class="table-wrapper"><table id="expensesTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none">Сумма</th><th scope="col" data-sort-key="count" aria-sort="none">Кол-во</th><th scope="col" data-sort-key="description" aria-sort="none">Что именно?</th><th scope="col">Действия</th></tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <div class="tab-content" id="clients">
+        <div class="controls"><button id="addClientRowBtn">➕ Добавить клиента</button><input type="search" id="clientSearch" placeholder="Поиск по дате, номеру, имени..." aria-label="Поиск по клиентам"></div>
+        <div class="table-wrapper"><table id="clientsTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none">Сумма из заметки</th><th scope="col" data-sort-key="phone" aria-sort="none">Номер</th><th scope="col" data-sort-key="plate" aria-sort="none">Гос номер</th><th scope="col" data-sort-key="name" aria-sort="none">Имя</th><th scope="col">Кол-во посещений</th><th scope="col">Действия</th></tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <div class="tab-content" id="settings">
+        <div class="settings-page">
+            <h2>Настройки</h2>
+            <div class="setting-item"><label>Тема:</label><div class="setting-controls" id="theme-switcher"><button data-theme="dark" class="active">Темная</button><button data-theme="light">Светлая</button></div></div>
+            <div class="setting-item"><label for="primaryColorPicker">Основной цвет:</label><input type="color" id="primaryColorPicker" value="#38BDF8"></div>
+            <div class="setting-item"><label for="currencySymbol">Символ валюты:</label><input type="text" id="currencySymbol" value="₽" style="width: 50px; text-align: center;"></div>
+            <div class="setting-item"><label>Анимации:</label><div class="setting-controls" id="animation-switcher"><button data-anim="on" class="active">Вкл</button><button data-anim="off">Выкл</button></div></div>
+            <div class="setting-item"><label>Плотность таблиц:</label><div class="setting-controls" id="density-switcher"><button data-density="compact">Компактно</button><button data-density="normal" class="active">Нормально</button><button data-density="spacious">Просторно</button></div></div>
+            <div class="setting-item"><label>Размер шрифта:</label><div class="setting-controls" id="font-size-switcher"><button data-size="small">Мелкий</button><button data-size="normal" class="active">Обычный</button><button data-size="large">Крупный</button></div></div>
+            <div class="setting-item"><label>Подтверждение удаления:</label><div class="setting-controls" id="confirm-delete-switcher"><button data-confirm="on" class="active">Вкл</button><button data-confirm="off">Выкл</button></div></div>
+            <div class="setting-item" title="При равенстве основного критерия, сортировка происходит по вторичному (Сумма -> Посещения, Посещения -> Сумма)"><label>Критерий "Лучшего клиента":</label><div class="setting-controls" id="best-client-metric-switcher"><button data-metric="profit" class="active">По сумме</button><button data-metric="visits">По посещениям</button></div></div>
+            <div class="setting-item"><label>Шаблоны услуг</label><div class="setting-controls" style="flex-direction: column; align-items: stretch; gap: 10px;"><div style="display: flex; gap: 10px; width:100%;"><input type="text" id="templateName" placeholder="Название" style="flex-grow: 1;"><input type="number" id="templatePrice" placeholder="Цена" style="width: 100px;" min="0"><button id="addServiceTemplateBtn">Добавить</button></div><div id="service-templates-list"></div></div></div>
+            <div class="setting-item"><label>Управление данными</label><div class="setting-controls"><button class="warning" id="resetSettingsBtn">Сбросить настройки</button></div></div>
+        </div>
+    </div>
+</div>
+<datalist id="service-templates-datalist"></datalist>
+
+<div id="confirmModal" class="modal-overlay">
+    <div class="modal-content">
+        <p id="modalText">Вы уверены?</p>
+        <div class="modal-actions">
+            <button id="modalConfirmBtn" class="button">Да</button>
+            <button id="modalCancelBtn" class="button">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<script>
+'use strict';
+const get = (selector) => document.querySelector(selector);
+const getAll = (selector) => document.querySelectorAll(selector);
+
+class TireServiceApp {
+    constructor() {
+        this.MAX_HISTORY_STATES = 100;
+        this.data = {
+            expenses: [], income: [], clients: [], serviceTemplates: [],
+            settings: {
+                version: "1.4",
+                theme: 'dark', currency: '₽', primaryColor: '#38BDF8', animations: true,
+                tableDensity: 'normal', fontSize: 'normal', confirmDelete: true, bestClientMetric: 'profit',
+                incomeFilter: '', expensesFilter: '', clientsFilter: '',
+                sort: {
+                    income: {key: 'date', dir: 'desc'},
+                    expenses: {key: 'date', dir: 'desc'},
+                    clients: {key: 'date', dir: 'desc'}
+                }
+            }
+        };
+        this.historyStack = [];
+        this.historyIndex = -1;
+        this.bestClientGlobal = null;
+        this.editingTemplateIndex = null;
+        this.debouncedSave = this.debounce(() => this.recordHistoryState(), 500);
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.loadData();
+    }
+    
+    uuid() {
+        if (crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        const timestamp = Date.now().toString(16);
+        return `${'xxxxxxxx'.replace(/[x]/g, c => (Math.random() * 16 | 0).toString(16))}-${timestamp}`;
+    }
+
+    setupEventListeners() {
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && e.key === 'z') { e.preventDefault(); this.undo(); }
+            if (e.ctrlKey && e.key === 'y') { e.preventDefault(); this.redo(); }
+        });
+
+        getAll('.tab').forEach(tab => tab.addEventListener('click', (e) => this.switchTab(e.currentTarget.dataset.tab)));
+        get('#undoBtn').addEventListener('click', () => this.undo());
+        get('#redoBtn').addEventListener('click', () => this.redo());
+
+        get('#addIncomeRowBtn').addEventListener('click', () => this.addIncomeRow());
+        get('#addExpenseRowBtn').addEventListener('click', () => this.addExpenseRow());
+        get('#addClientRowBtn').addEventListener('click', () => this.addClientRow());
+        get('#addServiceTemplateBtn').addEventListener('click', () => this.addOrUpdateServiceTemplate());
+        
+        get('#incomeTable tbody').addEventListener('input', e => this.handleTableInput(e, 'income'));
+        get('#expensesTable tbody').addEventListener('input', e => this.handleTableInput(e, 'expenses'));
+        get('#clientsTable tbody').addEventListener('input', e => this.handleTableInput(e, 'clients'));
+
+        get('#incomeTable tbody').addEventListener('click', e => this.handleTableClick(e, 'income'));
+        get('#expensesTable tbody').addEventListener('click', e => this.handleTableClick(e, 'expenses'));
+        get('#clientsTable tbody').addEventListener('click', e => this.handleTableClick(e, 'clients'));
+        
+        getAll('th[data-sort-key]').forEach(th => th.addEventListener('click', e => {
+            const tableId = e.target.closest('table').id;
+            const tableKey = tableId.replace('Table', '');
+            const sortKey = e.target.dataset.sortKey;
+            this.sortTable(tableKey, sortKey);
+        }));
+
+        get('#incomeSearch').addEventListener('input', this.debounce(e => { this.updateSetting('incomeFilter', e.target.value, false); this.filterTable('#incomeTable tbody', e.target.value, 3); }, 300));
+        get('#expensesSearch').addEventListener('input', this.debounce(e => { this.updateSetting('expensesFilter', e.target.value, false); this.filterTable('#expensesTable tbody', e.target.value, 3); }, 300));
+        get('#clientSearch').addEventListener('input', this.debounce(e => { this.updateSetting('clientsFilter', e.target.value, false); this.filterClientsTable(e.target.value); }, 300));
+
+        get('#exportDataBtn').addEventListener('click', () => this.exportData());
+        get('#importFile').addEventListener('change', e => this.importData(e));
+        get('#clearAllDataBtn').addEventListener('click', () => this.clearAllData());
+        get('#copySummaryBtn').addEventListener('click', () => this.copySummary());
+        get('#bestClientCard').addEventListener('click', () => this.goToBestClient());
+
+        get('#theme-switcher').addEventListener('click', e => e.target.dataset.theme && this.updateSetting('theme', e.target.dataset.theme));
+        get('#animation-switcher').addEventListener('click', e => e.target.dataset.anim && this.updateSetting('animations', e.target.dataset.anim === 'on'));
+        get('#density-switcher').addEventListener('click', e => e.target.dataset.density && this.updateSetting('tableDensity', e.target.dataset.density));
+        get('#font-size-switcher').addEventListener('click', e => e.target.dataset.size && this.updateSetting('fontSize', e.target.dataset.size));
+        get('#confirm-delete-switcher').addEventListener('click', e => e.target.dataset.confirm && this.updateSetting('confirmDelete', e.target.dataset.confirm === 'on'));
+        get('#best-client-metric-switcher').addEventListener('click', e => e.target.dataset.metric && this.updateSetting('bestClientMetric', e.target.dataset.metric));
+        get('#resetSettingsBtn').addEventListener('click', () => this.resetSettings());
+        
+        get('#primaryColorPicker').addEventListener('input', this.debounce(e => this.updateSetting('primaryColor', e.target.value), 100));
+        get('#currencySymbol').addEventListener('input', this.debounce(e => this.updateSetting('currency', e.target.value), 300));
+
+        get('#service-templates-list').addEventListener('click', async e => {
+            const target = e.target.closest('button');
+            if (!target) return;
+            const item = target.closest('.template-item');
+            const index = parseInt(item.dataset.index);
+            if (target.classList.contains('btn-delete')) await this.deleteServiceTemplate(index);
+            if (target.classList.contains('btn-edit')) this.editServiceTemplate(index);
+        });
+    }
+    
+    confirmAction({ text, confirmText = "Да", cancelText = "Отмена", confirmClass = 'danger' }) {
+        return new Promise((resolve) => {
+            const modal = get('#confirmModal');
+            const confirmBtn = get('#modalConfirmBtn');
+            const cancelBtn = get('#modalCancelBtn');
+
+            get('#modalText').textContent = text;
+            confirmBtn.textContent = confirmText;
+            cancelBtn.textContent = cancelText;
+
+            confirmBtn.className = `button ${confirmClass}`;
+            cancelBtn.className = 'button';
+
+            modal.classList.add('visible');
+            
+            const cleanup = () => {
+                modal.classList.remove('visible');
+                confirmBtn.removeEventListener('click', confirmHandler);
+                cancelBtn.removeEventListener('click', cancelHandler);
+            };
+            const confirmHandler = () => { cleanup(); resolve(true); };
+            const cancelHandler = () => { cleanup(); resolve(false); };
+            
+            confirmBtn.addEventListener('click', confirmHandler, { once: true });
+            cancelBtn.addEventListener('click', cancelHandler, { once: true });
+        });
+    }
+
+    updateState(updater, recordHistory = true) {
+        updater(this.data);
+        try {
+            localStorage.setItem('tireServiceData', JSON.stringify(this.data));
+        } catch(e) {
+            console.error("Failed to save data to localStorage:", e);
+            this.showNotification("Ошибка сохранения: Хранилище переполнено", "danger");
+        }
+        if (recordHistory) this.recordHistoryState();
+        this.render();
+    }
+    
+    loadState(newState, recordHistory = true) {
+        const defaultData = new TireServiceApp().data;
+        const sanitizedData = this.sanitizeData(newState);
+        this.data = { ...defaultData, ...sanitizedData, settings: { ...defaultData.settings, ...(sanitizedData.settings || {}) }};
+        if (recordHistory) this.recordHistoryState();
+        this.render();
+    }
+
+    render() {
+        this.applySettings();
+        this.renderAllTables();
+        this.renderServiceTemplates();
+        this.updateAllCalculations();
+        this.updateHistoryButtons();
+        this.updateSortHeaders();
+        
+        const { incomeFilter, expensesFilter, clientsFilter } = this.data.settings;
+        get('#incomeSearch').value = incomeFilter || '';
+        this.filterTable('#incomeTable tbody', incomeFilter || '', 3);
+        get('#expensesSearch').value = expensesFilter || '';
+        this.filterTable('#expensesTable tbody', expensesFilter || '', 3);
+        get('#clientSearch').value = clientsFilter || '';
+        this.filterClientsTable(clientsFilter || '');
+    }
+    
+    recordHistoryState() {
+        const currentState = JSON.stringify(this.data);
+        if (this.historyIndex > -1 && this.historyStack[this.historyIndex] === currentState) return;
+
+        this.historyStack = this.historyStack.slice(0, this.historyIndex + 1);
+        this.historyStack.push(currentState);
+        this.historyIndex++;
+        
+        if (this.historyStack.length > this.MAX_HISTORY_STATES) {
+            this.historyStack.shift(); this.historyIndex--;
+        }
+
+        this.updateHistoryButtons();
+    }
+
+    undo() { if (this.historyIndex > 0) { this.historyIndex--; this.loadState(JSON.parse(this.historyStack[this.historyIndex]), false); }}
+    redo() { if (this.historyIndex < this.historyStack.length - 1) { this.historyIndex++; this.loadState(JSON.parse(this.historyStack[this.historyIndex]), false); }}
+    updateHistoryButtons() { get('#undoBtn').disabled = this.historyIndex <= 0; get('#redoBtn').disabled = this.historyIndex >= this.historyStack.length - 1; }
+
+    parseMoney(value) {
+        if (typeof value !== 'string' && typeof value !== 'number') return 0;
+        const stringValue = String(value).replace(',', '.').replace(/[^0-9.-]/g, '');
+        let parsed = parseFloat(stringValue);
+        return isNaN(parsed) ? 0 : parsed;
+    }
+    
+    renderMoney(value) { return `${this.parseMoney(value).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ${this.data.settings.currency || '₽'}`; }
+    
+    showNotification(message, type = 'success') {
+        const notif = document.createElement('div');
+        notif.className = `notification ${type}`;
+        notif.textContent = message;
+        notif.setAttribute('role', 'alert');
+        document.body.appendChild(notif);
+        setTimeout(() => notif.remove(), 3000);
+    }
+    
+    debounce(func, delay) { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); }; }
+
+    handleTableInput(event, tableKey) {
+        const input = event.target;
+        if (input.tagName !== 'INPUT') return;
+        const row = input.closest('tr');
+        if (!row) return;
+        const { id, subId } = row.dataset;
+        const colIndex = input.closest('td').cellIndex;
+        const keyMap = {
+            income: ['date', 'amount', 'count', 'service', 'comment'],
+            expenses: ['date', 'amount', 'count', 'description'],
+            clients: ['date', 'amount', 'phone', 'plate', 'name'],
+            clientVisits: ['date', 'amount', null, 'plate']
+        };
+        
+        const item = this.data[tableKey].find(i => i.id === id);
+        if (!item) return;
+        
+        let targetObject = item;
+        let keyMapToUse = keyMap[tableKey];
+        if (tableKey === 'clients' && subId) {
+            const visit = item.visits.find(v => v.id === subId);
+            if (!visit) return;
+            targetObject = visit;
+            keyMapToUse = keyMap.clientVisits;
+        }
+
+        const key = keyMapToUse[colIndex];
+        if (key && targetObject[key] !== input.value) {
+            let value = input.value;
+            if (key === 'amount' && this.parseMoney(value) < 0) {
+                value = Math.abs(this.parseMoney(value)).toString();
+                input.value = value;
+            }
+            targetObject[key] = value;
+            
+            if (input.dataset.template && tableKey === 'income') {
+                this.applyTemplate(input.value, item, row);
+            }
+            
+            this.updateState(d => {}, false); 
+            this.updateAllCalculations();
+            this.debouncedSave();
+        }
+    }
+    
+    applyTemplate(templateName, incomeItem, row) {
+        const template = (this.data.serviceTemplates || []).find(t => t.name === templateName);
+        if (template && incomeItem) {
+            incomeItem.amount = template.price;
+            if (row) {
+                const amountInput = row.cells[1].querySelector('input');
+                if (amountInput) amountInput.value = template.price;
+            }
+            this.updateState(d => {}, false);
+        }
+    }
+    
+    async handleTableClick(event, tableKey) {
+        const button = event.target.closest('button');
+        if (!button) return;
+        const row = button.closest('tr');
+        if (!row) return;
+        const { id, subId } = row.dataset;
+
+        if (button.classList.contains('btn-delete')) await this.deleteRow(tableKey, id, subId, row);
+        if (button.classList.contains('btn-expand')) this.expandClientRow(id);
+    }
+
+    addIncomeRow() { this.updateState(data => { data.income.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', count: 1, service: '', comment: '' }); }); }
+    addExpenseRow() { this.updateState(data => { data.expenses.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', count: 1, description: '' }); }); }
+    addClientRow() { this.updateState(data => { data.clients.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', phone: '', plate: '', name: '', visits: [] }); }); }
+
+    async deleteRow(tableKey, id, subId, rowElement) {
+        if (this.data.settings.confirmDelete) {
+            if (!await this.confirmAction({ text: "Удалить эту запись?" })) return;
+        }
+        
+        const animate = this.data.settings.animations;
+        if (animate) {
+            rowElement.classList.add('row-exit');
+            if (tableKey === 'clients' && !subId) {
+                let next = rowElement.nextElementSibling;
+                while(next && next.classList.contains('sub-row')) {
+                    next.classList.add('row-exit');
+                    next = next.nextElementSibling;
+                }
+            }
+        }
+        
+        setTimeout(() => {
+            this.updateState(data => {
+                if (tableKey === 'clients' && subId) {
+                    const client = data.clients.find(c => c.id === id);
+                    if (client) client.visits = client.visits.filter(v => v.id !== subId);
+                } else {
+                    data[tableKey] = data[tableKey].filter(item => item.id !== id);
+                }
+            });
+        }, animate ? 400 : 0);
+    }
+    
+    expandClientRow(clientId) {
+        this.updateState(data => {
+            const client = data.clients.find(c => c.id === clientId);
+            if (client) {
+                const plate = client.plate || '';
+                client.visits.push({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', plate: plate });
+            }
+        });
+    }
+    
+    renderAllTables() {
+        ['income', 'expenses', 'clients'].forEach(key => {
+            const sortState = this.data.settings.sort[key];
+            if (sortState && sortState.key) {
+                this.data[key].sort((a, b) => {
+                    const sortKey = sortState.key;
+                    let valA = a[sortKey];
+                    let valB = b[sortKey];
+
+                    if (sortKey === 'amount' || sortKey === 'count') {
+                        valA = this.parseMoney(valA);
+                        valB = this.parseMoney(valB);
+                        if(isNaN(valA)) valA = 0;
+                        if(isNaN(valB)) valB = 0;
+                    } else {
+                        valA = String(valA || '').toLowerCase();
+                        valB = String(valB || '').toLowerCase();
+                    }
+
+                    if (valA < valB) return sortState.dir === 'asc' ? -1 : 1;
+                    if (valA > valB) return sortState.dir === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+        });
+        
+        this.renderTable('#incomeTable tbody', this.data.income, this.getIncomeRowHTML);
+        this.renderTable('#expensesTable tbody', this.data.expenses, this.getExpenseRowHTML);
+        this.renderClientsTable();
+    }
+
+    renderTable(tbodySelector, data, rowRenderer) {
+        const tbody = get(tbodySelector);
+        tbody.innerHTML = data.map(item => rowRenderer.call(this, item)).join('');
+    }
+
+    renderClientsTable() {
+        const tbody = get('#clientsTable tbody');
+        let html = '';
+        this.data.clients.forEach(client => {
+            const totalVisits = 1 + (client.visits?.length || 0);
+            html += `
+                <tr data-id="${client.id}">
+                    <td><input type="date" value="${client.date || ''}"></td>
+                    <td><input type="number" step="0.01" min="0" placeholder="0" value="${client.amount || ''}"></td>
+                    <td><input type="tel" placeholder="+7..." value="${client.phone || ''}" pattern="\\+?[0-9\\s\\-()]+"></td>
+                    <td><input type="text" placeholder="А000АА00" value="${client.plate || ''}" pattern="[А-Яа-яA-Za-z0-9]+"></td>
+                    <td><input type="text" placeholder="Имя" value="${client.name || ''}"></td>
+                    <td><input type="number" value="${totalVisits}" readonly></td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-delete" title="Удалить клиента" aria-label="Удалить клиента">✖</button>
+                        <button class="btn-action btn-expand" title="Добавить посещение" aria-label="Добавить посещение">➕</button>
+                    </td>
+                </tr>`;
+            const sortedVisits = (client.visits || []).sort((a, b) => b.date.localeCompare(a.date));
+            sortedVisits.forEach(visit => {
+                html += `
+                <tr class="sub-row" data-id="${client.id}" data-sub-id="${visit.id}">
+                    <td><input type="date" value="${visit.date || ''}"></td>
+                    <td><input type="number" step="0.01" min="0" placeholder="0" value="${visit.amount || ''}"></td>
+                    <td></td>
+                    <td><input type="text" placeholder="Гос номер" value="${visit.plate || ''}"></td>
+                    <td></td><td></td>
+                    <td class="actions-cell"><button class="btn-action btn-delete" title="Удалить посещение" aria-label="Удалить посещение">✖</button></td>
+                </tr>`;
+            });
+        });
+        tbody.innerHTML = html;
+    }
+
+    getIncomeRowHTML(item) { return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}"></td><td><input type="number" step="0.01" min="0" placeholder="0" value="${item.amount || ''}"></td><td><input type="number" min="1" value="${item.count || 1}" placeholder="1"></td><td><input type="text" placeholder="Услуга" value="${item.service || ''}" list="service-templates-datalist" data-template="true"></td><td><input type="text" placeholder="Комментарий" value="${item.comment || ''}"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td></tr>`; }
+    getExpenseRowHTML(item) { return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}"></td><td><input type="number" step="0.01" min="0" placeholder="0" value="${item.amount || ''}"></td><td><input type="number" min="1" value="${item.count || 1}" placeholder="1"></td><td><input type="text" placeholder="Описание" value="${item.description || ''}"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td></tr>`; }
+
+    updateAllCalculations() {
+        const totalIncome = this.data.income.reduce((sum, item) => sum + (this.parseMoney(item.amount) * (parseInt(item.count) || 1)), 0);
+        const totalExpenses = this.data.expenses.reduce((sum, item) => sum + (this.parseMoney(item.amount) * (parseInt(item.count) || 1)), 0);
+        const netProfit = totalIncome - totalExpenses;
+        
+        let totalVisits = 0;
+        let totalFromNotes = 0;
+        const clientsData = this.data.clients.map(client => {
+            const clientVisitsCount = 1 + (client.visits?.length || 0);
+            const clientProfit = this.parseMoney(client.amount) + (client.visits || []).reduce((sum, visit) => sum + this.parseMoney(visit.amount), 0);
+            totalVisits += clientVisitsCount;
+            totalFromNotes += clientProfit;
+            return { id: client.id, name: client.name, phone: client.phone, profit: clientProfit, visits: clientVisitsCount };
+        });
+
+        get('#totalIncome').textContent = this.renderMoney(totalIncome);
+        get('#totalExpenses').textContent = this.renderMoney(totalExpenses);
+        get('#totalProfit').textContent = this.renderMoney(netProfit);
+        get('#totalClients').textContent = clientsData.length;
+        get('#totalVisits').textContent = totalVisits;
+        get('#avgClientCheck').textContent = this.renderMoney(totalVisits > 0 ? totalFromNotes / totalVisits : 0);
+        
+        get('#totalProfit').classList.toggle('positive', netProfit >= 0);
+        get('#totalProfit').classList.toggle('negative', netProfit < 0);
+        
+        this.findBestClient(clientsData);
+    }
+    
+    findBestClient(clientsData) {
+        if (clientsData.length === 0) {
+            get('#bestClientInfo').textContent = 'Нет данных о клиентах';
+            this.bestClientGlobal = null; return;
+        }
+        const metric = this.data.settings.bestClientMetric || 'profit';
+        
+        const sortedClients = [...clientsData].sort((a, b) => {
+            const primaryDiff = b[metric] - a[metric];
+            if (primaryDiff !== 0) return primaryDiff;
+
+            const secondaryMetric = metric === 'profit' ? 'visits' : 'profit';
+            const secondaryDiff = b[secondaryMetric] - a[secondaryMetric];
+            if (secondaryDiff !== 0) return secondaryDiff;
+            
+            return (a.name || '').localeCompare(b.name || '');
+        });
+        
+        this.bestClientGlobal = sortedClients[0];
+        get('#bestClientInfo').innerHTML = `<span class="highlight-text">${this.bestClientGlobal.name || 'Безымянный'} (${this.bestClientGlobal.phone || 'Без номера'})</span><br>Сумма: <span class="highlight-text">${this.renderMoney(this.bestClientGlobal.profit)}</span> | Посещений: ${this.bestClientGlobal.visits}`;
+    }
+
+    goToBestClient() {
+        if (!this.bestClientGlobal?.id) return;
+        this.switchTab('clients', () => {
+            const targetRow = get(`#clientsTable tbody tr[data-id="${this.bestClientGlobal.id}"]`);
+            if (targetRow) {
+                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetRow.classList.add('highlight');
+                setTimeout(() => targetRow.classList.remove('highlight'), 2000);
+            }
+        });
+    }
+
+    filterTable(tbodySelector, searchTerm, textCellIndex) { const term = searchTerm.toLowerCase(); getAll(`${tbodySelector} tr`).forEach(row => { const cell = row.cells[textCellIndex]; if (cell) row.style.display = cell.querySelector('input').value.toLowerCase().includes(term) ? '' : 'none'; }); }
+    
+    filterClientsTable(term) {
+        const lowerTerm = term.toLowerCase();
+
+        if (!lowerTerm) {
+            getAll('#clientsTable tbody tr').forEach(row => row.style.display = '');
+            return;
+        }
+
+        this.data.clients.forEach(client => {
+            const mainRow = get(`#clientsTable tbody tr[data-id="${client.id}"]:not(.sub-row)`);
+            if (!mainRow) return;
+
+            const clientText = [client.date, client.amount, client.phone, client.plate, client.name].join(' ').toLowerCase();
+            const mainRowMatches = clientText.includes(lowerTerm);
+
+            let anySubRowMatches = false;
+            (client.visits || []).forEach(visit => {
+                const subRow = get(`#clientsTable tbody tr[data-sub-id="${visit.id}"]`);
+                if (!subRow) return;
+                
+                const visitText = [visit.date, visit.amount, visit.plate].join(' ').toLowerCase();
+                const subRowMatches = visitText.includes(lowerTerm);
+
+                if (subRowMatches) {
+                    subRow.style.display = '';
+                    anySubRowMatches = true;
+                } else {
+                    subRow.style.display = 'none';
+                }
+            });
+
+            mainRow.style.display = (mainRowMatches || anySubRowMatches) ? '' : 'none';
+        });
+    }
+
+
+    validateData(data) {
+        return data && typeof data === 'object' &&
+               Array.isArray(data.income) &&
+               Array.isArray(data.expenses) &&
+               Array.isArray(data.clients) &&
+               typeof data.settings === 'object';
+    }
+    
+    sanitizeData(data) {
+        if (!this.validateData(data)) return new TireServiceApp().data;
+
+        const sanitizeItem = (item) => ({
+            ...item,
+            id: item.id || this.uuid(),
+            date: typeof item.date === 'string' ? item.date : new Date().toISOString().slice(0, 10),
+            amount: Math.abs(this.parseMoney(item.amount)),
+            count: parseInt(item.count) || 1,
+        });
+        
+        data.income = Array.isArray(data.income) ? data.income.map(sanitizeItem) : [];
+        data.expenses = Array.isArray(data.expenses) ? data.expenses.map(sanitizeItem) : [];
+        data.clients = Array.isArray(data.clients) ? data.clients.map(client => ({
+            ...sanitizeItem(client),
+            visits: Array.isArray(client.visits) ? client.visits.map(sanitizeItem) : []
+        })) : [];
+        data.serviceTemplates = Array.isArray(data.serviceTemplates) ? data.serviceTemplates : [];
+        return data;
+    }
+
+    loadData() {
+        const savedData = localStorage.getItem('tireServiceData');
+        if (savedData) {
+            try {
+                const parsedData = JSON.parse(savedData);
+                this.loadState(parsedData, false);
+                this.showNotification('Данные загружены');
+            } catch (e) {
+                console.error("Failed to load data, resetting to default.", e);
+                this.loadState(new TireServiceApp().data, false);
+                this.showNotification('Данные повреждены, загружен стандартный набор', 'danger');
+            }
+        } else {
+            this.recordHistoryState();
+            this.render();
+        }
+    }
+    
+    exportData() { const json = JSON.stringify(this.data, null, 2); const blob = new Blob([json], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `tire_service_data_${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(url); this.showNotification('Данные экспортированы'); }
+    
+    async importData(e) { 
+        const file = e.target.files[0]; 
+        if (!file) return; 
+        
+        const reader = new FileReader(); 
+        reader.onload = async event => { 
+            try { 
+                const parsed = JSON.parse(event.target.result); 
+                if (this.validateData(parsed)) { 
+                    const shouldMerge = await this.confirmAction({
+                        text: "Как импортировать данные?",
+                        confirmText: "Объединить",
+                        cancelText: "Заменить все",
+                        confirmClass: 'success'
+                    });
+
+                    if (shouldMerge) {
+                        this.updateState(data => {
+                            const newIncome = (parsed.income || []).map(item => ({ ...item, id: this.uuid() }));
+                            const newExpenses = (parsed.expenses || []).map(item => ({ ...item, id: this.uuid() }));
+                            const newClients = (parsed.clients || []).map(client => ({
+                                ...client,
+                                id: this.uuid(),
+                                visits: (client.visits || []).map(visit => ({ ...visit, id: this.uuid() }))
+                            }));
+                            
+                            const existingTemplateNames = new Set(data.serviceTemplates.map(t => t.name));
+                            const newTemplates = (parsed.serviceTemplates || []).filter(t => !existingTemplateNames.has(t.name));
+
+                            data.income.push(...newIncome);
+                            data.expenses.push(...newExpenses);
+                            data.clients.push(...newClients);
+                            data.serviceTemplates.push(...newTemplates);
+                        });
+                        this.showNotification('Данные объединены');
+                    } else {
+                        this.loadState(parsed); 
+                        this.showNotification('Данные импортированы и заменены');
+                    }
+                } else { 
+                    this.showNotification('Неверный формат файла импорта', 'danger'); 
+                } 
+            } catch (err) { 
+                this.showNotification('Ошибка импорта', 'danger'); 
+                console.error(err);
+            } 
+        }; 
+        reader.readAsText(file); 
+        e.target.value = ''; 
+    }
+    
+    async clearAllData() { 
+        if (await this.confirmAction({text: 'Вы уверены? Это действие необратимо.'})) {
+            const settings = this.data.settings;
+            this.updateState(data => {
+                data.expenses = []; data.income = []; data.clients = [];
+                data.settings = settings;
+            }); 
+            this.showNotification('Все данные удалены (настройки сохранены)', 'danger');
+        }
+    }
+
+    copySummary() { 
+        this.updateAllCalculations();
+        let text = 'Сводка:\n'; 
+        getAll('.summary-category').forEach(cat => { 
+            text += `\n--- ${cat.querySelector('h2').textContent} ---\n`; 
+            cat.querySelectorAll('.result-card').forEach(card => { 
+                text += `${card.querySelector('.label').textContent.trim()}: ${card.querySelector('.value').textContent.trim()}\n`; 
+            }); 
+        }); 
+        this.copyToClipboard(text.trim()); 
+    }
+    
+    async copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            try {
+                await navigator.clipboard.writeText(text); this.showNotification('Скопировано!');
+            } catch (err) { this.copyToClipboardFallback(text); }
+        } else { this.copyToClipboardFallback(text); }
+    }
+    
+    copyToClipboardFallback(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = 'fixed'; textArea.style.top = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.focus(); textArea.select();
+        try {
+            document.execCommand('copy'); this.showNotification('Скопировано!');
+        } catch (err) { this.showNotification('Ошибка копирования', 'danger'); }
+        document.body.removeChild(textArea);
+    }
+    
+    applySettings() {
+        const s = this.data.settings;
+        document.body.className = '';
+        if (s.theme === 'light') document.body.classList.add('light-theme');
+        if (!s.animations) document.body.classList.add('animations-disabled');
+        if (s.tableDensity && s.tableDensity !== 'normal') document.body.classList.add(`table-density-${s.tableDensity}`);
+        if (s.fontSize && s.fontSize !== 'normal') document.body.classList.add(`font-size-${s.fontSize}`);
+        document.documentElement.style.setProperty('--primary', s.primaryColor);
+        
+        get('#primaryColorPicker').value = s.primaryColor;
+        get('#currencySymbol').value = s.currency;
+        this.updateSettingsUI('#theme-switcher', 'theme', s.theme);
+        this.updateSettingsUI('#animation-switcher', 'anim', s.animations ? 'on' : 'off');
+        this.updateSettingsUI('#density-switcher', 'density', s.tableDensity);
+        this.updateSettingsUI('#font-size-switcher', 'size', s.fontSize);
+        this.updateSettingsUI('#confirm-delete-switcher', 'confirm', s.confirmDelete ? 'on' : 'off');
+        this.updateSettingsUI('#best-client-metric-switcher', 'metric', s.bestClientMetric);
+    }
+    
+    updateSetting(key, value, recordHistory = true) {
+        this.updateState(data => { data.settings[key] = value; }, recordHistory);
+        if (key === 'bestClientMetric') this.updateAllCalculations();
+    }
+    updateSettingsUI(containerId, dataAttr, value) { getAll(`${containerId} button`).forEach(btn => btn.classList.toggle('active', btn.dataset[dataAttr] == value)); }
+    
+    async resetSettings() { 
+        if(await this.confirmAction({text: 'Сбросить все настройки к значениям по умолчанию?'})) {
+            this.updateState(data => { data.settings = new TireServiceApp().data.settings; });
+        }
+    }
+
+    switchTab(tabName, callback) {
+        get('.tab.active')?.classList.remove('active');
+        get('.tab-content.active')?.classList.remove('active');
+        get(`.tab[data-tab="${tabName}"]`).classList.add('active');
+        get(`#${tabName}`).classList.add('active');
+        if (callback) setTimeout(callback, 50);
+    }
+
+    addOrUpdateServiceTemplate() {
+        const nameInput = get('#templateName');
+        const priceInput = get('#templatePrice');
+        const name = nameInput.value.trim();
+        const price = this.parseMoney(priceInput.value);
+        
+        if (!name || price <= 0) {
+            this.showNotification('Введите корректное название и цену', 'danger');
+            return;
+        }
+
+        this.updateState(data => {
+            if (this.editingTemplateIndex !== null) {
+                data.serviceTemplates[this.editingTemplateIndex] = { name, price };
+            } else {
+                data.serviceTemplates.push({ name, price });
+            }
+        });
+        
+        this.resetTemplateForm();
+    }
+    
+    editServiceTemplate(index) {
+        const template = this.data.serviceTemplates[index];
+        if (!template) return;
+        
+        this.editingTemplateIndex = index;
+        get('#templateName').value = template.name;
+        get('#templatePrice').value = template.price;
+        get('#addServiceTemplateBtn').textContent = 'Сохранить';
+        get('#addServiceTemplateBtn').classList.add('success');
+        get('#templateName').focus();
+    }
+
+    resetTemplateForm() {
+        this.editingTemplateIndex = null;
+        get('#templateName').value = '';
+        get('#templatePrice').value = '';
+        const btn = get('#addServiceTemplateBtn');
+        btn.textContent = 'Добавить';
+        btn.classList.remove('success');
+    }
+
+    async deleteServiceTemplate(index) { 
+        if (this.data.settings.confirmDelete && !await this.confirmAction({text: "Удалить этот шаблон?"})) return;
+        this.updateState(data => { data.serviceTemplates.splice(index, 1); }); 
+    }
+
+    renderServiceTemplates() { 
+        const list = get('#service-templates-list'); 
+        const datalist = get('#service-templates-datalist'); 
+        list.innerHTML = ''; 
+        datalist.innerHTML = ''; 
+        (this.data.serviceTemplates || []).forEach((template, index) => { 
+            list.innerHTML += `
+            <div class="template-item" data-index="${index}">
+                <span>${template.name} - ${this.renderMoney(template.price)}</span>
+                <div class="template-actions">
+                    <button class="btn-action btn-edit" title="Редактировать шаблон">✎</button>
+                    <button class="btn-action btn-delete" title="Удалить шаблон">✖</button>
+                </div>
+            </div>`; 
+            datalist.innerHTML += `<option value="${template.name}">`; 
+        }); 
+    }
+
+    sortTable(tableKey, newKey) {
+        const sortState = this.data.settings.sort[tableKey];
+        let newDir = 'desc';
+        if (sortState.key === newKey) {
+            newDir = sortState.dir === 'desc' ? 'asc' : 'desc';
+        }
+        this.updateState(data => {
+            data.settings.sort[tableKey] = { key: newKey, dir: newDir };
+        }, false);
+        this.render();
+    }
+
+    updateSortHeaders() {
+        getAll('th[data-sort-key]').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+            th.setAttribute('aria-sort', 'none');
+        });
+        ['income', 'expenses', 'clients'].forEach(key => {
+            const sortState = this.data.settings.sort[key];
+            if (sortState && sortState.key) {
+                const header = get(`#${key}Table th[data-sort-key="${sortState.key}"]`);
+                if (header) {
+                    const direction = sortState.dir === 'asc' ? 'ascending' : 'descending';
+                    header.classList.add(`sort-${sortState.dir}`);
+                    header.setAttribute('aria-sort', direction);
+                }
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const app = new TireServiceApp();
+    app.init();
+});
+</script>
+</body>
+</html>
