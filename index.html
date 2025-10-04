@@ -8,120 +8,147 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg-dark: #111827; --bg-light: #1F2937; --bg-card-dark: #1F2937; --bg-card-light: #FFFFFF; --bg-input-dark: #374151; --bg-input-light: #F3F4F6;
-            --primary: #38BDF8; --primary-hover: #7DD3FC; --primary-light: rgba(56, 189, 248, 0.1);
-            --text-dark: #F9FAFB; --text-light: #111827; --text-muted-dark: #9CA3AF; --text-muted-light: #6B7280;
-            --danger: #F43F5E; --success: #34D399; --warning: #FBBF24; --border-color-dark: #374151; --border-color-light: #E5E7EB;
-            --border-radius: 12px; --transition-speed: 0.3s;
+            --bg-dark: #0D1117; --bg-light: #161B22; --bg-card-dark: #161B22; --bg-card-light: #FFFFFF; --bg-input-dark: #21262D; --bg-input-light: #F3F4F6;
+            --primary: #58A6FF; --primary-hover: #7DD3FC; --primary-light: rgba(88, 166, 255, 0.1);
+            --text-dark: #E6EDF3; --text-light: #111827; --text-muted-dark: #8B949E; --text-muted-light: #6B7280;
+            --danger: #F85149; --success: #34D399; --warning: #FBBF24; --info: #60A5FA; --border-color-dark: #30363D; --border-color-light: #E5E7EB;
+            --border-radius: 12px; --transition-speed: 0.3s; --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 1; transition: opacity 0.5s ease; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--bg-light); border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-dark); color: var(--text-dark); min-height: 100vh;
             padding: 15px; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            background-image: linear-gradient(180deg, var(--bg-dark) 0%, #0c121f 100%);
+            -webkit-tap-highlight-color: transparent;
         }
-        body:not(.animations-disabled) button,
-        body:not(.animations-disabled) .button,
-        body:not(.animations-disabled) .tab,
-        body:not(.animations-disabled) .result-card,
-        body:not(.animations-disabled) .modal-content,
-        body:not(.animations-disabled) .modal-overlay,
-        body:not(.animations-disabled) input,
-        body:not(.animations-disabled) select,
-        body:not(.animations-disabled) tr,
-        body:not(.animations-disabled) .icon {
-            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
+        body:not(.animations-disabled) * {
+             transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, opacity var(--transition-speed) ease;
         }
-        body.light-theme { --bg-dark: #F9FAFB; --bg-light: #FFFFFF; --bg-card-dark: #FFFFFF; --bg-input-dark: #F3F4F6; --text-dark: #111827; --text-muted-dark: #6B7280; --border-color-dark: #E5E7EB; }
+        body.light-theme { 
+            --bg-dark: #F9FAFB; --bg-light: #FFFFFF; --bg-card-dark: #FFFFFF; --bg-input-dark: #F3F4F6; --text-dark: #111827; 
+            --text-muted-dark: #6B7280; --border-color-dark: #E5E7EB; 
+            background-image: linear-gradient(180deg, var(--bg-dark) 0%, #f0f2f5 100%);
+        }
         body.font-size-small { font-size: 14px; } body.font-size-large { font-size: 18px; }
         .container { max-width: 1800px; margin: 0 auto; animation: fadeIn 0.8s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes icon-pop { 0% { transform: scale(1); } 50% { transform: scale(1.3) rotate(10deg); } 100% { transform: scale(1); } }
+        @keyframes subtle-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); color: var(--primary); text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
-        .history-controls button { background: var(--bg-light); color: var(--text-dark); border: none; width: 45px; height: 45px; font-size: 1.5em; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
-        .history-controls button:hover:not(:disabled) { background: var(--primary); color: var(--text-light); transform: translateY(-3px) scale(1.1); }
-        .history-controls button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; background: var(--bg-light); color: var(--text-dark); }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
-        .tab { padding: 10px 20px; background: var(--bg-light); border: 2px solid transparent; color: var(--text-muted-dark); cursor: pointer; font-size: 1em; font-weight: 600; border-radius: var(--border-radius); display: flex; align-items: center; gap: 8px; }
-        .tab:hover { color: var(--primary); transform: translateY(-3px); }
-        .tab.active { background: var(--primary); color: var(--bg-dark); box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); transform: translateY(-2px); }
+        h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); color: var(--primary); text-shadow: 0 0 20px rgba(88, 166, 255, 0.5); animation: fadeIn 1s ease-out; }
+        .top-controls { display: flex; align-items: center; gap: 10px; }
+        .top-controls button { background: var(--bg-light); color: var(--text-dark); border: 1px solid var(--border-color-dark); width: 45px; height: 45px; font-size: 1.5em; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+        .top-controls button:hover:not(:disabled) { background: var(--primary); color: var(--bg-dark); transform: translateY(-3px) scale(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .top-controls button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; background: var(--bg-light); color: var(--text-dark); }
+        .top-controls .icon { width: 24px; height: 24px; }
+        .top-controls button:hover:not(:disabled) .icon { animation: icon-pop 0.5s ease; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; border-bottom: 1px solid var(--border-color-dark); padding-bottom: 10px; }
+        .tab { padding: 10px 20px; background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--text-muted-dark); cursor: pointer; font-size: 1em; font-weight: 600; border-radius: 0; display: flex; align-items: center; gap: 8px; }
+        .tab:hover { color: var(--primary); }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
         .tab .icon { width: 22px; height: 22px; stroke-width: 2; }
-        .tab:hover .icon { transform: scale(1.2) rotate(-5deg); }
+        .tab:hover .icon { transform: scale(1.2) rotate(5deg); }
         .tab-content { display: none; } .tab-content.active { display: block; animation: slideIn 0.5s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        .controls { background: var(--bg-light); padding: 15px; margin-bottom: 20px; border-radius: var(--border-radius); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        button, .button { padding: 10px 20px; background: var(--primary); color: var(--bg-dark); border: none; cursor: pointer; font-size: 1em; font-weight: 600; border-radius: var(--border-radius); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.98) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .controls { background: transparent; padding: 15px 0; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .controls .icon { width: 20px; height: 20px; stroke-width: 2; }
+        button, .button { padding: 10px 20px; background: var(--primary); color: var(--bg-dark); border: none; cursor: pointer; font-size: 1em; font-weight: 600; border-radius: var(--border-radius); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; position: relative; overflow: hidden; }
         button:hover, .button:hover { filter: brightness(1.2); transform: scale(1.05) translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
-        button:active, .button:active { transform: scale(0.98) translateY(1px); filter: brightness(0.9); box-shadow: 0 1px 5px rgba(0,0,0,0.2); }
-        button.danger { background: var(--danger); } button.success { background: var(--success); } button.warning { background: var(--warning); }
-        input[type="date"], input[type="search"], input[type="text"], input[type="number"], input[type="color"], input[type="tel"], select { padding: 10px; background: var(--bg-input-dark); color: var(--text-dark); border: 2px solid var(--border-color-dark); font-size: 1em; border-radius: var(--border-radius); width: 100%; }
-        input:focus, select:focus { outline: none; box-shadow: 0 0 0 3px var(--primary-light); border-color: var(--primary); }
+        button:active, .button:active { transform: scale(0.97) translateY(1px); filter: brightness(0.9); box-shadow: 0 1px 5px rgba(0,0,0,0.2) inset; }
+        button.danger { background: var(--danger); } button.success { background: var(--success); } button.warning { background: var(--warning); } button.info { background: var(--info); }
+        input[type="date"], input[type="search"], input[type="text"], input[type="number"], input[type="color"], input[type="tel"], input[type="time"], select, textarea { padding: 10px; background: var(--bg-input-dark); color: var(--text-dark); border: 1px solid var(--border-color-dark); font-size: 1em; border-radius: var(--border-radius); width: 100%; font-family: inherit; }
+        textarea { resize: vertical; min-height: 80px; }
+        input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 3px var(--primary-light), 0 0 15px var(--primary-light); border-color: var(--primary); }
         .controls input { width: auto; flex-grow: 1; }
-        .table-wrapper { overflow-x: auto; background: var(--bg-light); border-radius: var(--border-radius); padding: 5px; }
-        table { width: 100%; border-collapse: collapse; }
-        tbody tr.row-enter { animation: rowSlideIn 0.4s ease-out forwards, newRowHighlight 1.5s ease-out .2s; }
+        .table-wrapper { overflow-x: auto; background: var(--bg-light); border-radius: var(--border-radius); border: 1px solid var(--border-color-dark); padding: 5px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        tbody tr.row-enter { animation: rowSlideIn 0.4s var(--transition-bounce) forwards, newRowHighlight 1.5s ease-out .2s; }
         tbody tr.row-exit { animation: rowSlideOut 0.4s ease-in forwards; }
-        @keyframes rowSlideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes rowSlideIn { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes rowSlideOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
         @keyframes newRowHighlight { from { background-color: var(--primary-light); } to { background-color: transparent; } }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color-dark); vertical-align: middle; white-space: nowrap; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color-dark); vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         th[data-sort-key] { cursor: pointer; user-select: none; }
-        th[data-sort-key]:hover { background: var(--primary-hover); color: var(--bg-dark); }
+        th[data-sort-key]:hover { background: var(--bg-input-dark); color: var(--primary); }
         th.sort-asc::after { content: ' ▲'; font-size: 0.8em; }
         th.sort-desc::after { content: ' ▼'; font-size: 0.8em; }
         .table-density-compact td, .table-density-compact th { padding: 8px; } .table-density-spacious td, .table-density-spacious th { padding: 20px; }
-        thead { background: var(--primary); color: var(--bg-dark); position: sticky; top: 0; z-index: 1; }
-        tbody tr:hover { background: var(--primary-light); }
+        thead { background: var(--bg-light); color: var(--text-dark); }
+        thead th { background: var(--bg-input-dark); color: var(--text-muted-dark); text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; border-bottom: 2px solid var(--border-color-dark); }
+        tbody tr:not(.sub-row):nth-child(even) { background-color: rgba(255, 255, 255, 0.02); }
+        body.light-theme tbody tr:not(.sub-row):nth-child(even) { background-color: rgba(0, 0, 0, 0.02); }
+        tbody tr:hover { background: var(--primary-light); transform: scale(1.005); z-index: 2; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         tbody tr.highlight { animation: highlight-row 2s ease-out; }
+        tbody tr.keyboard-focus { outline: 3px solid var(--primary); outline-offset: -3px; }
         tr.paid-debt { opacity: 0.6; }
-        tr.paid-debt input { text-decoration: line-through; }
+        tr.paid-debt input, tr.paid-debt a { text-decoration: line-through; }
         .status-cell { text-align: center; }
         .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--danger); transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--danger); }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: transform 0.4s var(--transition-bounce), background-color 0.4s ease; }
         input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(26px); }
+        input:checked + .slider:before { transform: translateX(26px) rotate(360deg); }
         .slider.round { border-radius: 34px; }
         .slider.round:before { border-radius: 50%; }
         @keyframes highlight-row { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(251, 191, 36, 0.3); } }
-        td input { max-width: 250px; }
-        .actions-cell { display: flex; align-items: center; gap: 10px; min-width: 100px; }
-        .btn-action { background: transparent; border: none; cursor: pointer; font-size: 1.5em; padding: 5px; color: var(--text-muted-dark); }
+        td input { text-overflow: ellipsis; }
+        .actions-cell { display: flex; align-items: center; justify-content: flex-start; gap: 10px; }
+        .btn-action { background: transparent; border: none; cursor: pointer; font-size: 1.5em; padding: 5px; color: var(--text-muted-dark); font-family: 'Inter', sans-serif; line-height: 1; }
+        .btn-action .icon { width: 18px; height: 18px; }
         .btn-action:hover { transform: scale(1.2) rotate(10deg); box-shadow: none; color: var(--primary); }
-        .btn-delete:hover { color: var(--danger); } .btn-expand:hover { color: var(--success); } .btn-edit:hover { color: var(--warning); }
-        .sub-row { background: rgba(56, 189, 248, 0.05); } .sub-row td:nth-child(3), .sub-row td:nth-child(5), .sub-row td:nth-child(6) { opacity: 0.5; }
+        .btn-delete:hover { color: var(--danger); animation: subtle-shake 0.3s ease; } .btn-expand:hover { color: var(--success); } .btn-edit:hover { color: var(--warning); }
+        .sub-row { background: rgba(88, 166, 255, 0.05); } 
+        .sub-row td:first-child { padding-left: 30px; position: relative; }
+        .sub-row td:first-child::before { content: '↳'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: bold; }
         .summary-container { display: flex; flex-direction: column; gap: 30px; }
-        .summary-category h2 { margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 10px; }
+        .summary-category h2 { margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--border-color-dark); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .summary-category h2 button { background: var(--bg-light); border: 1px solid var(--border-color-dark); color: var(--text-muted-dark); padding: 5px 10px; font-size: 0.8em; }
         .total-results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .result-card { background: var(--bg-card-dark); padding: 25px; border-radius: var(--border-radius); border-left: 5px solid var(--primary); animation: cardEnter 0.5s ease-out forwards; opacity: 0; border-top: 1px solid transparent; border-right: 1px solid transparent; }
-        @keyframes cardEnter { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .result-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: var(--primary); }
+        .result-card { background: var(--bg-card-dark); padding: 25px; border-radius: var(--border-radius); border: 1px solid var(--border-color-dark); border-left: 5px solid var(--primary); animation: cardEnter 0.5s var(--transition-bounce) forwards; opacity: 0; position: relative; }
+        @keyframes cardEnter { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .result-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: var(--primary); }
         .result-card .label { font-size: 1.1em; color: var(--text-muted-dark); margin-bottom: 10px; }
         .result-card .value { font-size: 2em; font-weight: 700; color: var(--text-dark); word-break: break-all; }
         .result-card .value.positive { color: var(--success); } .result-card .value.negative { color: var(--danger); }
         .result-card.best-client { grid-column: 1 / -1; border-color: var(--warning); cursor: pointer; }
         .best-client .value { font-size: 1.2em; line-height: 1.6; } .best-client .highlight-text { color: var(--warning); font-weight: bold; }
-        .notification { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: var(--bg-dark); padding: 15px 25px; border-radius: var(--border-radius); font-weight: bold; animation: slideInUp 0.5s ease, slideOutDown 0.5s ease 2.5s; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
-        @keyframes slideInUp { from { transform: translateY(100px) opacity(0); } to { transform: translateY(0) opacity(1); } }
-        @keyframes slideOutDown { from { transform: translateY(0) opacity(1); } to { transform: translateY(100px) opacity(0); } }
-        .settings-page { background: var(--bg-light); padding: 20px; border-radius: var(--border-radius); max-width: 800px; margin: 0 auto; }
+        @keyframes valueUpdate { 0% { transform: scale(1); } 50% { transform: scale(1.25); color: var(--primary); } 100% { transform: scale(1); } }
+        .value.updated { animation: valueUpdate 0.5s var(--transition-bounce); }
+        .toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; max-width: 350px; }
+        .toast { background: var(--bg-light); color: var(--text-dark); padding: 12px 16px; border-radius: var(--border-radius); box-shadow: 0 5px 20px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; animation: toastIn 0.3s var(--transition-bounce); border-left: 4px solid var(--primary); border: 1px solid var(--border-color-dark); }
+        .toast.success { border-left-color: var(--success); } .toast.danger { border-left-color: var(--danger); } .toast.warning { border-left-color: var(--warning); } .toast.info { border-left-color: var(--info); }
+        .toast.hiding { animation: toastOut 0.3s ease-in forwards; }
+        @keyframes toastIn { from { transform: translateX(400px) scale(0.8); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
+        @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }
+        .settings-page { background: var(--bg-light); padding: 20px; border-radius: var(--border-radius); max-width: 900px; margin: 0 auto; border: 1px solid var(--border-color-dark); }
         .settings-page h2 { margin-bottom: 20px; color: var(--primary); }
         .setting-item { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 25px; }
         .setting-item > label { font-weight: bold; }
-        .setting-controls { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
-        .setting-controls button { background-color: var(--bg-dark); color: var(--text-dark); border: 2px solid transparent; }
-        .setting-controls button.active { border-color: var(--primary); }
+        .setting-controls { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; align-items: center; }
+        .setting-controls button { background-color: var(--bg-dark); color: var(--text-dark); border: 2px solid var(--border-color-dark); }
+        .setting-controls button.active { border-color: var(--primary); color: var(--primary); }
         #service-templates-list { width: 100%; display: flex; flex-direction: column; gap: 5px; }
         .template-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-dark); padding: 8px; border-radius: 8px; width: 100%;}
         .template-item.income-template { border-left: 3px solid var(--success); }
         .template-item.expense-template { border-left: 3px solid var(--danger); }
         .template-item span { flex-grow: 1; margin-left: 10px;}
         .template-item .template-actions { display: flex; gap: 5px;}
-        .template-form-grid { display: grid; grid-template-columns: 1fr 100px 80px 100px auto; gap: 10px; width: 100%;}
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; }
-        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
-        .modal-content { background: var(--bg-light); padding: 30px; border-radius: var(--border-radius); text-align: center; max-width: 90%; width: 500px; }
-        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .template-form-grid { display: grid; grid-template-columns: 1fr 100px 80px 100px auto auto; gap: 10px; width: 100%;}
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; animation: modalFadeOut 0.4s ease forwards; }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; animation: modalFadeIn 0.4s ease forwards; }
+        @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalFadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .modal-content { background: var(--bg-light); padding: 30px; border-radius: var(--border-radius); text-align: center; max-width: 90%; width: 500px; max-height: 80vh; overflow-y: auto; animation: modalContentOut 0.4s ease forwards; border: 1px solid var(--border-color-dark); }
+        .modal-overlay.visible .modal-content { animation: modalContentIn 0.4s var(--transition-bounce) forwards; }
+        @keyframes modalContentIn { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+        @keyframes modalContentOut { from { transform: scale(1) translateY(0); opacity: 1; } to { transform: scale(0.9) translateY(20px); opacity: 0; } }
+        .modal-content.large { width: 800px; max-width: 95%; }
+        .modal-content h2 { color: var(--primary); margin-bottom: 10px; }
         .modal-content p { margin-bottom: 20px; font-size: 1.2em; color: var(--text-dark); }
         .modal-actions { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;}
         body.animations-disabled * { animation: none !important; transition: none !important; }
@@ -129,9 +156,9 @@
         .number-input-wrapper input[type="number"] { padding-right: 2rem; }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
-        .stepper-controls { position: absolute; right: 1px; top: 1px; bottom: 1px; width: 1.8rem; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.2s ease-in-out; }
+        .stepper-controls { position: absolute; right: 1px; top: 1px; bottom: 1px; width: 1.8rem; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
         .number-input-wrapper:hover .stepper-controls, .number-input-wrapper input:focus + .stepper-controls { opacity: 1; pointer-events: all; }
-        .stepper-btn { flex: 1; background: var(--bg-input-dark); border: none; color: var(--text-muted-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s, color 0.2s; }
+        .stepper-btn { flex: 1; background: var(--bg-input-dark); border: none; color: var(--text-muted-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .stepper-btn:hover { background: var(--bg-light); color: var(--primary); }
         .stepper-up { border-bottom: 1px solid var(--border-color-dark); border-top-right-radius: var(--border-radius); }
         .stepper-down { border-bottom-right-radius: var(--border-radius); }
@@ -141,14 +168,50 @@
         #faqModal summary { font-weight: bold; cursor: pointer; padding: 15px; color: var(--primary); }
         #faqModal details[open] summary { border-bottom: 1px solid var(--border-color-dark); }
         #faqModal .faq-content { padding: 15px; border-top: 1px solid var(--border-color-dark); }
-        .calculator-container { max-width: 400px; margin: 20px auto; background: var(--bg-light); padding: 20px; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .calculator-display { background: var(--bg-dark); color: var(--text-dark); text-align: right; padding: 20px; font-size: 2.5em; border-radius: var(--border-radius); margin-bottom: 20px; word-wrap: break-word; word-break: break-all; }
-        .calculator-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .calculator-keys button { height: 60px; font-size: 1.5em; background: var(--bg-input-dark); color: var(--text-dark); }
-        .calculator-keys button.operator { background: var(--primary); color: var(--bg-dark); }
-        .calculator-keys button.function { background: var(--bg-light); }
-        .calculator-keys button.equals { grid-column: span 2; background: var(--success); }
-        .calculator-keys button.zero { grid-column: span 2; }
+        .todo-list { display: flex; flex-direction: column; gap: 10px; }
+        .todo-item { background: var(--bg-light); padding: 10px; border-radius: var(--border-radius); display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary); }
+        .todo-item.completed { opacity: 0.6; border-left-color: var(--success); }
+        .todo-item.completed .todo-text { text-decoration: line-through; }
+        .todo-text { flex-grow: 1; background: transparent; border: none; color: var(--text-dark); font-family: inherit; font-size: 1em; resize: none; overflow: hidden; padding: 5px; }
+        .todo-text:focus { background-color: var(--bg-dark); box-shadow: none; }
+        .report-section { background: var(--bg-light); padding: 20px; border-radius: var(--border-radius); margin-bottom: 20px; }
+        .report-section h3 { color: var(--primary); margin-bottom: 15px; }
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .report-item { background: var(--bg-dark); padding: 15px; border-radius: var(--border-radius); }
+        .report-item-label { font-size: 0.9em; color: var(--text-muted-dark); margin-bottom: 5px; }
+        .report-item-value { font-size: 1.5em; font-weight: bold; }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 9999; }
+        .loading-overlay.visible { display: flex; }
+        .loading-spinner { width: 60px; height: 60px; border: 4px solid var(--bg-light); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        mark { background-color: var(--warning); color: var(--bg-dark); padding: 2px 4px; border-radius: 3px; }
+        #dashboardSettingsModal .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-items: start; }
+        .settings-column { display: flex; flex-direction: column; gap: 10px; }
+        .settings-column h3 { color: var(--primary); margin-bottom: 0; }
+        .settings-column > div { display: flex; flex-direction: column; gap: 10px; }
+        .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; background: var(--bg-dark); padding: 10px; border-radius: var(--border-radius); }
+        .checkbox-label:hover { background: var(--bg-light); }
+        #miniCalcContainer { display: none; position: fixed; top: 100px; left: 100px; z-index: 5000; background: var(--bg-light); border-radius: var(--border-radius); box-shadow: 0 15px 35px rgba(0,0,0,0.4); width: 280px; border: 1px solid var(--border-color-dark); opacity: 0; transform: scale(0.95); }
+        #miniCalcContainer.visible { display: block; opacity: 1; transform: scale(1); }
+        .mini-calc-header { padding: 10px; background: var(--primary); color: var(--bg-dark); cursor: move; border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius); display: flex; justify-content: space-between; align-items: center; }
+        .mini-calc-header span { font-weight: bold; }
+        #miniCalcCloseBtn { background: none; border: none; color: var(--bg-dark); font-size: 1.5em; cursor: pointer; line-height: 1; padding: 0 5px; }
+        .mini-calc .calculator-container { padding: 15px; box-shadow: none; }
+        .mini-calc .calculator-display { font-size: 2em; padding: 10px; height: 50px; text-align: right; word-wrap: break-word; word-break: break-all; display: flex; justify-content: flex-end; align-items: center; background: var(--bg-dark); color: var(--text-dark); border-radius: var(--border-radius); margin-bottom: 15px;}
+        .mini-calc .calculator-keys { gap: 8px; display: grid; grid-template-columns: repeat(4, 1fr); }
+        .mini-calc .calculator-keys button { height: 40px; font-size: 1.1em; background: var(--bg-input-dark); color: var(--text-dark);}
+        .mini-calc .calculator-keys button:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(0,0,0,0.3) inset; }
+        .mini-calc .calculator-keys button.operator { background: var(--primary); color: var(--bg-dark); }
+        .mini-calc .calculator-keys button.function { background: var(--bg-light); }
+        .mini-calc .calculator-keys button.equals { grid-column: span 2; background: var(--success); }
+        .mini-calc .calculator-keys button.zero { grid-column: span 2; }
+        .search-result-wrapper { animation: fadeIn 0.5s ease-out; }
+        .search-result-card { background: var(--bg-card-dark); padding: 20px; border-radius: var(--border-radius); border-left: 5px solid var(--info); margin-bottom: 15px; border: 1px solid var(--border-color-dark); }
+        .search-result-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); border-left-color: var(--primary); }
+        .search-result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .search-result-title { font-size: 1.2em; font-weight: bold; color: var(--primary); }
+        .search-result-body p { margin: 5px 0; color: var(--text-muted-dark); }
+        .search-result-body p strong { color: var(--text-dark); }
+        @media (max-width: 1024px) { .total-results-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); } }
         @media (max-width: 768px) {
             body { padding: 10px; }
             .top-bar { flex-direction: column; align-items: center; text-align: center; }
@@ -156,16 +219,24 @@
             .tab { padding: 10px 15px; font-size: 0.9em; }
             .tab .icon { width: 18px; height: 18px; }
             .template-form-grid { grid-template-columns: 1fr; }
+            .toast-container { right: 10px; left: 10px; max-width: none; }
+            #dashboardSettingsModal .settings-grid { grid-template-columns: 1fr; }
+            .stepper-controls { display: none; }
+            .number-input-wrapper input[type="number"] { padding-right: 10px; }
         }
     </style>
 </head>
 <body>
+
+<div id="preloader"><div class="spinner"></div></div>
+
 <div class="container">
     <div class="top-bar">
         <h1>Учет Шиномонтажа</h1>
-        <div class="history-controls">
+        <div class="top-controls">
             <button id="undoBtn" title="Отменить (Ctrl+Z)" aria-label="Отменить">↶</button>
             <button id="redoBtn" title="Повторить (Ctrl+Y)" aria-label="Повторить">↷</button>
+            <button id="miniCalcBtn" title="Мини-калькулятор" aria-label="Открыть мини-калькулятор"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></button>
         </div>
     </div>
 
@@ -175,101 +246,91 @@
         <div class="tab" data-tab="expenses" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg><span>Расходы</span></div>
         <div class="tab" data-tab="clients" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg><span>Клиенты</span></div>
         <div class="tab" data-tab="debts" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg><span>Долги</span></div>
-        <div class="tab" data-tab="calculator" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg><span>Калькулятор</span></div>
-        <div class="tab" data-tab="settings" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0 3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>Настройки</span></div>
+        <div class="tab" data-tab="todos" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg><span>Заметки</span></div>
+        <div class="tab" data-tab="reports" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span>Отчеты</span></div>
+        <div class="tab" data-tab="settings" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>Настройки</span></div>
     </div>
     
     <div class="tab-content active" id="total">
         <div class="controls">
-            <label for="importFile" class="button">📂 Импорт</label>
-            <input type="file" id="importFile" style="display:none" accept=".json">
-            <button class="success" id="exportDataBtn">💾 Экспорт</button>
-            <button class="warning" id="copySummaryBtn">📋 Копировать сводку</button>
-            <button class="danger" id="clearAllDataBtn">🗑️ Очистить все</button>
+            <input type="search" id="globalPhoneSearch" placeholder="Глобальный поиск по номеру телефона..." aria-label="Глобальный поиск по номеру телефона" style="flex-grow: 2;">
+            <button id="importDataBtn" class="button"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> <span>Импорт</span></button>
+            <input type="file" id="importFileInput" style="display:none" accept=".json">
+            <button class="success" id="exportDataBtn"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> <span>Экспорт</span></button>
+            <button class="warning" id="copySummaryBtn"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> <span>Копировать</span></button>
+            <button class="danger" id="clearAllDataBtn"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> <span>Очистить</span></button>
         </div>
+        <div id="globalSearchResults" class="summary-container" style="margin-top: 20px;"></div>
         <div class="summary-container">
             <div class="summary-category">
-                <h2>Сводка</h2>
-                <div class="total-results-grid">
-                    <div class="result-card" style="animation-delay: 0s;"><div class="label">💰 Чистая прибыль</div><div class="value" id="totalProfit">0.00 ₽</div></div>
-                    <div class="result-card" style="animation-delay: 0.1s;"><div class="label">📈 Общий доход</div><div class="value positive" id="totalIncome">0.00 ₽</div></div>
-                    <div class="result-card" style="animation-delay: 0.2s;"><div class="label">📉 Общий расход</div><div class="value negative" id="totalExpenses">0.00 ₽</div></div>
-                    <div class="result-card" style="animation-delay: 0.3s;"><div class="label">💸 Общая сумма долгов</div><div class="value negative" id="totalDebt">0.00 ₽</div></div>
-                </div>
+                <h2>Основные показатели <button id="customizeDashboardBtn"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6h8m-8 6h8m-8 6h8M4 6h2v2H4V6zm0 6h2v2H4v-2zm0 6h2v2H4v-2z"></path></svg> <span>Настроить</span></button></h2>
+                <div class="total-results-grid" id="dashboardCardsContainer"></div>
             </div>
             <div class="summary-category">
-                <h2>Клиенты (Инфо)</h2>
-                <div class="total-results-grid">
-                    <div class="result-card" style="animation-delay: 0.4s;"><div class="label">👥 Всего клиентов</div><div class="value" id="totalClients">0</div></div>
-                    <div class="result-card" style="animation-delay: 0.5s;"><div class="label">🚗 Всего посещений</div><div class="value" id="totalVisits">0</div></div>
-                    <div class="result-card" style="animation-delay: 0.6s;"><div class="label">📊 Средний чек</div><div class="value" id="avgClientCheck">0.00 ₽</div></div>
-                    <div class="result-card best-client" id="bestClientCard" style="animation-delay: 0.7s;"><div class="label">👑 Лучший клиент</div><div class="value" id="bestClientInfo">Нет данных</div></div>
-                </div>
+                <h2>Клиентские показатели</h2>
+                <div class="total-results-grid" id="dashboardClientCardsContainer"></div>
             </div>
         </div>
     </div>
 
     <div class="tab-content" id="income">
-        <div class="controls"> <button id="addIncomeRowBtn">➕ Добавить доход</button> <input type="search" id="incomeSearch" placeholder="Поиск по услугам, комментариям..." aria-label="Поиск по доходам"></div>
-        <div class="table-wrapper"><table id="incomeTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none">Дата</th><th scope="col" data-sort-key="price" aria-sort="none">Цена за шт.</th><th scope="col" data-sort-key="count" aria-sort="none">Кол-во</th><th scope="col" data-sort-key="totalAmount" aria-sort="none">Общая сумма</th><th scope="col" data-sort-key="service" aria-sort="none">Услуга</th><th scope="col" data-sort-key="comment" aria-sort="none">Комментарий</th><th scope="col">Действия</th></tr></thead><tbody></tbody></table></div>
+        <div class="controls"> <button id="addIncomeRowBtn">+ Добавить доход</button> <input type="search" id="incomeSearch" placeholder="Поиск по услугам, комментариям..." aria-label="Поиск по доходам"></div>
+        <div class="table-wrapper"><table id="incomeTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none" style="width: 170px;">Дата</th><th scope="col" data-sort-key="price" aria-sort="none" style="width: 140px;">Цена за шт.</th><th scope="col" data-sort-key="count" aria-sort="none" style="width: 100px;">Кол-во</th><th scope="col" data-sort-key="totalAmount" aria-sort="none" style="width: 150px;">Общая сумма</th><th scope="col" data-sort-key="service" aria-sort="none">Услуга</th><th scope="col" data-sort-key="comment" aria-sort="none">Комментарий</th><th scope="col" style="width: 100px;">Действия</th></tr></thead><tbody></tbody></table></div>
     </div>
 
     <div class="tab-content" id="expenses">
-        <div class="controls"><button id="addExpenseRowBtn">➕ Добавить расход</button><input type="search" id="expensesSearch" placeholder="Поиск по описанию..." aria-label="Поиск по расходам"></div>
-        <div class="table-wrapper"><table id="expensesTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none">Дата</th><th scope="col" data-sort-key="price" aria-sort="none">Цена за шт.</th><th scope="col" data-sort-key="count" aria-sort="none">Кол-во</th><th scope="col" data-sort-key="totalAmount" aria-sort="none">Общая сумма</th><th scope="col" data-sort-key="description" aria-sort="none">Что именно?</th><th scope="col">Действия</th></tr></thead><tbody></tbody></table></div>
+        <div class="controls"><button id="addExpenseRowBtn">+ Добавить расход</button><input type="search" id="expensesSearch" placeholder="Поиск по описанию..." aria-label="Поиск по расходам"></div>
+        <div class="table-wrapper"><table id="expensesTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none" style="width: 170px;">Дата</th><th scope="col" data-sort-key="price" aria-sort="none" style="width: 140px;">Цена за шт.</th><th scope="col" data-sort-key="count" aria-sort="none" style="width: 100px;">Кол-во</th><th scope="col" data-sort-key="totalAmount" aria-sort="none" style="width: 150px;">Общая сумма</th><th scope="col" data-sort-key="description" aria-sort="none">Что именно?</th><th scope="col" style="width: 100px;">Действия</th></tr></thead><tbody></tbody></table></div>
     </div>
 
     <div class="tab-content" id="clients">
-        <div class="controls"><button id="addClientRowBtn">➕ Добавить клиента</button><input type="search" id="clientSearch" placeholder="Поиск по дате, номеру, имени..." aria-label="Поиск по клиентам"></div>
-        <div class="table-wrapper"><table id="clientsTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none">Сумма из заметки</th><th scope="col" data-sort-key="phone" aria-sort="none">Номер</th><th scope="col" data-sort-key="plate" aria-sort="none">Гос номер</th><th scope="col" data-sort-key="name" aria-sort="none">Имя</th><th scope="col">Кол-во посещений</th><th scope="col">Действия</th></tr></thead><tbody></tbody></table></div>
+        <div class="controls"><button id="addClientRowBtn">+ Добавить клиента</button><input type="search" id="clientSearch" placeholder="Поиск по дате, номеру, имени, гос. номеру..." aria-label="Поиск по клиентам"></div>
+        <div class="table-wrapper"><table id="clientsTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none" style="width: 170px;">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none" style="width: 150px;">Сумма</th><th scope="col" data-sort-key="phone" aria-sort="none" style="width: 150px;">Номер</th><th scope="col" data-sort-key="plate" aria-sort="none" style="width: 130px;">Гос номер</th><th scope="col" data-sort-key="name" aria-sort="none">Имя</th><th scope="col" style="width: 120px;">Кол-во посещений</th><th scope="col" style="width: 140px;">Действия</th></tr></thead><tbody></tbody></table></div>
     </div>
     
     <div class="tab-content" id="debts">
-        <div class="controls"><button id="addDebtRowBtn">➕ Добавить долг</button><input type="search" id="debtSearch" placeholder="Поиск по имени, телефону, комментарию..." aria-label="Поиск по долгам"></div>
-        <div class="table-wrapper"><table id="debtsTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none">Сумма</th><th scope="col" data-sort-key="name" aria-sort="none">Кто должен</th><th scope="col" data-sort-key="phone" aria-sort-none">Телефон</th><th scope="col" data-sort-key="comment" aria-sort="none">Комментарий</th><th scope="col" data-sort-key="isPaid" aria-sort="none">Статус</th><th scope="col">Действия</th></tr></thead><tbody></tbody></table></div>
+        <div class="controls"><button id="addDebtRowBtn">+ Добавить долг</button><input type="search" id="debtSearch" placeholder="Поиск по имени, телефону, комментарию..." aria-label="Поиск по долгам"></div>
+        <div class="table-wrapper"><table id="debtsTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none" style="width: 170px;">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none" style="width: 150px;">Сумма</th><th scope="col" data-sort-key="name" aria-sort="none">Кто должен</th><th scope="col" data-sort-key="phone" aria-sort="none" style="width: 150px;">Телефон</th><th scope="col" data-sort-key="comment" aria-sort="none">Комментарий</th><th scope="col" data-sort-key="isPaid" aria-sort="none" style="width: 100px;">Статус</th><th scope="col" style="width: 100px;">Действия</th></tr></thead><tbody></tbody></table></div>
     </div>
     
-    <div class="tab-content" id="calculator">
-        <div class="calculator-container">
-            <div id="calculator-display" class="calculator-display">0</div>
-            <div class="calculator-keys">
-                <button class="function" data-key="clear">AC</button>
-                <button class="function" data-key="backspace">C</button>
-                <button class="function" data-key="percent">%</button>
-                <button class="operator" data-key="/">÷</button>
-                <button data-key="7">7</button>
-                <button data-key="8">8</button>
-                <button data-key="9">9</button>
-                <button class="operator" data-key="*">×</button>
-                <button data-key="4">4</button>
-                <button data-key="5">5</button>
-                <button data-key="6">6</button>
-                <button class="operator" data-key="-">−</button>
-                <button data-key="1">1</button>
-                <button data-key="2">2</button>
-                <button data-key="3">3</button>
-                <button class="operator" data-key="+">+</button>
-                <button class="zero" data-key="0">0</button>
-                <button data-key=".">.</button>
-                <button class="equals" data-key="=">=</button>
-            </div>
+    <div class="tab-content" id="todos">
+        <div class="controls">
+            <input type="text" id="newTodoInput" placeholder="Новая заметка (Enter для добавления)...">
+            <button id="addTodoBtn" class="success">+ Добавить</button>
         </div>
+        <div class="todo-list" id="todoList"></div>
+    </div>
+    
+    <div class="tab-content" id="reports">
+        <div class="controls">
+            <label for="reportStartDate">Период c:</label>
+            <input type="date" id="reportStartDate">
+            <label for="reportEndDate">по:</label>
+            <input type="date" id="reportEndDate">
+            <button id="generateReportBtn" class="info">📊 Сформировать отчет</button>
+        </div>
+        <div id="reportResults"></div>
     </div>
 
     <div class="tab-content" id="settings">
         <div class="settings-page">
             <h2>Настройки</h2>
             <div class="setting-item"><label>Тема:</label><div class="setting-controls" id="theme-switcher"><button data-theme="dark" class="active">Темная</button><button data-theme="light">Светлая</button></div></div>
-            <div class="setting-item"><label for="primaryColorPicker">Основной цвет:</label><input type="color" id="primaryColorPicker" value="#38BDF8"></div>
-            <div class="setting-item"><label for="currencySymbol">Символ валюты:</label><input type="text" id="currencySymbol" value="₽" style="width: 50px; text-align: center;"></div>
+            <div class="setting-item"><label for="primaryColorPicker">Основной цвет:</label><input type="color" id="primaryColorPicker" value="#58A6FF"></div>
+            <div class="setting-item"><label for="currencySymbol">Символ валюты:</label><input type="text" id="currencySymbol" value="₽" style="width: 60px; text-align: center;" maxlength="5"></div>
             <div class="setting-item"><label>Анимации:</label><div class="setting-controls" id="animation-switcher"><button data-anim="on" class="active">Вкл</button><button data-anim="off">Выкл</button></div></div>
             <div class="setting-item"><label>Плотность таблиц:</label><div class="setting-controls" id="density-switcher"><button data-density="compact">Компактно</button><button data-density="normal" class="active">Нормально</button><button data-density="spacious">Просторно</button></div></div>
             <div class="setting-item"><label>Размер шрифта:</label><div class="setting-controls" id="font-size-switcher"><button data-size="small">Мелкий</button><button data-size="normal" class="active">Обычный</button><button data-size="large">Крупный</button></div></div>
             <div class="setting-item"><label>Подтверждение удаления:</label><div class="setting-controls" id="confirm-delete-switcher"><button data-confirm="on" class="active">Вкл</button><button data-confirm="off">Выкл</button></div></div>
-            <div class="setting-item" title="При равенстве основного критерия, сортировка происходит по вторичному (Сумма -> Посещения, Посещения -> Сумма)"><label>Критерий "Лучшего клиента":</label><div class="setting-controls" id="best-client-metric-switcher"><button data-metric="profit" class="active">По сумме</button><button data-metric="visits">По посещениям</button></div></div>
+            <div class="setting-item"><label>Вкладка по умолчанию:</label><div class="setting-controls"><select id="defaultTabSelect" class="setting-select"></select></div></div>
+            <div class="setting-item"><label>Автоматическое резервное копирование:</label><div class="setting-controls"><select id="autoBackupSelect" class="setting-select"><option value="0">Никогда</option><option value="hourly">Каждый час</option><option value="1">Каждый день</option><option value="7">Каждую неделю</option><option value="30">Каждый месяц</option></select></div></div>
+            <div class="setting-item"><label>Автоматическое форматирование имен клиентов:</label><div class="setting-controls" id="auto-capitalize-switcher"><button data-capitalize="on" class="active">Первая буква заглавная</button><button data-capitalize="off">Как введено</button></div></div>
+            <div class="setting-item" title="При равенстве основного критерия, сортировка происходит по вторичному"><label>Критерий "Лучшего клиента":</label><div class="setting-controls" id="best-client-metric-switcher"><button data-metric="profit" class="active">По сумме</button><button data-metric="visits">По посещениям</button><button data-metric="avgCheck">По среднему чеку</button></div></div>
             <div class="setting-item"><label>Показывать погашенные долги:</label><div class="setting-controls" id="show-paid-debts-switcher"><button data-show="on" class="active">Вкл</button><button data-show="off">Выкл</button></div></div>
-            <div class="setting-item"><label>Шаблоны</label><div class="setting-controls"><div class="template-form-grid"><input type="text" id="templateName" placeholder="Название"><input type="number" id="templatePrice" placeholder="Цена" min="0"><input type="number" id="templateCount" placeholder="Кол-во" value="1" min="1"><select id="templateType" style="width: 100%;"><option value="income">Доход</option><option value="expense">Расход</option></select><button id="addServiceTemplateBtn">Добавить</button></div></div><div id="service-templates-list" style="margin-top: 10px;"></div></div>
-            <div class="setting-item"><label>Управление данными</label><div class="setting-controls"><button class="warning" id="resetSettingsBtn">Сбросить настройки</button></div></div>
+            <div class="setting-item"><label for="defaultItemCountInput">Кол-во по умолчанию для Доходов/Расходов:</label><div class="setting-controls"><input type="number" id="defaultItemCountInput" min="1" step="1" style="width: 100px;"></div></div>
+            <div class="setting-item"><label>Подтверждать импорт данных:</label><div class="setting-controls" id="confirm-import-switcher"><button data-import="on" class="active">Вкл</button><button data-import="off">Выкл</button></div></div>
+            <div class="setting-item"><label>Шаблоны</label><div class="setting-controls"><div class="template-form-grid"><input type="text" id="templateName" placeholder="Название"><input type="number" id="templatePrice" placeholder="Цена" min="0"><input type="number" id="templateCount" placeholder="Кол-во" value="1" min="1"><select id="templateType" style="width: 100%;"><option value="income">Доход</option><option value="expense">Расход</option></select><button id="addServiceTemplateBtn">Добавить</button><button id="cancelEditTemplateBtn" class="button danger" style="display: none;">Отмена</button></div></div><div id="service-templates-list" style="margin-top: 10px;"></div></div>
+            <div class="setting-item"><label>Управление данными</label><div class="setting-controls"><button class="success" id="saveBackupNowBtn">Сохранить копию сейчас</button><button class="info" id="restoreBackupBtn">Восстановить из копии</button><button class="warning" id="resetSettingsBtn">Сбросить настройки</button></div></div>
             <div class="setting-item"><label>Помощь</label><div class="setting-controls"><button id="showFaqBtn">Инструкция по приложению</button></div></div>
         </div>
     </div>
@@ -287,37 +348,72 @@
     </div>
 </div>
 
+<div id="importChoiceModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Импорт данных</h2>
+        <p>Как импортировать данные?</p>
+        <div class="modal-actions">
+            <button id="importMergeBtn" class="button success">Объединить</button>
+            <button id="importReplaceBtn" class="button warning">Заменить</button>
+            <button id="importCancelBtn" class="button">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<div id="exportChoiceModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Экспорт данных</h2>
+        <p>Какие данные вы хотите сохранить?</p>
+        <div class="modal-actions">
+            <button id="exportAllBtn" class="button success">Сохранить все</button>
+            <button id="exportPartialBtn" class="button info">Частично</button>
+            <button id="exportCancelBtn" class="button">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<div id="partialExportModal" class="modal-overlay">
+    <div class="modal-content large" style="text-align: left;">
+        <h2>Частичный экспорт</h2>
+        <p style="font-size: 1em; color: var(--text-muted-dark); margin-top: -10px;">Выберите категории для сохранения:</p>
+        <div id="partialExportCheckboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 25px; margin-top: 15px;">
+        </div>
+        <div class="modal-actions">
+            <button id="exportSelectedBtn" class="button success">Сохранить выбранное</button>
+            <button id="exportBackBtn" class="button">Назад</button>
+        </div>
+    </div>
+</div>
+
 <div id="faqModal" class="modal-overlay">
     <div class="modal-content">
         <h2>FAQ / Инструкция</h2>
         <details>
-            <summary>Как добавить доход или расход?</summary>
+            <summary>Как работает автоматическое резервное копирование?</summary>
             <div class="faq-content">
-                <p>Перейдите на вкладку "Доходы" или "Расходы" и нажмите кнопку "➕ Добавить". Появится новая строка, где вы можете ввести дату, цену за штуку, количество и описание. Общая сумма рассчитается автоматически. Вы также можете ввести общую сумму, и цена за штуку пересчитается.</p>
+                <p>Если в настройках выбрана частота (час, день, неделя, месяц), приложение будет автоматически создавать внутреннюю резервную копию ваших данных. Эта копия хранится прямо в браузере.</p>
+                <p><b>Важно:</b> Это защищает от случайных изменений или удаления данных, но не спасет, если вы полностью очистите данные браузера. Для надежного хранения регулярно используйте функцию "Экспорт", чтобы сохранить файл на свой компьютер.</p>
+                <p>Вы можете восстановить данные из последней автоматической копии с помощью кнопки "Восстановить из копии" или сохранить текущее состояние с помощью "Сохранить копию сейчас" в настройках.</p>
             </div>
+        </details>
+        <details>
+            <summary>Как добавить доход или расход?</summary>
+            <div class="faq-content"><p>Перейдите на вкладку "Доходы" или "Расходы" и нажмите кнопку "+ Добавить". Появится новая строка, где вы можете ввести дату, цену за штуку, количество и описание. Общая сумма рассчитается автоматически. Вы также можете ввести общую сумму, и цена за штуку пересчитается.</p></div>
         </details>
         <details>
             <summary>Как работают шаблоны?</summary>
-            <div class="faq-content">
-                <p>В "Настройках" есть раздел "Шаблоны". Вы можете создать шаблон для часто повторяющихся доходов или расходов, указав название, цену, количество и тип (доход/расход). После создания, при добавлении новой записи о доходе/расходе, начните вводить название в поле "Услуга" или "Что именно?", и вам будет предложен ваш шаблон. При выборе шаблона все поля заполнятся автоматически.</p>
-            </div>
-        </details>
-        <details>
-            <summary>Как работают клиенты и долги?</summary>
-            <div class="faq-content">
-                <p>На вкладке "Клиенты" вы можете вести базу своих клиентов, добавлять их посещения (кнопка ➕ в строке клиента). На вкладке "Долги" можно записывать, кто и сколько вам должен. Статус долга можно изменить переключателем в строке.</p>
-            </div>
-        </details>
-        <details>
-            <summary>Что такое "Лучший клиент"?</summary>
-            <div class="faq-content">
-                <p>На главной странице в сводке отображается "Лучший клиент". Этот клиент определяется либо по общей сумме, которую он вам принес, либо по количеству посещений. Вы можете изменить этот критерий в настройках.</p>
-            </div>
+            <div class="faq-content"><p>В "Настройках" есть раздел "Шаблоны". Вы можете создать шаблон для часто повторяющихся доходов или расходов, указав название, цену, количество и тип (доход/расход). После создания, при добавлении новой записи о доходе/расходе, начните вводить название в поле "Услуга" или "Что именно?", и вам будет предложен ваш шаблон. При выборе шаблона все поля заполнятся автоматически.</p></div>
         </details>
         <details>
             <summary>Как сохранить и загрузить данные?</summary>
             <div class="faq-content">
-                <p>На главной вкладке "Общий результат" есть кнопки "Экспорт" и "Импорт". Экспорт сохраняет все ваши данные в один файл на компьютер. Импорт позволяет загрузить данные из такого файла. При импорте вам будет предложено либо полностью заменить текущие данные, либо объединить их с данными из файла.</p>
+                <p>На главной вкладке "Общий результат" есть кнопки "Импорт" и "Экспорт".</p>
+                <p><b>Экспорт:</b> Позволяет сохранить все данные или только выбранные категории (доходы, клиенты и т.д.) в один файл на ваш компьютер.</p>
+                <p><b>Импорт:</b> Позволяет загрузить данные из ранее сохраненного файла. Вам будет предложено два варианта:</p>
+                <ul>
+                    <li style="text-align: left; margin-left: 20px;"><b>Объединить:</b> Данные из файла добавятся к вашим текущим данным. Если в файле есть только расходы, то только они и добавятся, а ваши доходы, клиенты и т.д. останутся без изменений.</li>
+                    <li style="text-align: left; margin-left: 20px;"><b>Заменить:</b> Все текущие данные в приложении будут полностью удалены, а вместо них загрузятся данные из файла. Если в файле были только доходы, то в приложении останутся только они, а остальные разделы станут пустыми.</li>
+                </ul>
             </div>
         </details>
          <details>
@@ -325,13 +421,61 @@
             <div class="faq-content">
                 <p><b>Ctrl + Z</b> - Отменить последнее действие.</p>
                 <p><b>Ctrl + Y</b> - Вернуть отмененное действие.</p>
+                <p><b>Escape</b> - Закрыть любое открытое окно (подтверждение, инструкция, и т.д.).</p>
             </div>
         </details>
+        <div class="modal-actions" style="margin-top: 20px;"><button id="faqCloseBtn" class="button">Закрыть</button></div>
+    </div>
+</div>
+
+<div id="dashboardSettingsModal" class="modal-overlay">
+    <div class="modal-content large">
+        <h2>Настройка главной страницы</h2>
+        <div id="dashboardSettingsForm">
+            <div class="settings-grid">
+                <div class="settings-column">
+                    <h3>Основные показатели</h3>
+                    <div id="main-cards-settings"></div>
+                </div>
+                <div class="settings-column">
+                    <h3>Клиентские показатели</h3>
+                    <div id="client-cards-settings"></div>
+                </div>
+            </div>
+        </div>
         <div class="modal-actions" style="margin-top: 20px;">
-            <button id="faqCloseBtn" class="button">Закрыть</button>
+            <button id="saveDashboardSettingsBtn" class="button success">Сохранить</button>
+            <button id="cancelDashboardSettingsBtn" class="button">Отмена</button>
         </div>
     </div>
 </div>
+
+<div id="miniCalcContainer">
+    <div class="mini-calc-header" id="miniCalcHeader">
+        <span>Калькулятор</span>
+        <button id="miniCalcCloseBtn">&times;</button>
+    </div>
+    <div class="calculator-container mini-calc">
+        <div id="mini-calculator-display" class="calculator-display">0</div>
+        <div class="calculator-keys">
+            <button class="function" data-key="clear">AC</button>
+            <button class="function" data-key="backspace">C</button>
+            <button class="function" data-key="percent">%</button>
+            <button class="operator" data-key="/">÷</button>
+            <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+            <button class="operator" data-key="*">×</button>
+            <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+            <button class="operator" data-key="-">−</button>
+            <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+            <button class="operator" data-key="+">+</button>
+            <button class="zero" data-key="0">0</button><button data-key=".">.</button>
+            <button class="equals" data-key="=">=</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div></div>
 
 <script>
 'use strict';
@@ -340,103 +484,192 @@ const getAll = (selector) => document.querySelectorAll(selector);
 
 class TireServiceApp {
     constructor() {
-        this.MAX_HISTORY_STATES = 100;
-        this.data = {
-            expenses: [], income: [], clients: [], debts: [], serviceTemplates: [],
+        this.MAX_HISTORY_STATES = 30;
+        this.data = this.getDefaultData();
+        this.historyStack = [];
+        this.historyIndex = -1;
+        this.editingTemplateIndex = null;
+        this.miniCalculatorState = { displayValue: '0', firstOperand: null, waitingForSecondOperand: false, operator: null };
+        this.showSavedToast = this.debounce(() => this.showToast('Сохранено', 'success', 1500), 1000);
+        this.dashboardCards = {
+            totalProfit: { label: '💰 Чистая прибыль' },
+            totalIncome: { label: '📈 Общий доход' },
+            totalExpenses: { label: '📉 Общий расход' },
+            profitToday: { label: '🤑 Прибыль за сегодня' },
+            incomeToday: { label: '💲 Доход за сегодня' },
+            totalDebt: { label: '💸 Общая сумма долгов' },
+            avgIncome: { label: '🧾 Средний чек (доход)' },
+            avgExpense: { label: '🛒 Средний чек (расход)' },
+            topService: { label: '⭐ Топ услуга' },
+            incomeCount: { label: '📝 Кол-во доходов' },
+            expenseCount: { label: '🛒 Кол-во расходов' },
+            transactionsToday: { label: '🔄 Операций сегодня' },
+        };
+        this.clientCards = {
+            totalClients: { label: '👥 Всего клиентов' },
+            totalVisits: { label: '🚗 Всего посещений' },
+            avgClientCheck: { label: '📊 Средний чек клиента' },
+            newClientsToday: { label: '👋 Новых клиентов сегодня'},
+            bestClientInfo: { label: '👑 Лучший клиент по сумме' },
+            topClientVisits: { label: '🏆 Клиент по визитам' },
+            returningClients: { label: '🔁 Постоянные клиенты' },
+            newestClient: { label: '✨ Последний клиент' },
+        };
+    }
+    
+    getDefaultData() {
+        return {
+            income: [], expenses: [], clients: [], debts: [], serviceTemplates: [], todos: [],
             settings: {
-                version: "2.0",
-                theme: 'dark', currency: '₽', primaryColor: '#38BDF8', animations: true,
-                tableDensity: 'normal', fontSize: 'normal', confirmDelete: true, bestClientMetric: 'profit',
-                showPaidDebts: true,
+                theme: 'dark', currency: '₽', primaryColor: '#58A6FF', animations: true, tableDensity: 'normal', 
+                fontSize: 'normal', confirmDelete: true, bestClientMetric: 'profit', showPaidDebts: true, 
+                activeTab: 'total', defaultTab: 'total', autoBackup: '7', autoCapitalize: true,
+                defaultItemCount: 1, confirmImport: true,
+                visibleDashboardCards: ['totalProfit', 'totalIncome', 'totalExpenses', 'profitToday', 'incomeToday', 'totalDebt', 'topService', 'transactionsToday'],
+                visibleClientCards: ['totalClients', 'totalVisits', 'avgClientCheck', 'newClientsToday', 'bestClientInfo', 'topClientVisits', 'returningClients'],
                 incomeFilter: '', expensesFilter: '', clientsFilter: '', debtsFilter: '',
                 sort: {
-                    income: {key: 'date', dir: 'desc'},
-                    expenses: {key: 'date', dir: 'desc'},
-                    clients: {key: 'date', dir: 'desc'},
-                    debts: {key: 'date', dir: 'desc'}
+                    income: {key: 'date', dir: 'desc'}, expenses: {key: 'date', dir: 'desc'},
+                    clients: {key: 'date', dir: 'desc'}, debts: {key: 'date', dir: 'desc'}
                 }
             }
         };
-        this.historyStack = [];
-        this.historyIndex = -1;
-        this.bestClientGlobal = null;
-        this.editingTemplateIndex = null;
-        this.debouncedSave = this.debounce(() => this.recordHistoryState(), 500);
-        this.calculatorState = { displayValue: '0', firstOperand: null, waitingForSecondOperand: false, operator: null };
     }
 
     init() {
+        const preloader = document.getElementById('preloader');
+        setTimeout(() => {
+            preloader.style.opacity = '0';
+            preloader.addEventListener('transitionend', () => preloader.style.display = 'none');
+        }, 2000);
+        this.populateDefaultTabSelect();
         this.setupEventListeners();
         this.loadData();
+        this.handleAutoBackup();
     }
     
     uuid() {
-        if (crypto && crypto.randomUUID) {
-            return crypto.randomUUID();
-        }
-        let dt = new Date().getTime();
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            const r = (dt + Math.random()*16)%16 | 0;
-            dt = Math.floor(dt/16);
-            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
-        });
+        return (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() :
+            'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
     }
 
     setupEventListeners() {
         document.addEventListener('keydown', e => {
             if (e.ctrlKey && e.key === 'z') { e.preventDefault(); this.undo(); }
             if (e.ctrlKey && e.key === 'y') { e.preventDefault(); this.redo(); }
+            if (e.key === 'Escape') {
+                const visibleModal = get('.modal-overlay.visible');
+                if (visibleModal) visibleModal.classList.remove('visible');
+                const miniCalc = get('#miniCalcContainer');
+                if(miniCalc.classList.contains('visible')) miniCalc.classList.remove('visible');
+            }
         });
 
-        getAll('.tab').forEach(tab => tab.addEventListener('click', (e) => this.switchTab(e.currentTarget.dataset.tab)));
+        get('.tabs').addEventListener('click', e => {
+            const tab = e.target.closest('.tab');
+            if (tab) this.switchTab(tab.dataset.tab);
+        });
+        
         get('#undoBtn').addEventListener('click', () => this.undo());
         get('#redoBtn').addEventListener('click', () => this.redo());
+        get('#miniCalcBtn').addEventListener('click', () => this.toggleMiniCalc());
 
         get('#addIncomeRowBtn').addEventListener('click', () => this.addIncomeRow());
         get('#addExpenseRowBtn').addEventListener('click', () => this.addExpenseRow());
         get('#addClientRowBtn').addEventListener('click', () => this.addClientRow());
         get('#addDebtRowBtn').addEventListener('click', () => this.addDebtRow());
         get('#addServiceTemplateBtn').addEventListener('click', () => this.addOrUpdateServiceTemplate());
+        get('#cancelEditTemplateBtn').addEventListener('click', () => this.resetTemplateForm());
         
-        get('#incomeTable tbody').addEventListener('input', e => this.handleTableInput(e, 'income'));
-        get('#expensesTable tbody').addEventListener('input', e => this.handleTableInput(e, 'expenses'));
-        get('#clientsTable tbody').addEventListener('input', e => this.handleTableInput(e, 'clients'));
-        get('#debtsTable tbody').addEventListener('input', e => this.handleTableInput(e, 'debts'));
-
-        get('#incomeTable tbody').addEventListener('click', e => this.handleTableClick(e, 'income'));
-        get('#expensesTable tbody').addEventListener('click', e => this.handleTableClick(e, 'expenses'));
-        get('#clientsTable tbody').addEventListener('click', e => this.handleTableClick(e, 'clients'));
-        get('#debtsTable tbody').addEventListener('click', e => this.handleTableClick(e, 'debts'));
+        ['income', 'expenses', 'clients', 'debts'].forEach(key => {
+            get(`#${key}Table tbody`).addEventListener('input', e => this.handleTableLiveUpdate(e, key));
+            get(`#${key}Table tbody`).addEventListener('change', e => this.handleTableChangeCommit(e, key));
+            get(`#${key}Table tbody`).addEventListener('click', e => this.handleTableClick(e, key));
+        });
         
         getAll('th[data-sort-key]').forEach(th => th.addEventListener('click', e => {
             const tableId = e.target.closest('table').id;
             const tableKey = tableId.replace('Table', '');
-            const sortKey = e.target.dataset.sortKey;
-            this.sortTable(tableKey, sortKey);
+            this.sortTable(tableKey, e.target.dataset.sortKey);
         }));
 
-        get('#incomeSearch').addEventListener('input', this.debounce(e => { this.updateSetting('incomeFilter', e.target.value, false); this.filterTable('#incomeTable tbody', e.target.value, [4, 5]); }, 300));
-        get('#expensesSearch').addEventListener('input', this.debounce(e => { this.updateSetting('expensesFilter', e.target.value, false); this.filterTable('#expensesTable tbody', e.target.value, [4]); }, 300));
-        get('#clientSearch').addEventListener('input', this.debounce(e => { this.updateSetting('clientsFilter', e.target.value, false); this.filterClientsTable(e.target.value); }, 300));
-        get('#debtSearch').addEventListener('input', this.debounce(e => { this.updateSetting('debtsFilter', e.target.value, false); this.filterTable('#debtsTable tbody', e.target.value, [2, 3, 4]); }, 300));
+        const setupSearch = (inputId, key) => {
+            get(inputId).addEventListener('input', this.debounce(e => {
+                this.updateSetting(`${key}Filter`, e.target.value, false);
+                this.renderAllTables();
+            }, 300));
+        };
+        setupSearch('#incomeSearch', 'income');
+        setupSearch('#expensesSearch', 'expenses');
+        setupSearch('#clientSearch', 'clients');
+        setupSearch('#debtSearch', 'debts');
 
-        get('#exportDataBtn').addEventListener('click', () => this.exportData());
-        get('#importFile').addEventListener('change', e => this.importData(e));
+        get('#importDataBtn').addEventListener('click', () => get('#importChoiceModal').classList.add('visible'));
+        get('#exportDataBtn').addEventListener('click', () => get('#exportChoiceModal').classList.add('visible'));
+        get('#importFileInput').addEventListener('change', e => this.handleFileImport(e));
+
+        get('#importMergeBtn').addEventListener('click', () => this.triggerImport('merge'));
+        get('#importReplaceBtn').addEventListener('click', () => this.triggerImport('replace'));
+        get('#importCancelBtn').addEventListener('click', () => get('#importChoiceModal').classList.remove('visible'));
+
+        get('#exportAllBtn').addEventListener('click', () => { this.exportData(null); get('#exportChoiceModal').classList.remove('visible'); });
+        get('#exportPartialBtn').addEventListener('click', () => this.showPartialExportModal());
+        get('#exportCancelBtn').addEventListener('click', () => get('#exportChoiceModal').classList.remove('visible'));
+
+        get('#exportSelectedBtn').addEventListener('click', () => this.exportPartialData());
+        get('#exportBackBtn').addEventListener('click', () => {
+            get('#partialExportModal').classList.remove('visible');
+            get('#exportChoiceModal').classList.add('visible');
+        });
+
         get('#clearAllDataBtn').addEventListener('click', () => this.clearAllData());
         get('#copySummaryBtn').addEventListener('click', () => this.copySummary());
-        get('#bestClientCard').addEventListener('click', () => this.goToBestClient());
-
-        get('#theme-switcher').addEventListener('click', e => e.target.dataset.theme && this.updateSetting('theme', e.target.dataset.theme));
-        get('#animation-switcher').addEventListener('click', e => e.target.dataset.anim && this.updateSetting('animations', e.target.dataset.anim === 'on'));
-        get('#density-switcher').addEventListener('click', e => e.target.dataset.density && this.updateSetting('tableDensity', e.target.dataset.density));
-        get('#font-size-switcher').addEventListener('click', e => e.target.dataset.size && this.updateSetting('fontSize', e.target.dataset.size));
-        get('#confirm-delete-switcher').addEventListener('click', e => e.target.dataset.confirm && this.updateSetting('confirmDelete', e.target.dataset.confirm === 'on'));
-        get('#best-client-metric-switcher').addEventListener('click', e => e.target.dataset.metric && this.updateSetting('bestClientMetric', e.target.dataset.metric));
-        get('#show-paid-debts-switcher').addEventListener('click', e => e.target.dataset.show && this.updateSetting('showPaidDebts', e.target.dataset.show === 'on'));
+        get('#dashboardClientCardsContainer').addEventListener('click', e => {
+            const card = e.target.closest('.result-card');
+            if (card && (card.id === 'bestClientInfoCard' || card.id === 'topClientVisitsCard' || card.id === 'newestClientCard')) {
+                this.goToBestClient(card.dataset.clientId);
+            }
+        });
+        get('#customizeDashboardBtn').addEventListener('click', () => this.showDashboardSettingsModal());
+        
+        get('#settings').addEventListener('click', e => {
+            const button = e.target.closest('button');
+            if (!button) return;
+        
+            const switcher = button.closest('.setting-controls');
+            if (!switcher) return;
+        
+            const settingMap = {
+                'theme-switcher': { key: 'theme', attr: 'theme' },
+                'animation-switcher': { key: 'animations', attr: 'anim', transform: v => v === 'on' },
+                'density-switcher': { key: 'tableDensity', attr: 'density' },
+                'font-size-switcher': { key: 'fontSize', attr: 'size' },
+                'confirm-delete-switcher': { key: 'confirmDelete', attr: 'confirm', transform: v => v === 'on' },
+                'best-client-metric-switcher': { key: 'bestClientMetric', attr: 'metric' },
+                'show-paid-debts-switcher': { key: 'showPaidDebts', attr: 'show', transform: v => v === 'on' },
+                'auto-capitalize-switcher': { key: 'autoCapitalize', attr: 'capitalize', transform: v => v === 'on' },
+                'confirm-import-switcher': { key: 'confirmImport', attr: 'import', transform: v => v === 'on' },
+            };
+            
+            const setting = settingMap[switcher.id];
+            if (setting && button.dataset[setting.attr]) {
+                let value = button.dataset[setting.attr];
+                if (setting.transform) value = setting.transform(value);
+                this.updateSetting(setting.key, value);
+            }
+        });
         get('#resetSettingsBtn').addEventListener('click', () => this.resetSettings());
+        get('#restoreBackupBtn').addEventListener('click', () => this.restoreFromBackup());
+        get('#saveBackupNowBtn').addEventListener('click', () => this.saveBackupNow());
         
         get('#primaryColorPicker').addEventListener('input', this.debounce(e => this.updateSetting('primaryColor', e.target.value), 100));
         get('#currencySymbol').addEventListener('input', this.debounce(e => this.updateSetting('currency', e.target.value), 300));
+        get('#defaultTabSelect').addEventListener('change', e => this.updateSetting('defaultTab', e.target.value));
+        get('#autoBackupSelect').addEventListener('change', e => this.updateSetting('autoBackup', e.target.value));
+        get('#defaultItemCountInput').addEventListener('input', this.debounce(e => this.updateSetting('defaultItemCount', parseInt(e.target.value) || 1), 300));
 
         get('#service-templates-list').addEventListener('click', async e => {
             const target = e.target.closest('button');
@@ -451,10 +684,45 @@ class TireServiceApp {
         get('#faqCloseBtn').addEventListener('click', () => get('#faqModal').classList.remove('visible'));
         get('#faqModal').addEventListener('click', e => { if (e.target.id === 'faqModal') get('#faqModal').classList.remove('visible'); });
 
-        get('.calculator-keys').addEventListener('click', e => {
-            if (e.target.matches('button')) {
-                this.handleCalculatorInput(e.target.dataset.key);
-            }
+        get('#addTodoBtn').addEventListener('click', () => this.addTodo());
+        get('#newTodoInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.addTodo(); } });
+        get('#todoList').addEventListener('click', e => {
+            const item = e.target.closest('.todo-item');
+            if(!item) return;
+            if(e.target.type === 'checkbox') this.toggleTodo(item.dataset.id);
+            if(e.target.closest('.btn-delete')) this.deleteTodo(item.dataset.id);
+        });
+        get('#todoList').addEventListener('input', e => {
+            const textarea = e.target.closest('.todo-text');
+            if(textarea) this.autoResizeTextarea(textarea);
+        });
+        get('#todoList').addEventListener('change', e => {
+            const textarea = e.target.closest('.todo-text');
+            if(textarea) this.handleTodoChange(textarea);
+        });
+        
+        get('#generateReportBtn').addEventListener('click', () => this.generateReport());
+        const today = new Date().toISOString().slice(0, 10);
+        get('#reportStartDate').value = new Date(new Date().setDate(1)).toISOString().slice(0,10);
+        get('#reportEndDate').value = today;
+
+        get('#saveDashboardSettingsBtn').addEventListener('click', () => this.saveDashboardSettings());
+        get('#cancelDashboardSettingsBtn').addEventListener('click', () => get('#dashboardSettingsModal').classList.remove('visible'));
+        
+        get('#globalPhoneSearch').addEventListener('input', this.debounce(e => this.performGlobalPhoneSearch(e.target.value), 300));
+        get('#globalSearchResults').addEventListener('click', e => this.handleSearchResultClick(e));
+
+        this.setupMiniCalcListeners();
+    }
+
+    populateDefaultTabSelect() {
+        const select = get('#defaultTabSelect');
+        select.innerHTML = '';
+        getAll('.tab').forEach(tab => {
+            const option = document.createElement('option');
+            option.value = tab.dataset.tab;
+            option.textContent = tab.querySelector('span') ? tab.querySelector('span').textContent.trim() : tab.textContent.trim();
+            select.appendChild(option);
         });
     }
     
@@ -463,50 +731,64 @@ class TireServiceApp {
             const modal = get('#confirmModal');
             const confirmBtn = get('#modalConfirmBtn');
             const cancelBtn = get('#modalCancelBtn');
-
             get('#modalText').textContent = text;
             confirmBtn.textContent = confirmText;
             cancelBtn.textContent = cancelText;
-
             confirmBtn.className = `button ${confirmClass}`;
             cancelBtn.className = 'button';
-
             modal.classList.add('visible');
-            
-            const cleanup = () => {
+            const cleanup = (result) => {
                 modal.classList.remove('visible');
                 confirmBtn.removeEventListener('click', confirmHandler);
                 cancelBtn.removeEventListener('click', cancelHandler);
+                modal.removeEventListener('click', outsideClickHandler);
+                resolve(result);
             };
-            const confirmHandler = () => { cleanup(); resolve(true); };
-            const cancelHandler = () => { cleanup(); resolve(false); };
+            const confirmHandler = () => cleanup(true);
+            const cancelHandler = () => cleanup(false);
+            const outsideClickHandler = e => { if (e.target === modal) cleanup(false); };
             
-            confirmBtn.addEventListener('click', confirmHandler, { once: true });
-            cancelBtn.addEventListener('click', cancelHandler, { once: true });
+            confirmBtn.addEventListener('click', confirmHandler);
+            cancelBtn.addEventListener('click', cancelHandler);
+            modal.addEventListener('click', outsideClickHandler);
         });
     }
 
     saveData() {
         try {
-            localStorage.setItem('tireServiceData', JSON.stringify(this.data));
+            localStorage.setItem('tireServiceData_v4', JSON.stringify(this.data));
         } catch(e) {
             console.error("Failed to save data to localStorage:", e);
-            this.showNotification("Ошибка сохранения: Хранилище переполнено", "danger");
+            this.showToast("Ошибка сохранения: Хранилище переполнено", "danger");
         }
     }
 
     updateState(updater, recordHistory = true) {
         updater(this.data);
+        if (recordHistory) {
+            const afterStateJSON = JSON.stringify(this.data);
+            const lastStateJSON = this.historyStack.length > 0 ? JSON.stringify(this.historyStack[this.historyIndex]) : "{}";
+            if (afterStateJSON !== lastStateJSON) {
+                this.recordHistory(JSON.parse(afterStateJSON));
+            }
+        }
         this.saveData();
-        if (recordHistory) this.recordHistoryState();
         this.render();
+    }
+
+    deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
     }
     
     loadState(newState, recordHistory = true) {
-        const defaultData = new TireServiceApp().data;
-        const sanitizedData = this.sanitizeData(newState);
-        this.data = { ...defaultData, ...sanitizedData, settings: { ...defaultData.settings, ...(sanitizedData.settings || {}) }};
-        if (recordHistory) this.recordHistoryState();
+        const defaultData = this.getDefaultData();
+        const migratedData = this.migrateData(newState);
+        this.data = { ...defaultData, ...migratedData, settings: { ...defaultData.settings, ...(migratedData.settings || {}) }};
+        if (recordHistory) {
+            this.historyStack = [];
+            this.historyIndex = -1;
+            this.recordHistory(this.deepClone(this.data));
+        }
         this.render();
     }
 
@@ -514,146 +796,146 @@ class TireServiceApp {
         this.applySettings();
         this.renderAllTables();
         this.renderServiceTemplates();
+        this.renderDashboard();
         this.updateAllCalculations();
         this.updateHistoryButtons();
         this.updateSortHeaders();
+        this.renderTodos();
         
         const { incomeFilter, expensesFilter, clientsFilter, debtsFilter } = this.data.settings;
         get('#incomeSearch').value = incomeFilter || '';
-        this.filterTable('#incomeTable tbody', incomeFilter || '', [4, 5]);
         get('#expensesSearch').value = expensesFilter || '';
-        this.filterTable('#expensesTable tbody', expensesFilter || '', [4]);
         get('#clientSearch').value = clientsFilter || '';
-        this.filterClientsTable(clientsFilter || '');
         get('#debtSearch').value = debtsFilter || '';
-        this.filterTable('#debtsTable tbody', debtsFilter || '', [2, 3, 4]);
+        
+        this.switchTab(this.data.settings.activeTab || 'total', null, false);
     }
     
-    recordHistoryState() {
-        const currentState = JSON.stringify(this.data);
-        if (this.historyIndex > -1 && this.historyStack[this.historyIndex] === currentState) return;
-
+    recordHistory(stateSnapshot) {
         this.historyStack = this.historyStack.slice(0, this.historyIndex + 1);
-        this.historyStack.push(currentState);
-        this.historyIndex++;
-        
-        if (this.historyStack.length > this.MAX_HISTORY_STATES) {
-            this.historyStack.shift(); this.historyIndex--;
-        }
+        this.historyStack.push(stateSnapshot);
+        this.historyIndex = this.historyStack.length - 1;
 
-        this.updateHistoryButtons();
+        if (this.historyStack.length > this.MAX_HISTORY_STATES) {
+            this.historyStack.shift();
+            this.historyIndex--;
+        }
     }
 
-    undo() { if (this.historyIndex > 0) { this.historyIndex--; this.loadState(JSON.parse(this.historyStack[this.historyIndex]), false); }}
-    redo() { if (this.historyIndex < this.historyStack.length - 1) { this.historyIndex++; this.loadState(JSON.parse(this.historyStack[this.historyIndex]), false); }}
-    updateHistoryButtons() { get('#undoBtn').disabled = this.historyIndex <= 0; get('#redoBtn').disabled = this.historyIndex >= this.historyStack.length - 1; }
+    undo() {
+        if (this.historyIndex > 0) {
+            this.historyIndex--;
+            this.loadState(this.deepClone(this.historyStack[this.historyIndex]), false);
+        }
+    }
+    
+    redo() {
+        if (this.historyIndex < this.historyStack.length - 1) {
+            this.historyIndex++;
+            this.loadState(this.deepClone(this.historyStack[this.historyIndex]), false);
+        }
+    }
+
+    updateHistoryButtons() {
+        get('#undoBtn').disabled = this.historyIndex <= 0;
+        get('#redoBtn').disabled = this.historyIndex >= this.historyStack.length - 1;
+    }
 
     parseMoney(value) {
-        if (typeof value !== 'string' && typeof value !== 'number') return 0;
-        const stringValue = String(value).replace(',', '.').replace(/[^0-9.-]/g, '');
-        let parsed = parseFloat(stringValue);
+        const stringValue = String(value || '0').replace(',', '.').replace(/[^0-9.-]/g, '');
+        const parsed = parseFloat(stringValue);
         return isNaN(parsed) ? 0 : parsed;
     }
     
     renderMoney(value) { return `${this.parseMoney(value).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ${this.data.settings.currency || '₽'}`; }
     
-    showNotification(message, type = 'success') {
-        const notif = document.createElement('div');
-        notif.className = `notification ${type}`;
-        notif.textContent = message;
-        notif.setAttribute('role', 'alert');
-        document.body.appendChild(notif);
-        setTimeout(() => notif.remove(), 3000);
+    showToast(message, type = 'info', duration = 3000) {
+        const container = get('#toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toast.setAttribute('role', 'alert');
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add('hiding');
+            toast.addEventListener('animationend', () => toast.remove());
+        }, duration);
     }
     
     debounce(func, delay) { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); }; }
 
-    handleTableInput(event, tableKey) {
+    handleTableLiveUpdate(event, tableKey) {
+        if (!['income', 'expenses'].includes(tableKey)) return;
+        const input = event.target;
+        if (input.tagName !== 'INPUT' || !input.dataset.key) return;
+        const row = input.closest('tr');
+        if (!row) return;
+    
+        const changedKey = input.dataset.key;
+        const countInput = row.querySelector('input[data-key="count"]');
+        const priceInput = row.querySelector('input[data-key="price"]');
+        const totalAmountInput = row.querySelector('input[data-key="totalAmount"]');
+    
+        const count = Math.max(1, parseInt(countInput.value) || 1);
+        const price = this.parseMoney(priceInput.value);
+        const totalAmount = this.parseMoney(totalAmountInput.value);
+    
+        if (changedKey === 'count' || changedKey === 'price') {
+            const newTotal = count * price;
+            if (this.parseMoney(totalAmountInput.value) !== newTotal) totalAmountInput.value = newTotal.toFixed(2);
+        } else if (changedKey === 'totalAmount') {
+            if (count > 0) {
+                const newPrice = totalAmount / count;
+                if (this.parseMoney(priceInput.value) !== newPrice) priceInput.value = newPrice.toFixed(2);
+            }
+        }
+    }
+
+    handleTableChangeCommit(event, tableKey) {
         const input = event.target;
         if (input.tagName !== 'INPUT') return;
-        
         const row = input.closest('tr');
         if (!row) return;
 
         const { id, subId } = row.dataset;
-        const key = input.dataset.key;
         
-        const mainKeyMap = {
-            income: ['date', 'price', 'count', 'totalAmount', 'service', 'comment'],
-            expenses: ['date', 'price', 'count', 'totalAmount', 'description'],
-            clients: ['date', 'amount', 'phone', 'plate', 'name'],
-            debts: ['date', 'amount', 'name', 'phone', 'comment'],
-            clientVisits: ['date', 'amount', null, 'plate']
-        };
+        this.updateState(d => {
+            const item = d[tableKey].find(i => i.id === id);
+            if (!item) return;
 
-        const item = this.data[tableKey].find(i => i.id === id);
-        if (!item) return;
-        
-        let targetObject = item;
-        if (tableKey === 'clients' && subId) {
-            const visit = item.visits.find(v => v.id === subId);
-            if (!visit) return;
-            targetObject = visit;
-        }
-
-        if (key) {
-            let value = input.value;
-            if ((key === 'price' || key === 'totalAmount' || key === 'amount') && this.parseMoney(value) < 0) {
-                value = Math.abs(this.parseMoney(value)).toString();
-                input.value = value;
+            let targetObject = item;
+            if (tableKey === 'clients' && subId) {
+                targetObject = (item.visits || []).find(v => v.id === subId);
+                if (!targetObject) return;
             }
-            targetObject[key] = value;
-            
-            if (tableKey === 'income' || tableKey === 'expenses') {
-                this.updateRowCalculation(row, targetObject, key);
-                if (key === 'service' || key === 'description') {
-                    this.applyTemplate(value, targetObject, row, tableKey);
+
+            row.querySelectorAll('input[data-key]').forEach(inputEl => {
+                const key = inputEl.dataset.key;
+                let value = inputEl.value;
+                if(key === 'name' && d.settings.autoCapitalize) {
+                    value = value.charAt(0).toUpperCase() + value.slice(1);
                 }
-            }
+                if(['price', 'totalAmount', 'amount', 'count'].includes(key)) {
+                    value = this.parseMoney(value);
+                }
+                targetObject[key] = value;
+            });
             
-            this.saveData();
-            this.updateAllCalculations();
-            this.debouncedSave();
-        }
-    }
-
-    updateRowCalculation(row, item, changedKey) {
-        const count = Math.max(1, parseInt(item.count) || 1);
-        const price = this.parseMoney(item.price);
-        const totalAmount = this.parseMoney(item.totalAmount);
-
-        const priceInput = row.querySelector('input[data-key="price"]');
-        const countInput = row.querySelector('input[data-key="count"]');
-        const totalAmountInput = row.querySelector('input[data-key="totalAmount"]');
-        
-        if (changedKey === 'count' || changedKey === 'price') {
-            const newTotal = count * price;
-            item.totalAmount = newTotal;
-            if (totalAmountInput) totalAmountInput.value = newTotal.toFixed(2);
-        } else if (changedKey === 'totalAmount') {
-            if (count > 0) {
-                const newPrice = totalAmount / count;
-                item.price = newPrice;
-                if (priceInput) priceInput.value = newPrice.toFixed(2);
+            if (['service', 'description'].includes(input.dataset.key)) {
+                this.applyTemplate(targetObject, d);
             }
-        }
-        if (countInput && (parseInt(countInput.value) || 0) <= 0) {
-            countInput.value = 1;
-            item.count = 1;
-        }
+        });
+        this.showSavedToast();
     }
     
-    applyTemplate(templateName, item, row, tableKey) {
-        const template = (this.data.serviceTemplates || []).find(t => t.name === templateName && t.type === tableKey);
-        if (template && item) {
+    applyTemplate(item, data) {
+        const templateName = item.service || item.description;
+        const templateType = item.service ? 'income' : 'expense';
+        const template = (data.serviceTemplates || []).find(t => t.name === templateName && t.type === templateType);
+        if (template) {
             item.price = template.price;
             item.count = template.count;
-            this.updateRowCalculation(row, item, 'price');
-            
-            const priceInput = row.querySelector('input[data-key="price"]');
-            const countInput = row.querySelector('input[data-key="count"]');
-            if(priceInput) priceInput.value = item.price;
-            if(countInput) countInput.value = item.count;
+            item.totalAmount = template.price * template.count;
         }
     }
     
@@ -664,11 +946,11 @@ class TireServiceApp {
         const { id } = row.dataset;
 
         if (target.classList.contains('btn-status')) {
-            const item = this.data[tableKey].find(i => i.id === id);
-            if (item) {
-                item.isPaid = target.checked;
-                this.updateState(d => {}, true);
-            }
+            this.updateState(d => {
+                const item = d[tableKey].find(i => i.id === id);
+                if (item) item.isPaid = target.checked;
+            });
+            this.showSavedToast();
             return;
         }
 
@@ -676,72 +958,57 @@ class TireServiceApp {
         if (!button) return;
         
         if (button.classList.contains('stepper-btn')) {
-            const wrapper = button.closest('.number-input-wrapper');
-            const input = wrapper.querySelector('input[type="number"]');
-            const isUp = button.classList.contains('stepper-up');
-            const step = 1;
-
-            let currentValue = this.parseMoney(input.value);
-            if (isNaN(currentValue)) currentValue = 0;
-
-            let newValue = isUp ? currentValue + step : currentValue - step;
-            
-            const min = parseFloat(input.min);
-            if (!isNaN(min) && newValue < min) {
-                newValue = min;
-            } else if (newValue < 0) {
-                 newValue = 0;
-            }
-            
-            input.value = newValue;
+            const input = button.closest('.number-input-wrapper').querySelector('input[type="number"]');
+            const step = parseFloat(input.step) || 1;
+            const min = input.min !== '' ? parseFloat(input.min) : -Infinity;
+            let value = this.parseMoney(input.value) + (button.classList.contains('stepper-up') ? step : -step);
+            if (value < min) value = min;
+            input.value = value;
             input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
             return;
         }
 
         const { subId } = row.dataset;
-
         if (button.classList.contains('btn-delete')) await this.deleteRow(tableKey, id, subId, row);
         if (button.classList.contains('btn-expand')) this.expandClientRow(id);
     }
 
-    addIncomeRow() { this.updateState(data => { data.income.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), price: '', count: 1, totalAmount: 0, service: '', comment: '' }); }); }
-    addExpenseRow() { this.updateState(data => { data.expenses.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), price: '', count: 1, totalAmount: 0, description: '' }); }); }
-    addClientRow() { this.updateState(data => { data.clients.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', phone: '', plate: '', name: '', visits: [] }); }); }
+    addIncomeRow() { this.updateState(data => { data.income.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), price: '', count: data.settings.defaultItemCount || 1, totalAmount: 0, service: '', comment: '' }); }); }
+    addExpenseRow() { this.updateState(data => { data.expenses.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), price: '', count: data.settings.defaultItemCount || 1, totalAmount: 0, description: '' }); }); }
+    addClientRow() { this.updateState(data => { data.clients.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', phone: '', plate: '', name: '', visits: [], cars:[] }); }); }
     addDebtRow() { this.updateState(data => { data.debts.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', name: '', phone: '', comment: '', isPaid: false }); }); }
 
     async deleteRow(tableKey, id, subId, rowElement) {
-        if (this.data.settings.confirmDelete) {
-            if (!await this.confirmAction({ text: "Удалить эту запись?" })) return;
-        }
+        if (this.data.settings.confirmDelete && !await this.confirmAction({ text: "Удалить эту запись?" })) return;
         
-        const animate = this.data.settings.animations;
-        if (animate) {
-            rowElement.classList.add('row-exit');
-            if (tableKey === 'clients' && !subId) {
-                let next = rowElement.nextElementSibling;
-                while(next && next.classList.contains('sub-row')) {
-                    next.classList.add('row-exit');
-                    next = next.nextElementSibling;
-                }
-            }
-        }
-        
-        setTimeout(() => {
+        const animateAndRemove = () => {
             this.updateState(data => {
                 if (tableKey === 'clients' && subId) {
                     const client = data.clients.find(c => c.id === id);
-                    if (client) client.visits = client.visits.filter(v => v.id !== subId);
+                    if (client) client.visits = (client.visits || []).filter(v => v.id !== subId);
                 } else {
                     data[tableKey] = data[tableKey].filter(item => item.id !== id);
                 }
             });
-        }, animate ? 400 : 0);
+        };
+        
+        if (this.data.settings.animations) {
+            rowElement.classList.add('row-exit');
+            if (tableKey === 'clients' && !subId) {
+                getAll(`#clientsTable tbody tr[data-id="${id}"]`).forEach(r => r.classList.add('row-exit'));
+            }
+            setTimeout(animateAndRemove, 400);
+        } else {
+            animateAndRemove();
+        }
     }
     
     expandClientRow(clientId) {
         this.updateState(data => {
             const client = data.clients.find(c => c.id === clientId);
             if (client) {
+                if (!client.visits) client.visits = [];
                 const plate = client.plate || '';
                 client.visits.push({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', plate: plate });
             }
@@ -749,53 +1016,34 @@ class TireServiceApp {
     }
 
     getNumberInputHTML(value, placeholder, min = 0, step = 1, dataKey) {
-        return `
-            <div class="number-input-wrapper">
-                <input type="number" step="${step}" min="${min}" placeholder="${placeholder}" value="${value}" data-key="${dataKey}">
-                <div class="stepper-controls">
-                    <button type="button" class="stepper-btn stepper-up" aria-label="Увеличить">▲</button>
-                    <button type="button" class="stepper-btn stepper-down" aria-label="Уменьшить">▼</button>
-                </div>
-            </div>`;
+        return `<div class="number-input-wrapper"><input type="number" step="${step}" min="${min}" placeholder="${placeholder}" value="${value}" data-key="${dataKey}"><div class="stepper-controls"><button type="button" class="stepper-btn stepper-up" aria-label="Увеличить">▲</button><button type="button" class="stepper-btn stepper-down" aria-label="Уменьшить">▼</button></div></div>`;
     }
     
     renderAllTables() {
-        ['income', 'expenses', 'clients', 'debts'].forEach(key => {
-            const sortState = this.data.settings.sort[key];
-            if (sortState && sortState.key) {
-                this.data[key].sort((a, b) => {
-                    const sortKey = sortState.key;
-                    
-                    if (sortKey === 'isPaid') {
-                        const valA = a.isPaid || false;
-                        const valB = b.isPaid || false;
-                        return sortState.dir === 'asc' ? (valA - valB) : (valB - valA);
-                    }
+        ['income', 'expenses', 'clients', 'debts'].forEach(key => this.sortData(key));
 
-                    let valA = a[sortKey];
-                    let valB = b[sortKey];
+        const getFilteredData = (key, filter, fields) => {
+            if (!filter) return this.data[key];
+            const lowerFilter = filter.toLowerCase();
+            return this.data[key].filter(item => {
+                const hasMatch = fields.some(field => String(item[field] || '').toLowerCase().includes(lowerFilter));
+                if (hasMatch) return true;
+                if (key === 'clients' && item.visits) {
+                    return item.visits.some(visit => String(visit.plate || '').toLowerCase().includes(lowerFilter));
+                }
+                return false;
+            });
+        };
 
-                    if (['amount', 'count', 'price', 'totalAmount'].includes(sortKey)) {
-                        valA = this.parseMoney(valA);
-                        valB = this.parseMoney(valB);
-                        if(isNaN(valA)) valA = 0;
-                        if(isNaN(valB)) valB = 0;
-                    } else {
-                        valA = String(valA || '').toLowerCase();
-                        valB = String(valB || '').toLowerCase();
-                    }
+        const incomeData = getFilteredData('income', this.data.settings.incomeFilter, ['service', 'comment', 'date']);
+        const expensesData = getFilteredData('expenses', this.data.settings.expensesFilter, ['description', 'date']);
+        const clientsData = getFilteredData('clients', this.data.settings.clientsFilter, ['name', 'phone', 'plate', 'date']);
+        const debtsData = getFilteredData('debts', this.data.settings.debtsFilter, ['name', 'phone', 'comment', 'date']);
 
-                    if (valA < valB) return sortState.dir === 'asc' ? -1 : 1;
-                    if (valA > valB) return sortState.dir === 'asc' ? 1 : -1;
-                    return 0;
-                });
-            }
-        });
-        
-        this.renderTable('#incomeTable tbody', this.data.income, this.getIncomeRowHTML);
-        this.renderTable('#expensesTable tbody', this.data.expenses, this.getExpenseRowHTML);
-        this.renderClientsTable();
-        const debtsToRender = this.data.settings.showPaidDebts ? this.data.debts : this.data.debts.filter(d => !d.isPaid);
+        this.renderTable('#incomeTable tbody', incomeData, this.getIncomeRowHTML);
+        this.renderTable('#expensesTable tbody', expensesData, this.getExpenseRowHTML);
+        this.renderClientsTable(clientsData);
+        const debtsToRender = this.data.settings.showPaidDebts ? debtsData : debtsData.filter(d => !d.isPaid);
         this.renderTable('#debtsTable tbody', debtsToRender, this.getDebtRowHTML);
     }
 
@@ -804,131 +1052,159 @@ class TireServiceApp {
         tbody.innerHTML = data.map(item => rowRenderer.call(this, item)).join('');
     }
 
-    renderClientsTable() {
+    renderClientsTable(clientsData) {
         const tbody = get('#clientsTable tbody');
-        let html = '';
-        this.data.clients.forEach(client => {
+        let htmlChunks = [];
+        clientsData.forEach(client => {
             const totalVisits = 1 + (client.visits?.length || 0);
-            html += `
-                <tr data-id="${client.id}">
-                    <td><input type="date" value="${client.date || ''}" data-key="date"></td>
-                    <td>${this.getNumberInputHTML(client.amount || '', '0', 0, 1, 'amount')}</td>
-                    <td><input type="tel" placeholder="+7..." value="${client.phone || ''}" pattern="\\+?[0-9\\s\\-()]+" data-key="phone"></td>
-                    <td><input type="text" placeholder="А000АА00" value="${client.plate || ''}" pattern="[А-Яа-яA-Za-z0-9]+" data-key="plate"></td>
-                    <td><input type="text" placeholder="Имя" value="${client.name || ''}" data-key="name"></td>
-                    <td><input type="number" value="${totalVisits}" readonly></td>
-                    <td class="actions-cell">
-                        <button class="btn-action btn-delete" title="Удалить клиента" aria-label="Удалить клиента">✖</button>
-                        <button class="btn-action btn-expand" title="Добавить посещение" aria-label="Добавить посещение">➕</button>
-                    </td>
-                </tr>`;
-            const sortedVisits = (client.visits || []).sort((a, b) => b.date.localeCompare(a.date));
-            sortedVisits.forEach(visit => {
-                html += `
-                <tr class="sub-row" data-id="${client.id}" data-sub-id="${visit.id}">
+            htmlChunks.push(`<tr data-id="${client.id}">
+                <td><input type="date" value="${client.date || ''}" data-key="date"></td>
+                <td>${this.getNumberInputHTML(client.amount || '', '0', 0, 1, 'amount')}</td>
+                <td><input type="tel" placeholder="+7..." value="${client.phone || ''}" pattern="\\+?[0-9\\s\\-()]+" data-key="phone"></td>
+                <td><input type="text" placeholder="А000АА00" value="${client.plate || ''}" pattern="[А-Яа-яA-Za-z0-9]+" data-key="plate"></td>
+                <td><input type="text" placeholder="Имя" value="${client.name || ''}" data-key="name"></td>
+                <td><input type="number" value="${totalVisits}" readonly style="background: transparent; border: none; text-align: center;"></td>
+                <td class="actions-cell">
+                    <button class="btn-action btn-expand" title="Добавить посещение">+</button>
+                    <button class="btn-action btn-delete" title="Удалить клиента">&times;</button>
+                </td>
+            </tr>`);
+
+            (client.visits || []).sort((a, b) => (b.date || '').localeCompare(a.date || '')).forEach(visit => {
+                htmlChunks.push(`<tr class="sub-row" data-id="${client.id}" data-sub-id="${visit.id}">
                     <td><input type="date" value="${visit.date || ''}" data-key="date"></td>
                     <td>${this.getNumberInputHTML(visit.amount || '', '0', 0, 1, 'amount')}</td>
-                    <td></td>
+                    <td>&nbsp;</td>
                     <td><input type="text" placeholder="Гос номер" value="${visit.plate || ''}" data-key="plate"></td>
-                    <td></td><td></td>
-                    <td class="actions-cell"><button class="btn-action btn-delete" title="Удалить посещение" aria-label="Удалить посещение">✖</button></td>
-                </tr>`;
+                    <td>&nbsp;</td><td>&nbsp;</td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-delete" title="Удалить посещение">&times;</button>
+                    </td>
+                </tr>`);
             });
         });
-        tbody.innerHTML = html;
+        tbody.innerHTML = htmlChunks.join('');
     }
 
     getIncomeRowHTML(item) {
-        return `<tr data-id="${item.id}">
-            <td><input type="date" value="${item.date || ''}" data-key="date"></td>
-            <td>${this.getNumberInputHTML(item.price || '', '0', 0, 1, 'price')}</td>
-            <td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1, 'count')}</td>
-            <td>${this.getNumberInputHTML(item.totalAmount || '0', '0', 0, 1, 'totalAmount')}</td>
-            <td><input type="text" placeholder="Услуга" value="${item.service || ''}" list="service-templates-datalist-income" data-key="service"></td>
-            <td><input type="text" placeholder="Комментарий" value="${item.comment || ''}" data-key="comment"></td>
-            <td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td>
-        </tr>`;
+        return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}" data-key="date"></td><td>${this.getNumberInputHTML(item.price || '', '0', 0, 1, 'price')}</td><td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1, 'count')}</td><td>${this.getNumberInputHTML(item.totalAmount || '0', '0', 0, 1, 'totalAmount')}</td><td><input type="text" placeholder="Услуга" value="${item.service || ''}" list="service-templates-datalist-income" data-key="service"></td><td><input type="text" placeholder="Комментарий" value="${item.comment || ''}" data-key="comment"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
     }
     getExpenseRowHTML(item) {
-        return `<tr data-id="${item.id}">
-            <td><input type="date" value="${item.date || ''}" data-key="date"></td>
-            <td>${this.getNumberInputHTML(item.price || '', '0', 0, 1, 'price')}</td>
-            <td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1, 'count')}</td>
-            <td>${this.getNumberInputHTML(item.totalAmount || '0', '0', 0, 1, 'totalAmount')}</td>
-            <td><input type="text" placeholder="Описание" value="${item.description || ''}" list="service-templates-datalist-expense" data-key="description"></td>
-            <td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td>
-        </tr>`;
+        return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}" data-key="date"></td><td>${this.getNumberInputHTML(item.price || '', '0', 0, 1, 'price')}</td><td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1, 'count')}</td><td>${this.getNumberInputHTML(item.totalAmount || '0', '0', 0, 1, 'totalAmount')}</td><td><input type="text" placeholder="Описание" value="${item.description || ''}" list="service-templates-datalist-expense" data-key="description"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
     }
     getDebtRowHTML(item) {
         const isPaid = item.isPaid || false;
-        return `
-        <tr data-id="${item.id}" class="${isPaid ? 'paid-debt' : ''}">
-            <td><input type="date" value="${item.date || ''}" data-key="date"></td>
-            <td>${this.getNumberInputHTML(item.amount || '', '0', 0, 1, 'amount')}</td>
-            <td><input type="text" placeholder="Имя" value="${item.name || ''}" data-key="name"></td>
-            <td><input type="tel" placeholder="+7..." value="${item.phone || ''}" data-key="phone"></td>
-            <td><input type="text" placeholder="Комментарий" value="${item.comment || ''}" data-key="comment"></td>
-            <td class="status-cell"><label class="switch"><input type="checkbox" class="btn-status" ${isPaid ? 'checked' : ''}><span class="slider round"></span></label></td>
-            <td class="actions-cell"><button class="btn-action btn-delete" title="Удалить" aria-label="Удалить">✖</button></td>
-        </tr>`;
+        return `<tr data-id="${item.id}" class="${isPaid ? 'paid-debt' : ''}"><td><input type="date" value="${item.date || ''}" data-key="date"></td><td>${this.getNumberInputHTML(item.amount || '', '0', 0, 1, 'amount')}</td><td><input type="text" placeholder="Имя" value="${item.name || ''}" data-key="name"></td><td><input type="tel" placeholder="+7..." value="${item.phone || ''}" data-key="phone"></td><td><input type="text" placeholder="Комментарий" value="${item.comment || ''}" data-key="comment"></td><td class="status-cell"><label class="switch"><input type="checkbox" class="btn-status" ${isPaid ? 'checked' : ''}><span class="slider round"></span></label></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
     }
 
     updateAllCalculations() {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const incomeTodayArr = this.data.income.filter(i => i.date === todayStr);
+        const expensesTodayArr = this.data.expenses.filter(e => e.date === todayStr);
+        
         const totalIncome = this.data.income.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
         const totalExpenses = this.data.expenses.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
+        const incomeToday = incomeTodayArr.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
+        const expensesToday = expensesTodayArr.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
+
         const netProfit = totalIncome - totalExpenses;
+        const profitToday = incomeToday - expensesToday;
         const totalDebt = this.data.debts.reduce((sum, item) => sum + (!item.isPaid ? this.parseMoney(item.amount) : 0), 0);
+        const avgIncome = this.data.income.length > 0 ? totalIncome / this.data.income.length : 0;
+        const avgExpense = this.data.expenses.length > 0 ? totalExpenses / this.data.expenses.length : 0;
+
+        const servicesCount = this.data.income.reduce((acc, item) => {
+            if(item.service) acc[item.service] = (acc[item.service] || 0) + 1;
+            return acc;
+        }, {});
+        const topService = Object.entries(servicesCount).sort((a,b) => b[1] - a[1])[0];
         
-        let totalVisits = 0;
-        let totalFromNotes = 0;
+        let totalVisits = 0; let totalFromNotes = 0;
         const clientsData = this.data.clients.map(client => {
             const clientVisitsCount = 1 + (client.visits?.length || 0);
             const clientProfit = this.parseMoney(client.amount) + (client.visits || []).reduce((sum, visit) => sum + this.parseMoney(visit.amount), 0);
             totalVisits += clientVisitsCount;
             totalFromNotes += clientProfit;
-            return { id: client.id, name: client.name, phone: client.phone, profit: clientProfit, visits: clientVisitsCount };
+            return { id: client.id, name: client.name, phone: client.phone, profit: clientProfit, visits: clientVisitsCount, avgCheck: clientVisitsCount > 0 ? clientProfit / clientVisitsCount : 0, date: client.date };
         });
 
-        get('#totalIncome').textContent = this.renderMoney(totalIncome);
-        get('#totalExpenses').textContent = this.renderMoney(totalExpenses);
-        get('#totalProfit').textContent = this.renderMoney(netProfit);
-        get('#totalDebt').textContent = this.renderMoney(totalDebt);
-        get('#totalClients').textContent = clientsData.length;
-        get('#totalVisits').textContent = totalVisits;
-        get('#avgClientCheck').textContent = this.renderMoney(totalVisits > 0 ? totalFromNotes / totalVisits : 0);
+        const cardValues = {
+            totalIncome: this.renderMoney(totalIncome),
+            totalExpenses: this.renderMoney(totalExpenses),
+            totalProfit: this.renderMoney(netProfit),
+            totalDebt: this.renderMoney(totalDebt),
+            avgIncome: this.renderMoney(avgIncome),
+            avgExpense: this.renderMoney(avgExpense),
+            profitToday: this.renderMoney(profitToday),
+            incomeToday: this.renderMoney(incomeToday),
+            topService: (topService ? `${topService[0]} (${topService[1]} раз)` : 'Нет данных'),
+            incomeCount: this.data.income.length || 0,
+            expenseCount: this.data.expenses.length || 0,
+            transactionsToday: (incomeTodayArr.length + expensesTodayArr.length) || 0,
+            totalClients: clientsData.length || 0,
+            totalVisits: totalVisits || 0,
+            avgClientCheck: this.renderMoney(totalVisits > 0 ? totalFromNotes / totalVisits : 0),
+            newClientsToday: this.data.clients.filter(c => c.date === todayStr).length || 0,
+            returningClients: clientsData.filter(c => c.visits > 1).length || 0
+        };
+
+        for(const [id, value] of Object.entries(cardValues)) {
+            const el = get(`#${id}`);
+            const finalValue = (value === null || value === undefined) ? '0' : String(value);
+            if (el && el.textContent !== finalValue) {
+                el.textContent = finalValue;
+                el.classList.add('updated');
+                el.addEventListener('animationend', () => el.classList.remove('updated'), { once: true });
+            }
+        }
         
-        get('#totalProfit').classList.toggle('positive', netProfit >= 0);
-        get('#totalProfit').classList.toggle('negative', netProfit < 0);
+        get('#totalProfit').classList.toggle('positive', netProfit >= 0); get('#totalProfit').classList.toggle('negative', netProfit < 0);
+        get('#profitToday').classList.toggle('positive', profitToday >= 0); get('#profitToday').classList.toggle('negative', profitToday < 0);
         
-        this.findBestClient(clientsData);
+        this.updateSpecialClientCards(clientsData);
+    }
+
+    sanitizeHTML(str) {
+        const temp = document.createElement('div');
+        temp.textContent = str;
+        return temp.innerHTML;
     }
     
-    findBestClient(clientsData) {
+    updateSpecialClientCards(clientsData) {
         if (clientsData.length === 0) {
-            get('#bestClientInfo').textContent = 'Нет данных о клиентах';
-            this.bestClientGlobal = null; return;
+            this.updateClientCard('bestClientInfo', null, () => 'Нет данных');
+            this.updateClientCard('topClientVisits', null, () => 'Нет данных');
+            this.updateClientCard('newestClient', null, () => 'Нет данных');
+            return;
         }
-        const metric = this.data.settings.bestClientMetric || 'profit';
-        
-        const sortedClients = [...clientsData].sort((a, b) => {
-            const primaryDiff = b[metric] - a[metric];
-            if (primaryDiff !== 0) return primaryDiff;
 
-            const secondaryMetric = metric === 'profit' ? 'visits' : 'profit';
-            const secondaryDiff = b[secondaryMetric] - a[secondaryMetric];
-            if (secondaryDiff !== 0) return secondaryDiff;
-            
-            return (a.name || '').localeCompare(b.name || '');
-        });
+        const bestByProfit = [...clientsData].sort((a,b) => b.profit - a.profit || b.visits - a.visits)[0];
+        const bestByVisits = [...clientsData].sort((a,b) => b.visits - a.visits || b.profit - a.profit)[0];
+        const newestClient = [...clientsData].sort((a,b) => (b.date || '').localeCompare(a.date || ''))[0];
         
-        this.bestClientGlobal = sortedClients[0];
-        get('#bestClientInfo').innerHTML = `<span class="highlight-text">${this.bestClientGlobal.name || 'Безымянный'} (${this.bestClientGlobal.phone || 'Без номера'})</span><br>Сумма: <span class="highlight-text">${this.renderMoney(this.bestClientGlobal.profit)}</span> | Посещений: ${this.bestClientGlobal.visits}`;
+        const formatClient = c => `<span class="highlight-text">${this.sanitizeHTML(c.name || 'Безымянный')}</span><br>Сумма: <span class="highlight-text">${this.renderMoney(c.profit)}</span> | Посещений: ${c.visits}`;
+        const formatVisits = c => `<span class="highlight-text">${this.sanitizeHTML(c.name || 'Безымянный')}</span><br>Посещений: <span class="highlight-text">${c.visits}</span> | Сумма: ${this.renderMoney(c.profit)}`;
+        const formatNewest = c => `<span class="highlight-text">${this.sanitizeHTML(c.name || 'Безымянный')}</span><br>Добавлен: ${c.date}`;
+
+        this.updateClientCard('bestClientInfo', bestByProfit, formatClient);
+        this.updateClientCard('topClientVisits', bestByVisits, formatVisits);
+        this.updateClientCard('newestClient', newestClient, formatNewest);
     }
 
-    goToBestClient() {
-        if (!this.bestClientGlobal?.id) return;
+    updateClientCard(cardId, client, formatter) {
+        const card = get(`#${cardId}Card`);
+        const valueEl = get(`#${cardId}`);
+        if(card && valueEl) {
+            card.classList.remove('hidden');
+            card.dataset.clientId = client ? client.id : '';
+            valueEl.innerHTML = client ? formatter(client) : 'Нет данных';
+        }
+    }
+
+    goToBestClient(clientId) {
+        if (!clientId) return;
         this.switchTab('clients', () => {
-            const targetRow = get(`#clientsTable tbody tr[data-id="${this.bestClientGlobal.id}"]`);
+            const targetRow = get(`#clientsTable tbody tr[data-id="${clientId}"]`);
             if (targetRow) {
                 targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 targetRow.classList.add('highlight');
@@ -937,200 +1213,193 @@ class TireServiceApp {
         });
     }
 
-    filterTable(tbodySelector, searchTerm, cellIndices) {
-        const term = searchTerm.toLowerCase();
-        getAll(`${tbodySelector} tr`).forEach(row => {
-            const rowText = cellIndices.map(index => {
-                const cell = row.cells[index];
-                const input = cell ? cell.querySelector('input') : null;
-                return input ? input.value.toLowerCase() : '';
-            }).join(' ');
-            row.style.display = rowText.includes(term) ? '' : 'none';
-        });
-    }
-    
-    filterClientsTable(term) {
-        const lowerTerm = term.toLowerCase();
-
-        if (!lowerTerm) {
-            getAll('#clientsTable tbody tr').forEach(row => row.style.display = '');
-            return;
-        }
-
-        this.data.clients.forEach(client => {
-            const mainRow = get(`#clientsTable tbody tr[data-id="${client.id}"]:not(.sub-row)`);
-            if (!mainRow) return;
-
-            const clientText = [client.date, client.amount, client.phone, client.plate, client.name].join(' ').toLowerCase();
-            const mainRowMatches = clientText.includes(lowerTerm);
-
-            let anySubRowMatches = false;
-            (client.visits || []).forEach(visit => {
-                const subRow = get(`#clientsTable tbody tr[data-sub-id="${visit.id}"]`);
-                if (!subRow) return;
-                
-                const visitText = [visit.date, visit.amount, visit.plate].join(' ').toLowerCase();
-                const subRowMatches = visitText.includes(lowerTerm);
-
-                if (subRowMatches) {
-                    subRow.style.display = '';
-                    anySubRowMatches = true;
-                } else {
-                    subRow.style.display = 'none';
-                }
-            });
-
-            mainRow.style.display = (mainRowMatches || anySubRowMatches) ? '' : 'none';
-        });
-    }
-
     validateData(data) {
-        return data && typeof data === 'object' &&
-               Array.isArray(data.income) &&
-               Array.isArray(data.expenses) &&
-               Array.isArray(data.clients) &&
-               Array.isArray(data.debts) &&
-               typeof data.settings === 'object';
+        return data && typeof data === 'object' && (data.settings || data.income || data.expenses || data.clients || data.debts || data.todos || data.serviceTemplates);
     }
     
-    sanitizeData(data) {
-        if (!this.validateData(data)) return new TireServiceApp().data;
-
-        const sanitizeItem = (item) => ({
-            ...item,
-            id: item.id || this.uuid(),
-            date: typeof item.date === 'string' ? item.date : new Date().toISOString().slice(0, 10),
-            price: this.parseMoney(item.price || item.amount),
-            count: parseInt(item.count) || 1,
-            totalAmount: this.parseMoney(item.totalAmount) || (this.parseMoney(item.price || item.amount) * (parseInt(item.count) || 1))
+    migrateData(data) {
+        if (!data || typeof data !== 'object') return this.getDefaultData();
+        const defaultData = this.getDefaultData();
+        if (data.settings && data.settings.version) delete data.settings.version;
+        Object.keys(defaultData).forEach(key => {
+            if (!data.hasOwnProperty(key) && Array.isArray(defaultData[key])) {
+                data[key] = [];
+            }
         });
-        
-        data.income = Array.isArray(data.income) ? data.income.map(sanitizeItem) : [];
-        data.expenses = Array.isArray(data.expenses) ? data.expenses.map(sanitizeItem) : [];
-        data.clients = Array.isArray(data.clients) ? data.clients.map(client => ({
-            ...client, id: client.id || this.uuid(),
-            visits: Array.isArray(client.visits) ? client.visits.map(v => ({...v, id: v.id || this.uuid()})) : []
-        })) : [];
-        data.debts = Array.isArray(data.debts) ? data.debts.map(d => ({...d, id: d.id || this.uuid(), isPaid: d.isPaid || false})) : [];
-        data.serviceTemplates = Array.isArray(data.serviceTemplates) ? data.serviceTemplates : [];
+        if (!data.settings || typeof data.settings !== 'object') {
+            data.settings = defaultData.settings;
+        } else {
+            data.settings = {...defaultData.settings, ...data.settings};
+        }
         return data;
     }
 
     loadData() {
-        const savedData = localStorage.getItem('tireServiceData');
+        let savedData = localStorage.getItem('tireServiceData_v4') || localStorage.getItem('tireServiceData_v3');
         if (savedData) {
-            try {
-                const parsedData = JSON.parse(savedData);
-                this.loadState(parsedData, false);
-                this.showNotification('Данные загружены');
-            } catch (e) {
-                console.error("Failed to load data, resetting to default.", e);
-                this.loadState(new TireServiceApp().data, false);
-                this.showNotification('Данные повреждены, загружен стандартный набор', 'danger');
+            try { 
+                this.loadState(JSON.parse(savedData), true);
+                this.showToast('Данные загружены', 'success');
+            } catch (e) { 
+                this.loadState(this.getDefaultData(), true);
+                this.showToast('Данные повреждены, загружен стандартный набор', 'danger'); 
             }
-        } else {
-            this.recordHistoryState();
-            this.render();
+        } else { 
+            this.loadState(this.getDefaultData(), true); 
         }
     }
     
-    exportData() { const json = JSON.stringify(this.data, null, 2); const blob = new Blob([json], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `tire_service_data_${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(url); this.showNotification('Данные экспортированы'); }
+    exportData(keysToExport = null) {
+        let dataToExport;
+        if (keysToExport) {
+            dataToExport = {};
+            keysToExport.forEach(key => {
+                if (this.data.hasOwnProperty(key)) {
+                    dataToExport[key] = this.data[key];
+                }
+            });
+        } else {
+            dataToExport = this.data;
+        }
+        const json = JSON.stringify(dataToExport, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tire_service_data_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        this.showToast('Данные экспортированы', 'success');
+    }
+
+    triggerImport(mode) {
+        get('#importChoiceModal').classList.remove('visible');
+        const fileInput = get('#importFileInput');
+        fileInput.dataset.importMode = mode;
+        fileInput.click();
+    }
     
-    async importData(e) { 
-        const file = e.target.files[0]; 
-        if (!file) return; 
-        
-        const reader = new FileReader(); 
-        reader.onload = async event => { 
-            try { 
-                const parsed = JSON.parse(event.target.result); 
-                if (this.validateData(parsed)) { 
-                    const shouldMerge = await this.confirmAction({
-                        text: "Как импортировать данные?",
-                        confirmText: "Объединить",
-                        cancelText: "Заменить все",
-                        confirmClass: 'success'
+    async handleFileImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const mode = e.target.dataset.importMode;
+        const confirmText = mode === 'replace' 
+            ? "ЗАМЕНИТЬ все текущие данные данными из файла? Это действие необратимо."
+            : "Объединить данные из файла с текущими?";
+        const confirmClass = mode === 'replace' ? 'danger' : 'success';
+
+        if (this.data.settings.confirmImport && !await this.confirmAction({ text: confirmText, confirmClass: confirmClass })) {
+            e.target.value = '';
+            return;
+        }
+
+        get('#loadingOverlay').classList.add('visible');
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            try {
+                const parsed = JSON.parse(event.target.result);
+                if (!this.validateData(parsed)) {
+                    this.showToast('Неверный формат файла импорта.', 'danger');
+                    return;
+                }
+                
+                const migrated = this.migrateData(parsed);
+
+                this.updateState(data => {
+                    if (mode === 'replace') {
+                        const settings = data.settings;
+                        const defaultData = this.getDefaultData();
+                        Object.keys(defaultData).forEach(key => {
+                            if (Array.isArray(defaultData[key])) data[key] = [];
+                        });
+                        data.settings = settings;
+                    }
+                    
+                    let newItemsCount = 0;
+                    Object.keys(migrated).forEach(key => {
+                        if (key === 'settings') {
+                            data.settings = { ...data.settings, ...migrated.settings };
+                        } else if (Array.isArray(data[key]) && Array.isArray(migrated[key])) {
+                            if (mode === 'replace') {
+                                data[key] = migrated[key];
+                            } else {
+                                const existingIds = new Set(data[key].map(i => i.id).filter(Boolean));
+                                const newItems = migrated[key].filter(newItem => newItem.id && !existingIds.has(newItem.id));
+                                if (newItems.length > 0) {
+                                    data[key].push(...newItems);
+                                    newItemsCount += newItems.length;
+                                }
+                            }
+                        }
                     });
 
-                    if (shouldMerge) {
-                        this.updateState(data => {
-                            const newIncome = (parsed.income || []).map(item => ({ ...item, id: this.uuid() }));
-                            const newExpenses = (parsed.expenses || []).map(item => ({ ...item, id: this.uuid() }));
-                            const newClients = (parsed.clients || []).map(client => ({
-                                ...client,
-                                id: this.uuid(),
-                                visits: (client.visits || []).map(visit => ({ ...visit, id: this.uuid() }))
-                            }));
-                            const newDebts = (parsed.debts || []).map(item => ({ ...item, id: this.uuid() }));
-                            
-                            const existingTemplateNames = new Set(data.serviceTemplates.map(t => `${t.name}-${t.type}`));
-                            const newTemplates = (parsed.serviceTemplates || []).filter(t => !existingTemplateNames.has(`${t.name}-${t.type}`));
+                    if(mode === 'replace') this.showToast('Данные успешно заменены.', 'success');
+                    else this.showToast(`Данные объединены. Добавлено ${newItemsCount} новых записей.`, 'success');
 
-                            data.income.push(...newIncome);
-                            data.expenses.push(...newExpenses);
-                            data.clients.push(...newClients);
-                            data.debts.push(...newDebts);
-                            data.serviceTemplates.push(...newTemplates);
-                        });
-                        this.showNotification('Данные объединены');
-                    } else {
-                        this.loadState(parsed); 
-                        this.showNotification('Данные импортированы и заменены');
-                    }
-                } else { 
-                    this.showNotification('Неверный формат файла импорта', 'danger'); 
-                } 
-            } catch (err) { 
-                this.showNotification('Ошибка импорта', 'danger'); 
+                }, true);
+
+            } catch (err) {
+                this.showToast('Ошибка чтения файла импорта.', 'danger');
                 console.error(err);
-            } 
-        }; 
-        reader.readAsText(file); 
-        e.target.value = ''; 
+            } finally {
+                get('#loadingOverlay').classList.remove('visible');
+                e.target.value = '';
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    showPartialExportModal() {
+        get('#exportChoiceModal').classList.remove('visible');
+        const container = get('#partialExportCheckboxes');
+        const categories = {
+            income: 'Доходы', expenses: 'Расходы', clients: 'Клиенты',
+            debts: 'Долги', todos: 'Заметки', serviceTemplates: 'Шаблоны', settings: 'Настройки'
+        };
+        container.innerHTML = Object.entries(categories).map(([key, label]) => 
+            `<label class="checkbox-label" style="justify-content: flex-start;"><input type="checkbox" data-export-key="${key}" checked><span>${label}</span></label>`
+        ).join('');
+        get('#partialExportModal').classList.add('visible');
+    }
+
+    exportPartialData() {
+        const selectedKeys = [...getAll('#partialExportCheckboxes input:checked')].map(input => input.dataset.exportKey);
+        if (selectedKeys.length === 0) {
+            this.showToast('Выберите хотя бы одну категорию для экспорта', 'warning');
+            return;
+        }
+        this.exportData(selectedKeys);
+        get('#partialExportModal').classList.remove('visible');
     }
     
     async clearAllData() { 
         if (await this.confirmAction({text: 'Вы уверены? Это действие необратимо.'})) {
             const settings = this.data.settings;
             this.updateState(data => {
-                data.expenses = []; data.income = []; data.clients = []; data.debts = [];
+                Object.keys(data).forEach(key => { if(Array.isArray(data[key])) data[key] = [] });
                 data.settings = settings;
             }); 
-            this.showNotification('Все данные удалены (настройки сохранены)', 'danger');
+            this.showToast('Все данные удалены (настройки сохранены)', 'warning');
         }
     }
 
     copySummary() { 
-        this.updateAllCalculations();
-        let text = 'Сводка:\n'; 
+        this.updateAllCalculations(); let text = 'Сводка:\n'; 
         getAll('.summary-category').forEach(cat => { 
-            text += `\n--- ${cat.querySelector('h2').textContent} ---\n`; 
-            cat.querySelectorAll('.result-card').forEach(card => { 
-                text += `${card.querySelector('.label').textContent.trim()}: ${card.querySelector('.value').textContent.trim()}\n`; 
+            text += `\n--- ${cat.querySelector('h2').textContent.replace('Настроить', '').trim()} ---\n`; 
+            cat.querySelectorAll('.result-card:not(.hidden)').forEach(card => {
+                 const label = card.querySelector('.label')?.textContent.trim() || '';
+                 const value = card.querySelector('.value')?.textContent.trim() || '';
+                 text += `${label}: ${value.replace(/\s+/g, ' ')}\n`; 
             }); 
         }); 
         this.copyToClipboard(text.trim()); 
     }
     
-    async copyToClipboard(text) {
-        if (navigator.clipboard && window.isSecureContext) {
-            try {
-                await navigator.clipboard.writeText(text); this.showNotification('Скопировано!');
-            } catch (err) { this.copyToClipboardFallback(text); }
-        } else { this.copyToClipboardFallback(text); }
-    }
-    
-    copyToClipboardFallback(text) {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = 'fixed'; textArea.style.top = '-9999px';
-        document.body.appendChild(textArea);
-        textArea.focus(); textArea.select();
-        try {
-            document.execCommand('copy'); this.showNotification('Скопировано!');
-        } catch (err) { this.showNotification('Ошибка копирования', 'danger'); }
-        document.body.removeChild(textArea);
-    }
+    copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => this.showToast('Скопировано!', 'success'), () => this.showToast('Ошибка копирования', 'danger')); }
     
     applySettings() {
         const s = this.data.settings;
@@ -1143,6 +1412,7 @@ class TireServiceApp {
         
         get('#primaryColorPicker').value = s.primaryColor;
         get('#currencySymbol').value = s.currency;
+        get('#defaultItemCountInput').value = s.defaultItemCount;
         this.updateSettingsUI('#theme-switcher', 'theme', s.theme);
         this.updateSettingsUI('#animation-switcher', 'anim', s.animations ? 'on' : 'off');
         this.updateSettingsUI('#density-switcher', 'density', s.tableDensity);
@@ -1150,24 +1420,29 @@ class TireServiceApp {
         this.updateSettingsUI('#confirm-delete-switcher', 'confirm', s.confirmDelete ? 'on' : 'off');
         this.updateSettingsUI('#best-client-metric-switcher', 'metric', s.bestClientMetric);
         this.updateSettingsUI('#show-paid-debts-switcher', 'show', s.showPaidDebts ? 'on' : 'off');
+        this.updateSettingsUI('#auto-capitalize-switcher', 'capitalize', s.autoCapitalize ? 'on' : 'off');
+        this.updateSettingsUI('#confirm-import-switcher', 'import', s.confirmImport ? 'on' : 'off');
+        get('#defaultTabSelect').value = s.defaultTab;
+        get('#autoBackupSelect').value = s.autoBackup;
     }
     
-    updateSetting(key, value, recordHistory = true) {
-        this.updateState(data => { data.settings[key] = value; }, recordHistory);
-    }
+    updateSetting(key, value, recordHistory = true) { this.updateState(data => { data.settings[key] = value; }, recordHistory); }
     updateSettingsUI(containerId, dataAttr, value) { getAll(`${containerId} button`).forEach(btn => btn.classList.toggle('active', btn.dataset[dataAttr] == value)); }
     
     async resetSettings() { 
         if(await this.confirmAction({text: 'Сбросить все настройки к значениям по умолчанию?'})) {
-            this.updateState(data => { data.settings = new TireServiceApp().data.settings; });
+            this.updateState(data => { data.settings = this.getDefaultData().settings; });
         }
     }
 
-    switchTab(tabName, callback) {
+    switchTab(tabName, callback, record = true) {
         get('.tab.active')?.classList.remove('active');
         get('.tab-content.active')?.classList.remove('active');
-        get(`.tab[data-tab="${tabName}"]`).classList.add('active');
-        get(`#${tabName}`).classList.add('active');
+        const newTab = get(`.tab[data-tab="${tabName}"]`);
+        const newContent = get(`#${tabName}`);
+        if (newTab) newTab.classList.add('active');
+        if (newContent) newContent.classList.add('active');
+        if (record) this.updateSetting('activeTab', tabName, false);
         if (callback) setTimeout(callback, 50);
     }
 
@@ -1179,28 +1454,22 @@ class TireServiceApp {
         const name = nameInput.value.trim();
         const price = this.parseMoney(priceInput.value);
         const count = parseInt(countInput.value) || 1;
-        const type = typeInput.value;
         
-        if (!name || price <= 0) {
-            this.showNotification('Введите корректное название и цену', 'danger');
-            return;
-        }
+        if (!name || price <= 0) { this.showToast('Введите корректное название и цену', 'danger'); return; }
+        
+        const isDuplicate = this.data.serviceTemplates.some((t, i) => t.name.toLowerCase() === name.toLowerCase() && i !== this.editingTemplateIndex);
+        if (isDuplicate) { this.showToast('Шаблон с таким названием уже существует', 'danger'); return; }
 
         this.updateState(data => {
-            if (this.editingTemplateIndex !== null) {
-                data.serviceTemplates[this.editingTemplateIndex] = { name, price, count, type };
-            } else {
-                data.serviceTemplates.push({ name, price, count, type });
-            }
+            if (this.editingTemplateIndex !== null) { data.serviceTemplates[this.editingTemplateIndex] = { name, price, count, type: typeInput.value };
+            } else { data.serviceTemplates.push({ name, price, count, type: typeInput.value }); }
         });
-        
         this.resetTemplateForm();
     }
     
     editServiceTemplate(index) {
         const template = this.data.serviceTemplates[index];
         if (!template) return;
-        
         this.editingTemplateIndex = index;
         get('#templateName').value = template.name;
         get('#templatePrice').value = template.price;
@@ -1208,18 +1477,17 @@ class TireServiceApp {
         get('#templateType').value = template.type;
         get('#addServiceTemplateBtn').textContent = 'Сохранить';
         get('#addServiceTemplateBtn').classList.add('success');
+        get('#cancelEditTemplateBtn').style.display = 'inline-flex';
         get('#templateName').focus();
     }
 
     resetTemplateForm() {
         this.editingTemplateIndex = null;
-        get('#templateName').value = '';
-        get('#templatePrice').value = '';
-        get('#templateCount').value = '1';
-        get('#templateType').value = 'income';
+        get('#templateName').value = ''; get('#templatePrice').value = '';
+        get('#templateCount').value = '1'; get('#templateType').value = 'income';
         const btn = get('#addServiceTemplateBtn');
-        btn.textContent = 'Добавить';
-        btn.classList.remove('success');
+        btn.textContent = 'Добавить'; btn.classList.remove('success');
+        get('#cancelEditTemplateBtn').style.display = 'none';
     }
 
     async deleteServiceTemplate(index) { 
@@ -1231,136 +1499,290 @@ class TireServiceApp {
         const list = get('#service-templates-list');
         const incomeDatalist = get('#service-templates-datalist-income');
         const expenseDatalist = get('#service-templates-datalist-expense');
-        list.innerHTML = '';
-        incomeDatalist.innerHTML = '';
-        expenseDatalist.innerHTML = '';
+        list.innerHTML = ''; incomeDatalist.innerHTML = ''; expenseDatalist.innerHTML = '';
         (this.data.serviceTemplates || []).forEach((template, index) => {
-            const isIncome = template.type === 'income';
-            list.innerHTML += `
-            <div class="template-item ${isIncome ? 'income-template' : 'expense-template'}" data-index="${index}">
-                <span>${template.name} - ${template.count}шт x ${this.renderMoney(template.price)}</span>
-                <div class="template-actions">
-                    <button class="btn-action btn-edit" title="Редактировать шаблон">✎</button>
-                    <button class="btn-action btn-delete" title="Удалить шаблон">✖</button>
-                </div>
-            </div>`;
+            list.innerHTML += `<div class="template-item ${template.type === 'income' ? 'income-template' : 'expense-template'}" data-index="${index}"><span>${template.name} - ${template.count}шт x ${this.renderMoney(template.price)}</span><div class="template-actions"><button class="btn-action btn-edit" title="Редактировать"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button><button class="btn-action btn-delete" title="Удалить">&times;</button></div></div>`;
             const option = `<option value="${template.name}">`;
-            if (isIncome) {
-                incomeDatalist.innerHTML += option;
-            } else {
-                expenseDatalist.innerHTML += option;
-            }
+            template.type === 'income' ? incomeDatalist.innerHTML += option : expenseDatalist.innerHTML += option;
         }); 
+    }
+
+    sortData(tableKey) {
+        const sortState = this.data.settings.sort[tableKey];
+        if (!sortState || !sortState.key) return;
+        this.data[tableKey].sort((a, b) => {
+            let valA = a[sortState.key], valB = b[sortState.key];
+            if (['amount', 'count', 'price', 'totalAmount'].includes(sortState.key)) { valA = this.parseMoney(valA); valB = this.parseMoney(valB);
+            } else if (typeof valA === 'string') { valA = valA.toLowerCase(); valB = String(valB || '').toLowerCase(); }
+            const result = valA < valB ? -1 : valA > valB ? 1 : 0;
+            return sortState.dir === 'asc' ? result : -result;
+        });
     }
 
     sortTable(tableKey, newKey) {
         const sortState = this.data.settings.sort[tableKey];
-        let newDir = 'desc';
-        if (sortState.key === newKey) {
-            newDir = sortState.dir === 'desc' ? 'asc' : 'desc';
-        }
-        this.updateState(data => {
-            data.settings.sort[tableKey] = { key: newKey, dir: newDir };
-        }, false);
-        this.render();
+        const newDir = (sortState.key === newKey && sortState.dir === 'desc') ? 'asc' : 'desc';
+        this.updateState(data => { data.settings.sort[tableKey] = { key: newKey, dir: newDir }; }, false);
     }
 
     updateSortHeaders() {
-        getAll('th[data-sort-key]').forEach(th => {
-            th.classList.remove('sort-asc', 'sort-desc');
-            th.setAttribute('aria-sort', 'none');
-        });
-        ['income', 'expenses', 'clients', 'debts'].forEach(key => {
-            const sortState = this.data.settings.sort[key];
+        getAll('th[data-sort-key]').forEach(th => { th.classList.remove('sort-asc', 'sort-desc'); th.setAttribute('aria-sort', 'none'); });
+        Object.entries(this.data.settings.sort).forEach(([key, sortState]) => {
             if (sortState && sortState.key) {
                 const header = get(`#${key}Table th[data-sort-key="${sortState.key}"]`);
                 if (header) {
-                    const direction = sortState.dir === 'asc' ? 'ascending' : 'descending';
                     header.classList.add(`sort-${sortState.dir}`);
-                    header.setAttribute('aria-sort', direction);
+                    header.setAttribute('aria-sort', sortState.dir === 'asc' ? 'ascending' : 'descending');
                 }
             }
         });
     }
+    
+    renderDashboard() {
+        const renderContainer = (containerId, cards, visibleKeys) => {
+            const container = get(containerId);
+            container.innerHTML = Object.entries(cards).map(([id, card], index) => {
+                const isVisible = visibleKeys.includes(id); if (!isVisible) return '';
+                const specialClass = card.specialClass || '';
+                return `<div class="result-card ${specialClass}" id="${id}Card" data-card-id="${id}" style="animation-delay: ${index*0.05}s;"><div class="label">${card.label}</div><div class="value" id="${id}">0</div></div>`;
+            }).join('');
+        };
+        renderContainer('#dashboardCardsContainer', this.dashboardCards, this.data.settings.visibleDashboardCards);
+        renderContainer('#dashboardClientCardsContainer', this.clientCards, this.data.settings.visibleClientCards);
+    }
+
+    showDashboardSettingsModal() {
+        const populateCheckboxes = (containerId, cardDefs, visibleKeys) => {
+            const container = get(containerId);
+            container.innerHTML = Object.entries(cardDefs).map(([id, card]) => `<label class="checkbox-label"><input type="checkbox" data-card-id="${id}" ${visibleKeys.includes(id) ? 'checked' : ''}><span>${card.label}</span></label>`).join('');
+        };
+        populateCheckboxes('#main-cards-settings', this.dashboardCards, this.data.settings.visibleDashboardCards);
+        populateCheckboxes('#client-cards-settings', this.clientCards, this.data.settings.visibleClientCards);
+        get('#dashboardSettingsModal').classList.add('visible');
+    }
+
+    saveDashboardSettings() {
+        const getSelected = (containerId) => [...getAll(`${containerId} input:checked`)].map(input => input.dataset.cardId);
+        this.updateState(d => {
+            d.settings.visibleDashboardCards = getSelected('#main-cards-settings');
+            d.settings.visibleClientCards = getSelected('#client-cards-settings');
+        });
+        get('#dashboardSettingsModal').classList.remove('visible');
+        this.showToast('Настройки главной страницы сохранены', 'success');
+    }
+    
+    renderTodos() {
+        const list = get('#todoList');
+        const sortedTodos = (this.data.todos || []).sort((a,b) => a.completed - b.completed || (b.id || '').localeCompare(a.id || ''));
+        list.innerHTML = sortedTodos.map(todo => `<div class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}"><label class="switch" style="margin-top: 5px;"><input type="checkbox" ${todo.completed ? 'checked' : ''}><span class="slider round"></span></label><textarea class="todo-text" rows="1">${this.sanitizeHTML(todo.text)}</textarea><button class="btn-action btn-delete" title="Удалить" style="margin-top: 5px;">&times;</button></div>`).join('');
+        list.querySelectorAll('.todo-text').forEach(this.autoResizeTextarea);
+    }
+    
+    addTodo() { const input = get('#newTodoInput'); const text = input.value.trim(); if(!text) return; this.updateState(d => { if(!d.todos) d.todos = []; d.todos.unshift({id: this.uuid(), text: text, completed: false }); }); input.value = ''; }
+    handleTodoChange(textarea) { const id = textarea.closest('.todo-item').dataset.id; this.updateState(d => { const todo = d.todos.find(t => t.id === id); if(todo) todo.text = textarea.value; }); this.showSavedToast(); }
+    autoResizeTextarea(textarea) { textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px'; }
+    toggleTodo(id) { this.updateState(d => { const todo = d.todos.find(t => t.id === id); if(todo) todo.completed = !todo.completed; }); this.showSavedToast(); }
+    deleteTodo(id) { this.updateState(d => { d.todos = d.todos.filter(t => t.id !== id); }); }
+    
+    generateReport() {
+        const start = get('#reportStartDate').value, end = get('#reportEndDate').value;
+        if(!start || !end) { this.showToast('Выберите период', 'danger'); return; }
+        const filteredIncome = this.data.income.filter(i => i.date >= start && i.date <= end);
+        const filteredExpenses = this.data.expenses.filter(e => e.date >= start && e.date <= end);
+        const totalIncome = filteredIncome.reduce((s, i) => s + this.parseMoney(i.totalAmount), 0);
+        const totalExpenses = filteredExpenses.reduce((s, i) => s + this.parseMoney(i.totalAmount), 0);
+        const netProfit = totalIncome - totalExpenses;
+        const topService = Object.entries(filteredIncome.reduce((acc, item) => { acc[item.service] = (acc[item.service] || 0) + 1; return acc; }, {})).sort((a,b) => b[1] - a[1])[0];
+        get('#reportResults').innerHTML = `<div class="report-section"><h3>Отчет за период с ${start} по ${end}</h3><div class="report-grid"><div class="report-item"><div class="report-item-label">Доход</div><div class="report-item-value positive">${this.renderMoney(totalIncome)}</div></div><div class="report-item"><div class="report-item-label">Расход</div><div class="report-item-value negative">${this.renderMoney(totalExpenses)}</div></div><div class="report-item"><div class="report-item-label">Прибыль</div><div class="report-item-value ${netProfit >= 0 ? 'positive' : 'negative'}">${this.renderMoney(netProfit)}</div></div><div class="report-item"><div class="report-item-label">Кол-во чеков</div><div class="report-item-value">${filteredIncome.length}</div></div><div class="report-item"><div class="report-item-label">Средний чек</div><div class="report-item-value">${this.renderMoney(filteredIncome.length > 0 ? totalIncome/filteredIncome.length : 0)}</div></div><div class="report-item"><div class="report-item-label">Топ услуга</div><div class="report-item-value">${topService ? `${topService[0]} (${topService[1]} раз)` : 'Нет'}</div></div></div></div>`;
+    }
 
     handleCalculatorInput(key) {
-        if (/\d/.test(key)) { this.inputDigit(key); }
-        else if (key === '.') { this.inputDecimal(); }
-        else if (['+', '-', '*', '/'].includes(key)) { this.handleOperator(key); }
-        else if (key === '=') { this.handleEquals(); }
-        else if (key === 'clear') { this.resetCalculator(); }
-        else if (key === 'backspace') { this.backspace(); }
-        else if (key === 'percent') { this.handlePercent(); }
+        let state = this.miniCalculatorState;
+        if (/\d/.test(key)) { this.inputDigit(key, state); }
+        else if (key === '.') { this.inputDecimal(state); }
+        else if (['+', '-', '*', '/'].includes(key)) { this.handleOperator(key, state); }
+        else if (key === '=') { this.handleEquals(state); }
+        else if (key === 'clear') { this.resetCalculator(state); }
+        else if (key === 'backspace') { this.backspace(state); }
+        else if (key === 'percent') { this.handlePercent(state); }
         this.updateCalculatorDisplay();
     }
-    inputDigit(digit) {
-        const { displayValue, waitingForSecondOperand } = this.calculatorState;
-        if (waitingForSecondOperand) {
-            this.calculatorState.displayValue = digit;
-            this.calculatorState.waitingForSecondOperand = false;
-        } else {
-            this.calculatorState.displayValue = displayValue === '0' ? digit : displayValue + digit;
-        }
+    inputDigit(digit, state) { if (state.waitingForSecondOperand) { state.displayValue = digit; state.waitingForSecondOperand = false; } else { state.displayValue = state.displayValue === '0' ? digit : state.displayValue + digit; } }
+    inputDecimal(state) { if (state.waitingForSecondOperand) { state.displayValue = '0.'; state.waitingForSecondOperand = false; return; } if (!state.displayValue.includes('.')) { state.displayValue += '.'; } }
+    handleOperator(nextOperator, state) {
+        const { firstOperand, displayValue, operator } = state; const inputValue = parseFloat(displayValue);
+        if (operator && state.waitingForSecondOperand) { state.operator = nextOperator; return; }
+        if (firstOperand === null) { state.firstOperand = inputValue; } 
+        else if (operator) { const result = this.calculate(firstOperand, inputValue, operator); state.displayValue = `${parseFloat(result.toFixed(7))}`; state.firstOperand = result; }
+        state.waitingForSecondOperand = true; state.operator = nextOperator;
     }
-    inputDecimal() {
-        if (this.calculatorState.waitingForSecondOperand) {
-            this.calculatorState.displayValue = '0.';
-            this.calculatorState.waitingForSecondOperand = false;
-            return;
-        }
-        if (!this.calculatorState.displayValue.includes('.')) {
-            this.calculatorState.displayValue += '.';
-        }
-    }
-    handleOperator(nextOperator) {
-        const { firstOperand, displayValue, operator } = this.calculatorState;
-        const inputValue = parseFloat(displayValue);
-        if (operator && this.calculatorState.waitingForSecondOperand) {
-            this.calculatorState.operator = nextOperator;
-            return;
-        }
-        if (firstOperand === null) {
-            this.calculatorState.firstOperand = inputValue;
-        } else if (operator) {
-            const result = this.calculate(firstOperand, inputValue, operator);
-            this.calculatorState.displayValue = `${parseFloat(result.toFixed(7))}`;
-            this.calculatorState.firstOperand = result;
-        }
-        this.calculatorState.waitingForSecondOperand = true;
-        this.calculatorState.operator = nextOperator;
-    }
-    calculate(first, second, op) {
-        if (op === '+') return first + second;
-        if (op === '-') return first - second;
-        if (op === '*') return first * second;
-        if (op === '/') return first / second;
-        return second;
-    }
-    handleEquals() {
-        const { firstOperand, displayValue, operator } = this.calculatorState;
-        if (firstOperand === null || operator === null) return;
-        const secondOperand = parseFloat(displayValue);
-        const result = this.calculate(firstOperand, secondOperand, operator);
-        this.calculatorState.displayValue = `${parseFloat(result.toFixed(7))}`;
-        this.calculatorState.firstOperand = null;
-        this.calculatorState.operator = null;
-        this.calculatorState.waitingForSecondOperand = false;
-    }
-    resetCalculator() {
-        this.calculatorState = { displayValue: '0', firstOperand: null, waitingForSecondOperand: false, operator: null };
-    }
-    backspace() {
-        const { displayValue } = this.calculatorState;
-        this.calculatorState.displayValue = displayValue.slice(0, -1) || '0';
-    }
-    handlePercent() {
-        const { displayValue } = this.calculatorState;
-        const value = parseFloat(displayValue);
-        this.calculatorState.displayValue = `${value / 100}`;
-    }
+    calculate(first, second, op) { if (op === '+') return first + second; if (op === '-') return first - second; if (op === '*') return first * second; if (op === '/') return second !== 0 ? first / second : 'Ошибка'; return second; }
+    handleEquals(state) { const { firstOperand, displayValue, operator } = state; if (firstOperand === null || operator === null) return; const result = this.calculate(firstOperand, parseFloat(displayValue), operator); state.displayValue = `${parseFloat(result.toFixed(7))}`; state.firstOperand = null; state.operator = null; state.waitingForSecondOperand = false; }
+    resetCalculator(state) { state.displayValue = '0'; state.firstOperand = null; state.waitingForSecondOperand = false; state.operator = null; }
+    backspace(state) { state.displayValue = state.displayValue.slice(0, -1) || '0'; }
+    handlePercent(state) { state.displayValue = `${parseFloat(state.displayValue) / 100}`; }
     updateCalculatorDisplay() {
-        const display = get('#calculator-display');
-        display.textContent = this.calculatorState.displayValue;
+        const display = get('#mini-calculator-display');
+        let value = this.miniCalculatorState.displayValue;
+        const baseFontSize = 2; 
+        const threshold = 12;
+        display.style.fontSize = value.length > threshold ? `${Math.max(baseFontSize/2, baseFontSize - (value.length - threshold) * 0.15)}em` : `${baseFontSize}em`;
+        display.textContent = value;
+    }
+
+    toggleMiniCalc() { get('#miniCalcContainer').classList.toggle('visible'); }
+    setupMiniCalcListeners() {
+        const calc = get('#miniCalcContainer');
+        const header = get('#miniCalcHeader');
+        get('#miniCalcCloseBtn').addEventListener('click', () => this.toggleMiniCalc());
+        calc.querySelector('.calculator-keys').addEventListener('click', e => e.target.matches('button') && this.handleCalculatorInput(e.target.dataset.key));
+
+        let isDragging = false, offsetX, offsetY;
+        header.addEventListener('mousedown', e => { isDragging = true; offsetX = e.clientX - calc.offsetLeft; offsetY = e.clientY - calc.offsetTop; calc.style.transition = 'none'; });
+        document.addEventListener('mousemove', e => { if (isDragging) { calc.style.left = `${e.clientX - offsetX}px`; calc.style.top = `${e.clientY - offsetY}px`; } });
+        document.addEventListener('mouseup', () => { isDragging = false; calc.style.transition = ''; });
+    }
+
+    handleAutoBackup() {
+        const backupSetting = this.data.settings.autoBackup;
+        if (backupSetting === '0' || !backupSetting) return;
+
+        let interval;
+        if (backupSetting === 'hourly') {
+            interval = 60 * 60 * 1000;
+        } else {
+            const days = parseInt(backupSetting);
+            if (isNaN(days)) return;
+            interval = days * 24 * 60 * 60 * 1000;
+        }
+
+        const now = new Date().getTime();
+        const lastBackup = parseInt(localStorage.getItem('tireServiceBackupTimestamp_v4') || '0');
+
+        if (now - lastBackup > interval) {
+            const currentData = localStorage.getItem('tireServiceData_v4');
+            if (currentData) {
+                localStorage.setItem('tireServiceBackupData_v4', currentData);
+                localStorage.setItem('tireServiceBackupTimestamp_v4', now.toString());
+                this.showToast('Создана автоматическая резервная копия', 'info');
+            }
+        }
+    }
+    
+    async saveBackupNow() {
+        if (!await this.confirmAction({text: 'Создать новую резервную копию? Это перезапишет предыдущую.', confirmClass: 'info'})) return;
+        try {
+            const currentData = localStorage.getItem('tireServiceData_v4');
+            if (currentData) {
+                localStorage.setItem('tireServiceBackupData_v4', currentData);
+                localStorage.setItem('tireServiceBackupTimestamp_v4', new Date().getTime().toString());
+                this.showToast('Резервная копия успешно сохранена!', 'success');
+            } else {
+                 this.showToast('Нет данных для сохранения.', 'warning');
+            }
+        } catch (e) {
+            this.showToast('Ошибка при создании резервной копии.', 'danger');
+            console.error(e);
+        }
+    }
+
+    async restoreFromBackup() {
+        const backupData = localStorage.getItem('tireServiceBackupData_v4');
+        if (!backupData) {
+            this.showToast('Резервная копия не найдена', 'warning');
+            return;
+        }
+
+        const lastBackupTimestamp = parseInt(localStorage.getItem('tireServiceBackupTimestamp_v4') || '0');
+        const backupDate = new Date(lastBackupTimestamp).toLocaleString();
+        
+        if (await this.confirmAction({text: `Восстановить данные из резервной копии от ${backupDate}? Текущие данные будут полностью заменены.`, confirmClass: 'warning'})) {
+            try {
+                const parsed = JSON.parse(backupData);
+                this.loadState(parsed, true);
+                this.showToast('Данные успешно восстановлены из копии', 'success');
+            } catch (e) {
+                this.showToast('Ошибка восстановления: файл копии поврежден', 'danger');
+            }
+        }
+    }
+
+    performGlobalPhoneSearch(query) {
+        const resultsContainer = get('#globalSearchResults');
+        const searchTerm = query.trim();
+
+        if (!searchTerm) {
+            resultsContainer.innerHTML = '';
+            return;
+        }
+
+        const results = [];
+        const cleanQuery = searchTerm.replace(/[\s-()+]/g, '');
+
+        if (cleanQuery) {
+            this.data.clients.forEach(client => {
+                const clientPhone = (client.phone || '').replace(/[\s-()+]/g, '');
+                if (clientPhone.includes(cleanQuery)) {
+                    results.push({ type: 'clients', label: 'Клиент', data: client });
+                }
+            });
+
+            this.data.debts.forEach(debt => {
+                const debtPhone = (debt.phone || '').replace(/[\s-()+]/g, '');
+                if (debtPhone.includes(cleanQuery)) {
+                    results.push({ type: 'debts', label: 'Долг', data: debt });
+                }
+            });
+        }
+        this.renderGlobalSearchResults(results, searchTerm);
+    }
+
+    renderGlobalSearchResults(results, searchTerm) {
+        const container = get('#globalSearchResults');
+        if (results.length === 0) {
+            container.innerHTML = `<div class="search-result-wrapper"><h2>Поиск по номеру</h2><p style="padding: 15px 0;">Ничего не найдено.</p></div>`;
+            return;
+        }
+        
+        const highlight = (text) => text.replace(new RegExp(searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), (match) => `<mark>${match}</mark>`);
+
+        container.innerHTML = `<div class="search-result-wrapper"><h2>Результаты поиска по номеру</h2>` + results.map(res => {
+            const { type, label, data } = res;
+            let details = '';
+            if (type === 'clients') {
+                details = `<p><strong>Имя:</strong> ${data.name || 'N/A'}</p><p><strong>Телефон:</strong> ${highlight(data.phone || 'N/A')}</p><p><strong>Гос. номер:</strong> ${data.plate || 'N/A'}</p>`;
+            } else if (type === 'debts') {
+                details = `<p><strong>Кто должен:</strong> ${data.name || 'N/A'}</p><p><strong>Телефон:</strong> ${highlight(data.phone || 'N/A')}</p><p><strong>Сумма:</strong> ${this.renderMoney(data.amount)}</p><p><strong>Статус:</strong> ${data.isPaid ? 'Оплачен' : 'Не оплачен'}</p>`;
+            }
+
+            return `
+                <div class="search-result-card">
+                    <div class="search-result-header">
+                        <span class="search-result-title">${label}</span>
+                        <button class="button info" data-goto-type="${type}" data-goto-id="${data.id}">Перейти</button>
+                    </div>
+                    <div class="search-result-body">
+                        ${details}
+                    </div>
+                </div>`;
+        }).join('') + `</div>`;
+    }
+    
+    handleSearchResultClick(event) {
+        const button = event.target.closest('button[data-goto-id]');
+        if (!button) return;
+
+        const { gotoType, gotoId } = button.dataset;
+        
+        this.switchTab(gotoType, () => {
+            const targetRow = get(`#${gotoType}Table tbody tr[data-id="${gotoId}"]`);
+            if (targetRow) {
+                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                getAll(`#${gotoType}Table tbody tr`).forEach(r => r.classList.remove('highlight', 'keyboard-focus'));
+                targetRow.classList.add('highlight');
+                setTimeout(() => targetRow.classList.remove('highlight'), 2500);
+            }
+        });
     }
 }
 
