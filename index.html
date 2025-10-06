@@ -14,34 +14,53 @@
             --danger: #F85149; --success: #34D399; --warning: #FBBF24; --info: #60A5FA; --border-color-dark: #30363D; --border-color-light: #E5E7EB;
             --border-radius: 12px; --transition-speed: 0.3s; --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 1; transition: opacity 0.5s ease; }
-        .spinner { width: 50px; height: 50px; border: 5px solid var(--bg-light); border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 1; transition: opacity 0.5s ease, visibility 0.5s ease; }
+        .preloader-dots { display: flex; gap: 10px; }
+        .preloader-dots div { width: 15px; height: 15px; background-color: var(--primary); border-radius: 50%; animation: preloader-bounce 1.4s infinite ease-in-out both; }
+        .preloader-dots .dot1 { animation-delay: -0.32s; }
+        .preloader-dots .dot2 { animation-delay: -0.16s; }
+        @keyframes preloader-bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-dark); color: var(--text-dark); min-height: 100vh;
             padding: 15px; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-            background-image: linear-gradient(180deg, var(--bg-dark) 0%, #0c121f 100%);
+            background-image: radial-gradient(circle at 1px 1px, var(--border-color-dark) 1px, transparent 0);
+            background-size: 25px 25px;
             -webkit-tap-highlight-color: transparent;
         }
-        body:not(.animations-disabled) * {
-             transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, opacity var(--transition-speed) ease;
+        body:not(.animations-disabled) button,
+        body:not(.animations-disabled) .button,
+        body:not(.animations-disabled) .top-controls button,
+        body:not(.animations-disabled) .tab,
+        body:not(.animations-disabled) .result-card,
+        body:not(.animations-disabled) input,
+        body:not(.animations-disabled) select,
+        body:not(.animations-disabled) textarea,
+        body:not(.animations-disabled) .slider,
+        body:not(.animations-disabled) .slider:before,
+        body:not(.animations-disabled) .btn-action,
+        body:not(.animations-disabled) #miniCalcContainer,
+        body:not(.animations-disabled) .checkbox-label,
+        body:not(.animations-disabled) tbody tr {
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, opacity var(--transition-speed) ease;
         }
-        body.light-theme { 
-            --bg-dark: #F9FAFB; --bg-light: #FFFFFF; --bg-card-dark: #FFFFFF; --bg-input-dark: #F3F4F6; --text-dark: #111827; 
-            --text-muted-dark: #6B7280; --border-color-dark: #E5E7EB; 
-            background-image: linear-gradient(180deg, var(--bg-dark) 0%, #f0f2f5 100%);
+
+        body.light-theme {
+            --bg-dark: #F9FAFB; --bg-light: #FFFFFF; --bg-card-dark: #FFFFFF; --bg-input-dark: #F3F4F6; --text-dark: #111827;
+            --text-muted-dark: #6B7280; --border-color-dark: #E5E7EB;
+            background-image: radial-gradient(circle at 1px 1px, #e5e7eb 1px, transparent 0);
         }
         body.font-size-small { font-size: 14px; } body.font-size-large { font-size: 18px; }
         .container { max-width: 1800px; margin: 0 auto; animation: fadeIn 0.8s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes icon-pop { 0% { transform: scale(1); } 50% { transform: scale(1.3) rotate(10deg); } 100% { transform: scale(1); } }
         @keyframes subtle-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+        @keyframes glow { 0% { text-shadow: 0 0 10px rgba(88, 166, 255, 0.5), 0 0 20px rgba(88, 166, 255, 0.3); } 50% { text-shadow: 0 0 20px rgba(88, 166, 255, 0.8), 0 0 40px rgba(88, 166, 255, 0.5); } 100% { text-shadow: 0 0 10px rgba(88, 166, 255, 0.5), 0 0 20px rgba(88, 166, 255, 0.3); } }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); color: var(--primary); text-shadow: 0 0 20px rgba(88, 166, 255, 0.5); animation: fadeIn 1s ease-out; }
+        h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); color: var(--primary); animation: fadeIn 1s ease-out, glow 4s ease-in-out infinite; }
         .top-controls { display: flex; align-items: center; gap: 10px; }
-        .top-controls button { background: var(--bg-light); color: var(--text-dark); border: 1px solid var(--border-color-dark); width: 45px; height: 45px; font-size: 1.5em; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+        .top-controls button { background: var(--bg-light); color: var(--text-dark); border: 1px solid var(--border-color-dark); width: 45px; height: 45px; font-size: 1.5em; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; position: relative; overflow: hidden; }
         .top-controls button:hover:not(:disabled) { background: var(--primary); color: var(--bg-dark); transform: translateY(-3px) scale(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .top-controls button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; background: var(--bg-light); color: var(--text-dark); }
         .top-controls .icon { width: 24px; height: 24px; }
@@ -56,7 +75,9 @@
         @keyframes slideIn { from { opacity: 0; transform: scale(0.98) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         .controls { background: transparent; padding: 15px 0; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .controls .icon { width: 20px; height: 20px; stroke-width: 2; }
-        button, .button { padding: 10px 20px; background: var(--primary); color: var(--bg-dark); border: none; cursor: pointer; font-size: 1em; font-weight: 600; border-radius: var(--border-radius); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; position: relative; overflow: hidden; }
+        button, .button { padding: 10px 20px; background: var(--primary); color: var(--bg-dark); border: none; cursor: pointer; font-size: 1em; font-weight: 600; border-radius: var(--border-radius); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; position: relative; overflow: hidden; z-index: 1; }
+        button::before, .button::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background-color: rgba(255,255,255,0.3); border-radius: 50%; transform: translate(-50%, -50%); opacity: 0; transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease; z-index: -1; }
+        button:active::before, .button:active::before { width: 200%; height: 200%; opacity: 1; transition: 0s; }
         button:hover, .button:hover { filter: brightness(1.2); transform: scale(1.05) translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
         button:active, .button:active { transform: scale(0.97) translateY(1px); filter: brightness(0.9); box-shadow: 0 1px 5px rgba(0,0,0,0.2) inset; }
         button.danger { background: var(--danger); } button.success { background: var(--success); } button.warning { background: var(--warning); } button.info { background: var(--info); }
@@ -102,7 +123,7 @@
         .btn-action .icon { width: 18px; height: 18px; }
         .btn-action:hover { transform: scale(1.2) rotate(10deg); box-shadow: none; color: var(--primary); }
         .btn-delete:hover { color: var(--danger); animation: subtle-shake 0.3s ease; } .btn-expand:hover { color: var(--success); } .btn-edit:hover { color: var(--warning); }
-        .sub-row { background: rgba(88, 166, 255, 0.05); } 
+        .sub-row { background: rgba(88, 166, 255, 0.05); }
         .sub-row td:first-child { padding-left: 30px; position: relative; }
         .sub-row td:first-child::before { content: '↳'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: bold; }
         .summary-container { display: flex; flex-direction: column; gap: 30px; }
@@ -139,14 +160,10 @@
         .template-item span { flex-grow: 1; margin-left: 10px;}
         .template-item .template-actions { display: flex; gap: 5px;}
         .template-form-grid { display: grid; grid-template-columns: 1fr 100px 80px 100px auto auto; gap: 10px; width: 100%;}
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; animation: modalFadeOut 0.4s ease forwards; }
-        .modal-overlay.visible { opacity: 1; pointer-events: auto; animation: modalFadeIn 0.4s ease forwards; }
-        @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes modalFadeOut { from { opacity: 1; } to { opacity: 0; } }
-        .modal-content { background: var(--bg-light); padding: 30px; border-radius: var(--border-radius); text-align: center; max-width: 90%; width: 500px; max-height: 80vh; overflow-y: auto; animation: modalContentOut 0.4s ease forwards; border: 1px solid var(--border-color-dark); }
-        .modal-overlay.visible .modal-content { animation: modalContentIn 0.4s var(--transition-bounce) forwards; }
-        @keyframes modalContentIn { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-        @keyframes modalContentOut { from { transform: scale(1) translateY(0); opacity: 1; } to { transform: scale(0.9) translateY(20px); opacity: 0; } }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--bg-light); padding: 30px; border-radius: var(--border-radius); text-align: center; max-width: 90%; width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border-color-dark); transition: transform 0.4s var(--transition-bounce), opacity 0.4s ease; transform: scale(0.95); opacity: 0; }
+        .modal-overlay.visible .modal-content { transform: scale(1); opacity: 1; }
         .modal-content.large { width: 800px; max-width: 95%; }
         .modal-content h2 { color: var(--primary); margin-bottom: 10px; }
         .modal-content p { margin-bottom: 20px; font-size: 1.2em; color: var(--text-dark); }
@@ -183,6 +200,7 @@
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 9999; }
         .loading-overlay.visible { display: flex; }
         .loading-spinner { width: 60px; height: 60px; border: 4px solid var(--bg-light); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         mark { background-color: var(--warning); color: var(--bg-dark); padding: 2px 4px; border-radius: 3px; }
         #dashboardSettingsModal .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-items: start; }
         .settings-column { display: flex; flex-direction: column; gap: 10px; }
@@ -228,7 +246,7 @@
 </head>
 <body>
 
-<div id="preloader"><div class="spinner"></div></div>
+<div id="preloader"><div class="preloader-dots"><div class="dot1"></div><div class="dot2"></div><div class="dot3"></div></div></div>
 
 <div class="container">
     <div class="top-bar">
@@ -251,7 +269,7 @@
         <div class="tab" data-tab="reports" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span>Отчеты</span></div>
         <div class="tab" data-tab="settings" role="tab"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066 2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>Настройки</span></div>
     </div>
-    
+
     <div class="tab-content active" id="total">
         <div class="controls">
             <input type="search" id="globalPhoneSearch" placeholder="Глобальный поиск по номеру телефона..." aria-label="Глобальный поиск по номеру телефона" style="flex-grow: 2;">
@@ -293,12 +311,12 @@
         <div class="controls"><button id="addWarehouseRowBtn">+ Добавить товар</button><input type="search" id="warehouseSearch" placeholder="Поиск по названию..." aria-label="Поиск по складу"></div>
         <div class="table-wrapper"><table id="warehouseTable"><thead><tr><th scope="col" data-sort-key="name" aria-sort="none">Название</th><th scope="col" data-sort-key="quantity" aria-sort="none" style="width: 150px;">Кол-во</th><th scope="col" style="width: 100px;">Действия</th></tr></thead><tbody></tbody></table></div>
     </div>
-    
+
     <div class="tab-content" id="debts">
         <div class="controls"><button id="addDebtRowBtn">+ Добавить долг</button><input type="search" id="debtSearch" placeholder="Поиск по имени, телефону, комментарию..." aria-label="Поиск по долгам"></div>
         <div class="table-wrapper"><table id="debtsTable"><thead><tr><th scope="col" data-sort-key="date" aria-sort="none" style="width: 170px;">Дата</th><th scope="col" data-sort-key="amount" aria-sort="none" style="width: 150px;">Сумма</th><th scope="col" data-sort-key="name" aria-sort="none">Кто должен</th><th scope="col" data-sort-key="phone" aria-sort="none" style="width: 150px;">Телефон</th><th scope="col" data-sort-key="comment" aria-sort="none">Комментарий</th><th scope="col" data-sort-key="isPaid" aria-sort="none" style="width: 100px;">Статус</th><th scope="col" style="width: 100px;">Действия</th></tr></thead><tbody></tbody></table></div>
     </div>
-    
+
     <div class="tab-content" id="todos">
         <div class="controls">
             <input type="text" id="newTodoInput" placeholder="Новая заметка (Enter для добавления)...">
@@ -306,7 +324,7 @@
         </div>
         <div class="todo-list" id="todoList"></div>
     </div>
-    
+
     <div class="tab-content" id="reports">
         <div class="controls">
             <label for="reportStartDate">Период c:</label>
@@ -334,6 +352,7 @@
             <div class="setting-item" title="При равенстве основного критерия, сортировка происходит по вторичному"><label>Критерий "Лучшего клиента":</label><div class="setting-controls" id="best-client-metric-switcher"><button data-metric="profit" class="active">По сумме</button><button data-metric="visits">По посещениям</button><button data-metric="avgCheck">По среднему чеку</button></div></div>
             <div class="setting-item"><label>Показывать погашенные долги:</label><div class="setting-controls" id="show-paid-debts-switcher"><button data-show="on" class="active">Вкл</button><button data-show="off">Выкл</button></div></div>
             <div class="setting-item"><label for="defaultItemCountInput">Кол-во по умолчанию для Доходов/Расходов:</label><div class="setting-controls"><input type="number" id="defaultItemCountInput" min="1" step="1" style="width: 100px;"></div></div>
+            <div class="setting-item"><label for="stepperStepInput">Шаг для кнопок (+/-):</label><div class="setting-controls"><input type="number" id="stepperStepInput" value="1" step="0.01" min="0.01" style="width: 100px;"></div></div>
             <div class="setting-item"><label>Подтверждать импорт данных:</label><div class="setting-controls" id="confirm-import-switcher"><button data-import="on" class="active">Вкл</button><button data-import="off">Выкл</button></div></div>
             <div class="setting-item"><label>Шаблоны</label><div class="setting-controls"><div class="template-form-grid"><input type="text" id="templateName" placeholder="Название"><input type="number" id="templatePrice" placeholder="Цена" min="0"><input type="number" id="templateCount" placeholder="Кол-во" value="1" min="1"><select id="templateType" style="width: 100%;"><option value="income">Доход</option><option value="expense">Расход</option></select><button id="addServiceTemplateBtn">Добавить</button><button id="cancelEditTemplateBtn" class="button danger" style="display: none;">Отмена</button></div></div><div id="service-templates-list" style="margin-top: 10px;"></div></div>
             <div class="setting-item"><label>Управление данными</label><div class="setting-controls"><button class="success" id="saveBackupNowBtn">Сохранить копию сейчас</button><button class="info" id="restoreBackupBtn">Восстановить из копии</button><button class="warning" id="resetSettingsBtn">Сбросить настройки</button></div></div>
@@ -485,1333 +504,1327 @@
 
 <script>
 'use strict';
-const get = (selector) => document.querySelector(selector);
-const getAll = (selector) => document.querySelectorAll(selector);
-
-class TireServiceApp {
-    constructor() {
-        this.MAX_HISTORY_STATES = 30;
-        this.data = this.getDefaultData();
-        this.historyStack = [];
-        this.historyIndex = -1;
-        this.editingTemplateIndex = null;
-        this.miniCalculatorState = { displayValue: '0', firstOperand: null, waitingForSecondOperand: false, operator: null };
-        this.showSavedToast = this.debounce(() => this.showToast('Сохранено', 'success', 1500), 1000);
-        this.dashboardCards = {
-            totalProfit: { label: '💰 Чистая прибыль' },
-            totalIncome: { label: '📈 Общий доход' },
-            totalExpenses: { label: '📉 Общий расход' },
-            profitToday: { label: '🤑 Прибыль за сегодня' },
-            incomeToday: { label: '💲 Доход за сегодня' },
-            totalDebt: { label: '💸 Общая сумма долгов' },
-            avgIncome: { label: '🧾 Средний чек (доход)' },
-            avgExpense: { label: '🛒 Средний чек (расход)' },
-            topService: { label: '⭐ Топ услуга' },
-            incomeCount: { label: '📝 Кол-во доходов' },
-            expenseCount: { label: '🛒 Кол-во расходов' },
-            transactionsToday: { label: '🔄 Операций сегодня' },
-            uniqueWarehousePositions: { label: '📦 Позиций на складе' },
-            totalWarehouseItems: { label: '🔢 Всего единиц на складе' },
-        };
-        this.clientCards = {
-            totalClients: { label: '👥 Всего клиентов' },
-            totalVisits: { label: '🚗 Всего посещений' },
-            avgClientCheck: { label: '📊 Средний чек клиента' },
-            newClientsToday: { label: '👋 Новых клиентов сегодня'},
-            bestClientInfo: { label: '👑 Лучший клиент по сумме' },
-            topClientVisits: { label: '🏆 Клиент по визитам' },
-            returningClients: { label: '🔁 Постоянные клиенты' },
-            newestClient: { label: '✨ Последний клиент' },
-        };
-    }
-    
-    getDefaultData() {
-        return {
-            income: [], expenses: [], clients: [], debts: [], serviceTemplates: [], todos: [], warehouse: [],
-            settings: {
-                theme: 'dark', currency: '₽', primaryColor: '#58A6FF', animations: true, tableDensity: 'normal', 
-                fontSize: 'normal', confirmDelete: true, bestClientMetric: 'profit', showPaidDebts: true, 
-                activeTab: 'total', defaultTab: 'total', autoBackup: '7', autoCapitalize: true,
-                defaultItemCount: 1, confirmImport: true,
-                visibleDashboardCards: ['totalProfit', 'totalIncome', 'totalExpenses', 'profitToday', 'incomeToday', 'totalDebt', 'topService', 'transactionsToday', 'uniqueWarehousePositions', 'totalWarehouseItems'],
-                visibleClientCards: ['totalClients', 'totalVisits', 'avgClientCheck', 'newClientsToday', 'bestClientInfo', 'topClientVisits', 'returningClients'],
-                incomeFilter: '', expensesFilter: '', clientsFilter: '', debtsFilter: '', warehouseFilter: '',
-                sort: {
-                    income: {key: 'date', dir: 'desc'}, expenses: {key: 'date', dir: 'desc'},
-                    clients: {key: 'date', dir: 'desc'}, debts: {key: 'date', dir: 'desc'},
-                    warehouse: {key: 'name', dir: 'asc'}
-                }
-            }
-        };
-    }
-
-    init() {
-        const preloader = document.getElementById('preloader');
-        setTimeout(() => {
-            preloader.style.opacity = '0';
-            preloader.addEventListener('transitionend', () => preloader.style.display = 'none');
-        }, 2000);
-        this.populateDefaultTabSelect();
-        this.setupEventListeners();
-        this.loadData();
-        this.handleAutoBackup();
-    }
-    
-    uuid() {
-        return (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() :
-            'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-    }
-
-    setupEventListeners() {
-        document.addEventListener('keydown', e => {
-            if (e.ctrlKey && e.key === 'z') { e.preventDefault(); this.undo(); }
-            if (e.ctrlKey && e.key === 'y') { e.preventDefault(); this.redo(); }
-            if (e.key === 'Escape') {
-                const visibleModal = get('.modal-overlay.visible');
-                if (visibleModal) visibleModal.classList.remove('visible');
-                const miniCalc = get('#miniCalcContainer');
-                if(miniCalc.classList.contains('visible')) miniCalc.classList.remove('visible');
-            }
-        });
-
-        get('.tabs').addEventListener('click', e => {
-            const tab = e.target.closest('.tab');
-            if (tab) this.switchTab(tab.dataset.tab);
-        });
-        
-        get('#undoBtn').addEventListener('click', () => this.undo());
-        get('#redoBtn').addEventListener('click', () => this.redo());
-        get('#miniCalcBtn').addEventListener('click', () => this.toggleMiniCalc());
-
-        get('#addIncomeRowBtn').addEventListener('click', () => this.addIncomeRow());
-        get('#addExpenseRowBtn').addEventListener('click', () => this.addExpenseRow());
-        get('#addClientRowBtn').addEventListener('click', () => this.addClientRow());
-        get('#addWarehouseRowBtn').addEventListener('click', () => this.addWarehouseRow());
-        get('#addDebtRowBtn').addEventListener('click', () => this.addDebtRow());
-        get('#addServiceTemplateBtn').addEventListener('click', () => this.addOrUpdateServiceTemplate());
-        get('#cancelEditTemplateBtn').addEventListener('click', () => this.resetTemplateForm());
-        
-        ['income', 'expenses', 'clients', 'debts', 'warehouse'].forEach(key => {
-            get(`#${key}Table tbody`).addEventListener('input', e => this.handleTableLiveUpdate(e, key));
-            get(`#${key}Table tbody`).addEventListener('change', e => this.handleTableChangeCommit(e, key));
-            get(`#${key}Table tbody`).addEventListener('click', e => this.handleTableClick(e, key));
-        });
-        
-        getAll('th[data-sort-key]').forEach(th => th.addEventListener('click', e => {
-            const tableId = e.target.closest('table').id;
-            const tableKey = tableId.replace('Table', '');
-            this.sortTable(tableKey, e.target.dataset.sortKey);
-        }));
-
-        const setupSearch = (inputId, key) => {
-            get(inputId).addEventListener('input', this.debounce(e => {
-                this.updateSetting(`${key}Filter`, e.target.value, false);
-                this.renderAllTables();
-            }, 300));
-        };
-        setupSearch('#incomeSearch', 'income');
-        setupSearch('#expensesSearch', 'expenses');
-        setupSearch('#clientSearch', 'clients');
-        setupSearch('#debtSearch', 'debts');
-        setupSearch('#warehouseSearch', 'warehouse');
-
-        get('#importDataBtn').addEventListener('click', () => get('#importChoiceModal').classList.add('visible'));
-        get('#exportDataBtn').addEventListener('click', () => get('#exportChoiceModal').classList.add('visible'));
-        get('#importFileInput').addEventListener('change', e => this.handleFileImport(e));
-
-        get('#importMergeBtn').addEventListener('click', () => this.triggerImport('merge'));
-        get('#importReplaceBtn').addEventListener('click', () => this.triggerImport('replace'));
-        get('#importCancelBtn').addEventListener('click', () => get('#importChoiceModal').classList.remove('visible'));
-
-        get('#exportAllBtn').addEventListener('click', () => { this.exportData(null); get('#exportChoiceModal').classList.remove('visible'); });
-        get('#exportPartialBtn').addEventListener('click', () => this.showPartialExportModal());
-        get('#exportCancelBtn').addEventListener('click', () => get('#exportChoiceModal').classList.remove('visible'));
-
-        get('#exportSelectedBtn').addEventListener('click', () => this.exportPartialData());
-        get('#exportBackBtn').addEventListener('click', () => {
-            get('#partialExportModal').classList.remove('visible');
-            get('#exportChoiceModal').classList.add('visible');
-        });
-
-        get('#clearAllDataBtn').addEventListener('click', () => this.clearAllData());
-        get('#copySummaryBtn').addEventListener('click', () => this.copySummary());
-        get('#dashboardClientCardsContainer').addEventListener('click', e => {
-            const card = e.target.closest('.result-card');
-            if (card && (card.id === 'bestClientInfoCard' || card.id === 'topClientVisitsCard' || card.id === 'newestClientCard')) {
-                this.goToBestClient(card.dataset.clientId);
-            }
-        });
-        get('#customizeDashboardBtn').addEventListener('click', () => this.showDashboardSettingsModal());
-        
-        get('#settings').addEventListener('click', e => {
-            const button = e.target.closest('button');
-            if (!button) return;
-        
-            const switcher = button.closest('.setting-controls');
-            if (!switcher) return;
-        
-            const settingMap = {
-                'theme-switcher': { key: 'theme', attr: 'theme' },
-                'animation-switcher': { key: 'animations', attr: 'anim', transform: v => v === 'on' },
-                'density-switcher': { key: 'tableDensity', attr: 'density' },
-                'font-size-switcher': { key: 'fontSize', attr: 'size' },
-                'confirm-delete-switcher': { key: 'confirmDelete', attr: 'confirm', transform: v => v === 'on' },
-                'best-client-metric-switcher': { key: 'bestClientMetric', attr: 'metric' },
-                'show-paid-debts-switcher': { key: 'showPaidDebts', attr: 'show', transform: v => v === 'on' },
-                'auto-capitalize-switcher': { key: 'autoCapitalize', attr: 'capitalize', transform: v => v === 'on' },
-                'confirm-import-switcher': { key: 'confirmImport', attr: 'import', transform: v => v === 'on' },
-            };
-            
-            const setting = settingMap[switcher.id];
-            if (setting && button.dataset[setting.attr]) {
-                let value = button.dataset[setting.attr];
-                if (setting.transform) value = setting.transform(value);
-                this.updateSetting(setting.key, value);
-            }
-        });
-        get('#resetSettingsBtn').addEventListener('click', () => this.resetSettings());
-        get('#restoreBackupBtn').addEventListener('click', () => this.restoreFromBackup());
-        get('#saveBackupNowBtn').addEventListener('click', () => this.saveBackupNow());
-        
-        get('#primaryColorPicker').addEventListener('input', this.debounce(e => this.updateSetting('primaryColor', e.target.value), 100));
-        get('#currencySymbol').addEventListener('input', this.debounce(e => this.updateSetting('currency', e.target.value), 300));
-        get('#defaultTabSelect').addEventListener('change', e => this.updateSetting('defaultTab', e.target.value));
-        get('#autoBackupSelect').addEventListener('change', e => this.updateSetting('autoBackup', e.target.value));
-        get('#defaultItemCountInput').addEventListener('input', this.debounce(e => this.updateSetting('defaultItemCount', parseInt(e.target.value) || 1), 300));
-
-        get('#service-templates-list').addEventListener('click', async e => {
-            const target = e.target.closest('button');
-            if (!target) return;
-            const item = target.closest('.template-item');
-            const index = parseInt(item.dataset.index);
-            if (target.classList.contains('btn-delete')) await this.deleteServiceTemplate(index);
-            if (target.classList.contains('btn-edit')) this.editServiceTemplate(index);
-        });
-        
-        get('#showFaqBtn').addEventListener('click', () => get('#faqModal').classList.add('visible'));
-        get('#faqCloseBtn').addEventListener('click', () => get('#faqModal').classList.remove('visible'));
-        get('#faqModal').addEventListener('click', e => { if (e.target.id === 'faqModal') get('#faqModal').classList.remove('visible'); });
-
-        get('#addTodoBtn').addEventListener('click', () => this.addTodo());
-        get('#newTodoInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.addTodo(); } });
-        get('#todoList').addEventListener('click', e => {
-            const item = e.target.closest('.todo-item');
-            if(!item) return;
-            if(e.target.type === 'checkbox') this.toggleTodo(item.dataset.id);
-            if(e.target.closest('.btn-delete')) this.deleteTodo(item.dataset.id);
-        });
-        get('#todoList').addEventListener('input', e => {
-            const textarea = e.target.closest('.todo-text');
-            if(textarea) this.autoResizeTextarea(textarea);
-        });
-        get('#todoList').addEventListener('change', e => {
-            const textarea = e.target.closest('.todo-text');
-            if(textarea) this.handleTodoChange(textarea);
-        });
-        
-        get('#generateReportBtn').addEventListener('click', () => this.generateReport());
-        const today = new Date().toISOString().slice(0, 10);
-        get('#reportStartDate').value = new Date(new Date().setDate(1)).toISOString().slice(0,10);
-        get('#reportEndDate').value = today;
-
-        get('#saveDashboardSettingsBtn').addEventListener('click', () => this.saveDashboardSettings());
-        get('#cancelDashboardSettingsBtn').addEventListener('click', () => get('#dashboardSettingsModal').classList.remove('visible'));
-        
-        get('#globalPhoneSearch').addEventListener('input', this.debounce(e => this.performGlobalPhoneSearch(e.target.value), 300));
-        get('#globalSearchResults').addEventListener('click', e => this.handleSearchResultClick(e));
-
-        this.setupMiniCalcListeners();
-    }
-
-    populateDefaultTabSelect() {
-        const select = get('#defaultTabSelect');
-        select.innerHTML = '';
-        getAll('.tab').forEach(tab => {
-            const option = document.createElement('option');
-            option.value = tab.dataset.tab;
-            option.textContent = tab.querySelector('span') ? tab.querySelector('span').textContent.trim() : tab.textContent.trim();
-            select.appendChild(option);
-        });
-    }
-    
-    confirmAction({ text, confirmText = "Да", cancelText = "Отмена", confirmClass = 'danger' }) {
-        return new Promise((resolve) => {
-            const modal = get('#confirmModal');
-            const confirmBtn = get('#modalConfirmBtn');
-            const cancelBtn = get('#modalCancelBtn');
-            get('#modalText').textContent = text;
-            confirmBtn.textContent = confirmText;
-            cancelBtn.textContent = cancelText;
-            confirmBtn.className = `button ${confirmClass}`;
-            cancelBtn.className = 'button';
-            modal.classList.add('visible');
-            const cleanup = (result) => {
-                modal.classList.remove('visible');
-                confirmBtn.removeEventListener('click', confirmHandler);
-                cancelBtn.removeEventListener('click', cancelHandler);
-                modal.removeEventListener('click', outsideClickHandler);
-                resolve(result);
-            };
-            const confirmHandler = () => cleanup(true);
-            const cancelHandler = () => cleanup(false);
-            const outsideClickHandler = e => { if (e.target === modal) cleanup(false); };
-            
-            confirmBtn.addEventListener('click', confirmHandler);
-            cancelBtn.addEventListener('click', cancelHandler);
-            modal.addEventListener('click', outsideClickHandler);
-        });
-    }
-
-    saveData() {
-        try {
-            localStorage.setItem('tireServiceData_v4', JSON.stringify(this.data));
-        } catch(e) {
-            console.error("Failed to save data to localStorage:", e);
-            this.showToast("Ошибка сохранения: Хранилище переполнено", "danger");
-        }
-    }
-
-    updateState(updater, recordHistory = true) {
-        updater(this.data);
-        if (recordHistory) {
-            const afterStateJSON = JSON.stringify(this.data);
-            const lastStateJSON = this.historyStack.length > 0 ? JSON.stringify(this.historyStack[this.historyIndex]) : "{}";
-            if (afterStateJSON !== lastStateJSON) {
-                this.recordHistory(JSON.parse(afterStateJSON));
-            }
-        }
-        this.saveData();
-        this.render();
-    }
-
-    deepClone(obj) {
-        return JSON.parse(JSON.stringify(obj));
-    }
-    
-    loadState(newState, recordHistory = true) {
-        const defaultData = this.getDefaultData();
-        const migratedData = this.migrateData(newState);
-        this.data = { ...defaultData, ...migratedData, settings: { ...defaultData.settings, ...(migratedData.settings || {}) }};
-        if (recordHistory) {
-            this.historyStack = [];
-            this.historyIndex = -1;
-            this.recordHistory(this.deepClone(this.data));
-        }
-        this.render();
-    }
-
-    render() {
-        this.applySettings();
-        this.renderAllTables();
-        this.renderServiceTemplates();
-        this.renderDashboard();
-        this.updateAllCalculations();
-        this.updateHistoryButtons();
-        this.updateSortHeaders();
-        this.renderTodos();
-        
-        const { incomeFilter, expensesFilter, clientsFilter, debtsFilter, warehouseFilter } = this.data.settings;
-        get('#incomeSearch').value = incomeFilter || '';
-        get('#expensesSearch').value = expensesFilter || '';
-        get('#clientSearch').value = clientsFilter || '';
-        get('#debtSearch').value = debtsFilter || '';
-        get('#warehouseSearch').value = warehouseFilter || '';
-        
-        this.switchTab(this.data.settings.activeTab || 'total', null, false);
-    }
-    
-    recordHistory(stateSnapshot) {
-        this.historyStack = this.historyStack.slice(0, this.historyIndex + 1);
-        this.historyStack.push(stateSnapshot);
-        this.historyIndex = this.historyStack.length - 1;
-
-        if (this.historyStack.length > this.MAX_HISTORY_STATES) {
-            this.historyStack.shift();
-            this.historyIndex--;
-        }
-    }
-
-    undo() {
-        if (this.historyIndex > 0) {
-            this.historyIndex--;
-            this.loadState(this.deepClone(this.historyStack[this.historyIndex]), false);
-        }
-    }
-    
-    redo() {
-        if (this.historyIndex < this.historyStack.length - 1) {
-            this.historyIndex++;
-            this.loadState(this.deepClone(this.historyStack[this.historyIndex]), false);
-        }
-    }
-
-    updateHistoryButtons() {
-        get('#undoBtn').disabled = this.historyIndex <= 0;
-        get('#redoBtn').disabled = this.historyIndex >= this.historyStack.length - 1;
-    }
-
-    parseMoney(value) {
-        const stringValue = String(value || '0').replace(',', '.').replace(/[^0-9.-]/g, '');
-        const parsed = parseFloat(stringValue);
-        return isNaN(parsed) ? 0 : parsed;
-    }
-    
-    renderMoney(value) { return `${this.parseMoney(value).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ${this.data.settings.currency || '₽'}`; }
-    
-    showToast(message, type = 'info', duration = 3000) {
-        const container = get('#toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.textContent = message;
-        toast.setAttribute('role', 'alert');
-        container.appendChild(toast);
-        setTimeout(() => {
-            toast.classList.add('hiding');
-            toast.addEventListener('animationend', () => toast.remove());
-        }, duration);
-    }
-    
-    debounce(func, delay) { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); }; }
-
-    handleTableLiveUpdate(event, tableKey) {
-        if (!['income', 'expenses'].includes(tableKey)) return;
-        const input = event.target;
-        if (input.tagName !== 'INPUT' || !input.dataset.key) return;
-        const row = input.closest('tr');
-        if (!row) return;
-    
-        const changedKey = input.dataset.key;
-        const countInput = row.querySelector('input[data-key="count"]');
-        const priceInput = row.querySelector('input[data-key="price"]');
-        const totalAmountInput = row.querySelector('input[data-key="totalAmount"]');
-    
-        const count = Math.max(1, parseInt(countInput.value) || 1);
-        const price = this.parseMoney(priceInput.value);
-        const totalAmount = this.parseMoney(totalAmountInput.value);
-    
-        if (changedKey === 'count' || changedKey === 'price') {
-            const newTotal = count * price;
-            if (this.parseMoney(totalAmountInput.value) !== newTotal) totalAmountInput.value = newTotal.toFixed(2);
-        } else if (changedKey === 'totalAmount') {
-            if (count > 0) {
-                const newPrice = totalAmount / count;
-                if (this.parseMoney(priceInput.value) !== newPrice) priceInput.value = newPrice.toFixed(2);
-            }
-        }
-    }
-
-    handleTableChangeCommit(event, tableKey) {
-        const input = event.target;
-        if (input.tagName !== 'INPUT') return;
-        const row = input.closest('tr');
-        if (!row) return;
-
-        const { id, subId } = row.dataset;
-        
-        this.updateState(d => {
-            const item = d[tableKey].find(i => i.id === id);
-            if (!item) return;
-
-            let targetObject = item;
-            if (tableKey === 'clients' && subId) {
-                targetObject = (item.visits || []).find(v => v.id === subId);
-                if (!targetObject) return;
-            }
-
-            row.querySelectorAll('input[data-key]').forEach(inputEl => {
-                const key = inputEl.dataset.key;
-                let value = inputEl.value;
-                if(key === 'name' && d.settings.autoCapitalize) {
-                    value = value.charAt(0).toUpperCase() + value.slice(1);
-                }
-                if(['price', 'totalAmount', 'amount', 'count', 'quantity'].includes(key)) {
-                    value = this.parseMoney(value);
-                }
-                targetObject[key] = value;
-            });
-            
-            if (['service', 'description'].includes(input.dataset.key)) {
-                this.applyTemplate(targetObject, d);
-            }
-        });
-        this.showSavedToast();
-    }
-    
-    applyTemplate(item, data) {
-        const templateName = item.service || item.description;
-        const templateType = item.service ? 'income' : 'expense';
-        const template = (data.serviceTemplates || []).find(t => t.name === templateName && t.type === templateType);
-        if (template) {
-            item.price = template.price;
-            item.count = template.count;
-            item.totalAmount = template.price * template.count;
-        }
-    }
-    
-    async handleTableClick(event, tableKey) {
-        const target = event.target;
-        const row = target.closest('tr');
-        if (!row) return;
-        const { id } = row.dataset;
-
-        if (target.classList.contains('btn-status')) {
-            this.updateState(d => {
-                const item = d[tableKey].find(i => i.id === id);
-                if (item) item.isPaid = target.checked;
-            });
-            this.showSavedToast();
-            return;
-        }
-
-        const button = target.closest('button');
-        if (!button) return;
-        
-        if (button.classList.contains('stepper-btn')) {
-            const input = button.closest('.number-input-wrapper').querySelector('input[type="number"]');
-            const step = parseFloat(input.step) || 1;
-            const min = input.min !== '' ? parseFloat(input.min) : -Infinity;
-            let value = this.parseMoney(input.value) + (button.classList.contains('stepper-up') ? step : -step);
-            if (value < min) value = min;
-            input.value = value;
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-            input.dispatchEvent(new Event('change', { bubbles: true }));
-            return;
-        }
-
-        const { subId } = row.dataset;
-        if (button.classList.contains('btn-delete')) await this.deleteRow(tableKey, id, subId, row);
-        if (button.classList.contains('btn-expand')) this.expandClientRow(id);
-    }
-
-    addIncomeRow() { this.updateState(data => { data.income.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), price: '', count: data.settings.defaultItemCount || 1, totalAmount: 0, service: '', comment: '' }); }); }
-    addExpenseRow() { this.updateState(data => { data.expenses.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), price: '', count: data.settings.defaultItemCount || 1, totalAmount: 0, description: '' }); }); }
-    addClientRow() { this.updateState(data => { data.clients.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', phone: '', plate: '', name: '', visits: [], cars:[] }); }); }
-    addDebtRow() { this.updateState(data => { data.debts.unshift({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', name: '', phone: '', comment: '', isPaid: false }); }); }
-    addWarehouseRow() { this.updateState(data => { data.warehouse.unshift({ id: this.uuid(), name: '', quantity: 1 }); }); }
-
-    async deleteRow(tableKey, id, subId, rowElement) {
-        if (this.data.settings.confirmDelete && !await this.confirmAction({ text: "Удалить эту запись?" })) return;
-        
-        const animateAndRemove = () => {
-            this.updateState(data => {
-                if (tableKey === 'clients' && subId) {
-                    const client = data.clients.find(c => c.id === id);
-                    if (client) client.visits = (client.visits || []).filter(v => v.id !== subId);
-                } else {
-                    data[tableKey] = data[tableKey].filter(item => item.id !== id);
-                }
-            });
-        };
-        
-        if (this.data.settings.animations) {
-            rowElement.classList.add('row-exit');
-            if (tableKey === 'clients' && !subId) {
-                getAll(`#clientsTable tbody tr[data-id="${id}"]`).forEach(r => r.classList.add('row-exit'));
-            }
-            setTimeout(animateAndRemove, 400);
-        } else {
-            animateAndRemove();
-        }
-    }
-    
-    expandClientRow(clientId) {
-        this.updateState(data => {
-            const client = data.clients.find(c => c.id === clientId);
-            if (client) {
-                if (!client.visits) client.visits = [];
-                const plate = client.plate || '';
-                client.visits.push({ id: this.uuid(), date: new Date().toISOString().slice(0, 10), amount: '', plate: plate });
-            }
-        });
-    }
-
-    getNumberInputHTML(value, placeholder, min = 0, step = 1, dataKey) {
-        return `<div class="number-input-wrapper"><input type="number" step="${step}" min="${min}" placeholder="${placeholder}" value="${value}" data-key="${dataKey}"><div class="stepper-controls"><button type="button" class="stepper-btn stepper-up" aria-label="Увеличить">▲</button><button type="button" class="stepper-btn stepper-down" aria-label="Уменьшить">▼</button></div></div>`;
-    }
-    
-    renderAllTables() {
-        ['income', 'expenses', 'clients', 'debts', 'warehouse'].forEach(key => this.sortData(key));
-
-        const getFilteredData = (key, filter, fields) => {
-            if (!filter) return this.data[key];
-            const lowerFilter = filter.toLowerCase();
-            return this.data[key].filter(item => {
-                const hasMatch = fields.some(field => String(item[field] || '').toLowerCase().includes(lowerFilter));
-                if (hasMatch) return true;
-                if (key === 'clients' && item.visits) {
-                    return item.visits.some(visit => String(visit.plate || '').toLowerCase().includes(lowerFilter));
-                }
-                return false;
-            });
-        };
-
-        const incomeData = getFilteredData('income', this.data.settings.incomeFilter, ['service', 'comment', 'date']);
-        const expensesData = getFilteredData('expenses', this.data.settings.expensesFilter, ['description', 'date']);
-        const clientsData = getFilteredData('clients', this.data.settings.clientsFilter, ['name', 'phone', 'plate', 'date']);
-        const debtsData = getFilteredData('debts', this.data.settings.debtsFilter, ['name', 'phone', 'comment', 'date']);
-        const warehouseData = getFilteredData('warehouse', this.data.settings.warehouseFilter, ['name']);
-        
-        this.renderTable('#incomeTable tbody', incomeData, this.getIncomeRowHTML);
-        this.renderTable('#expensesTable tbody', expensesData, this.getExpenseRowHTML);
-        this.renderClientsTable(clientsData);
-        this.renderTable('#warehouseTable tbody', warehouseData, this.getWarehouseRowHTML);
-        const debtsToRender = this.data.settings.showPaidDebts ? debtsData : debtsData.filter(d => !d.isPaid);
-        this.renderTable('#debtsTable tbody', debtsToRender, this.getDebtRowHTML);
-    }
-
-    renderTable(tbodySelector, data, rowRenderer) {
-        const tbody = get(tbodySelector);
-        tbody.innerHTML = data.map(item => rowRenderer.call(this, item)).join('');
-    }
-
-    renderClientsTable(clientsData) {
-        const tbody = get('#clientsTable tbody');
-        let htmlChunks = [];
-        clientsData.forEach(client => {
-            const totalVisits = 1 + (client.visits?.length || 0);
-            htmlChunks.push(`<tr data-id="${client.id}">
-                <td><input type="date" value="${client.date || ''}" data-key="date"></td>
-                <td>${this.getNumberInputHTML(client.amount || '', '0', 0, 1, 'amount')}</td>
-                <td><input type="tel" placeholder="+7..." value="${client.phone || ''}" pattern="\\+?[0-9\\s\\-()]+" data-key="phone"></td>
-                <td><input type="text" placeholder="А000АА00" value="${client.plate || ''}" pattern="[А-Яа-яA-Za-z0-9]+" data-key="plate"></td>
-                <td><input type="text" placeholder="Имя" value="${client.name || ''}" data-key="name"></td>
-                <td><input type="number" value="${totalVisits}" readonly style="background: transparent; border: none; text-align: center;"></td>
-                <td class="actions-cell">
-                    <button class="btn-action btn-expand" title="Добавить посещение">+</button>
-                    <button class="btn-action btn-delete" title="Удалить клиента">&times;</button>
-                </td>
-            </tr>`);
-
-            (client.visits || []).sort((a, b) => (b.date || '').localeCompare(a.date || '')).forEach(visit => {
-                htmlChunks.push(`<tr class="sub-row" data-id="${client.id}" data-sub-id="${visit.id}">
-                    <td><input type="date" value="${visit.date || ''}" data-key="date"></td>
-                    <td>${this.getNumberInputHTML(visit.amount || '', '0', 0, 1, 'amount')}</td>
-                    <td>&nbsp;</td>
-                    <td><input type="text" placeholder="Гос номер" value="${visit.plate || ''}" data-key="plate"></td>
-                    <td>&nbsp;</td><td>&nbsp;</td>
-                    <td class="actions-cell">
-                        <button class="btn-action btn-delete" title="Удалить посещение">&times;</button>
-                    </td>
-                </tr>`);
-            });
-        });
-        tbody.innerHTML = htmlChunks.join('');
-    }
-
-    getIncomeRowHTML(item) {
-        return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}" data-key="date"></td><td>${this.getNumberInputHTML(item.price || '', '0', 0, 1, 'price')}</td><td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1, 'count')}</td><td>${this.getNumberInputHTML(item.totalAmount || '0', '0', 0, 1, 'totalAmount')}</td><td><input type="text" placeholder="Услуга" value="${item.service || ''}" list="service-templates-datalist-income" data-key="service"></td><td><input type="text" placeholder="Комментарий" value="${item.comment || ''}" data-key="comment"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
-    }
-    getExpenseRowHTML(item) {
-        return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}" data-key="date"></td><td>${this.getNumberInputHTML(item.price || '', '0', 0, 1, 'price')}</td><td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1, 'count')}</td><td>${this.getNumberInputHTML(item.totalAmount || '0', '0', 0, 1, 'totalAmount')}</td><td><input type="text" placeholder="Описание" value="${item.description || ''}" list="service-templates-datalist-expense" data-key="description"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
-    }
-    getDebtRowHTML(item) {
-        const isPaid = item.isPaid || false;
-        return `<tr data-id="${item.id}" class="${isPaid ? 'paid-debt' : ''}"><td><input type="date" value="${item.date || ''}" data-key="date"></td><td>${this.getNumberInputHTML(item.amount || '', '0', 0, 1, 'amount')}</td><td><input type="text" placeholder="Имя" value="${item.name || ''}" data-key="name"></td><td><input type="tel" placeholder="+7..." value="${item.phone || ''}" data-key="phone"></td><td><input type="text" placeholder="Комментарий" value="${item.comment || ''}" data-key="comment"></td><td class="status-cell"><label class="switch"><input type="checkbox" class="btn-status" ${isPaid ? 'checked' : ''}><span class="slider round"></span></label></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
-    }
-    getWarehouseRowHTML(item) {
-        return `<tr data-id="${item.id}"><td><input type="text" placeholder="Название товара" value="${item.name || ''}" data-key="name"></td><td style="width: 150px;">${this.getNumberInputHTML(item.quantity || 1, '1', 0, 1, 'quantity')}</td><td class="actions-cell" style="width: 100px;"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
-    }
-
-    updateAllCalculations() {
-        const todayStr = new Date().toISOString().slice(0, 10);
-        const incomeTodayArr = this.data.income.filter(i => i.date === todayStr);
-        const expensesTodayArr = this.data.expenses.filter(e => e.date === todayStr);
-        
-        const totalIncome = this.data.income.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
-        const totalExpenses = this.data.expenses.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
-        const incomeToday = incomeTodayArr.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
-        const expensesToday = expensesTodayArr.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
-
-        const netProfit = totalIncome - totalExpenses;
-        const profitToday = incomeToday - expensesToday;
-        const totalDebt = this.data.debts.reduce((sum, item) => sum + (!item.isPaid ? this.parseMoney(item.amount) : 0), 0);
-        const avgIncome = this.data.income.length > 0 ? totalIncome / this.data.income.length : 0;
-        const avgExpense = this.data.expenses.length > 0 ? totalExpenses / this.data.expenses.length : 0;
-
-        const servicesCount = this.data.income.reduce((acc, item) => {
-            if(item.service) acc[item.service] = (acc[item.service] || 0) + 1;
-            return acc;
-        }, {});
-        const topService = Object.entries(servicesCount).sort((a,b) => b[1] - a[1])[0];
-        
-        let totalVisits = 0; let totalFromNotes = 0;
-        const clientsData = this.data.clients.map(client => {
-            const clientVisitsCount = 1 + (client.visits?.length || 0);
-            const clientProfit = this.parseMoney(client.amount) + (client.visits || []).reduce((sum, visit) => sum + this.parseMoney(visit.amount), 0);
-            totalVisits += clientVisitsCount;
-            totalFromNotes += clientProfit;
-            return { id: client.id, name: client.name, phone: client.phone, profit: clientProfit, visits: clientVisitsCount, avgCheck: clientVisitsCount > 0 ? clientProfit / clientVisitsCount : 0, date: client.date };
-        });
-
-        const cardValues = {
-            totalIncome: this.renderMoney(totalIncome),
-            totalExpenses: this.renderMoney(totalExpenses),
-            totalProfit: this.renderMoney(netProfit),
-            totalDebt: this.renderMoney(totalDebt),
-            avgIncome: this.renderMoney(avgIncome),
-            avgExpense: this.renderMoney(avgExpense),
-            profitToday: this.renderMoney(profitToday),
-            incomeToday: this.renderMoney(incomeToday),
-            topService: (topService ? `${topService[0]} (${topService[1]} раз)` : 'Нет данных'),
-            incomeCount: this.data.income.length || 0,
-            expenseCount: this.data.expenses.length || 0,
-            transactionsToday: (incomeTodayArr.length + expensesTodayArr.length) || 0,
-            totalClients: clientsData.length || 0,
-            totalVisits: totalVisits || 0,
-            avgClientCheck: this.renderMoney(totalVisits > 0 ? totalFromNotes / totalVisits : 0),
-            newClientsToday: this.data.clients.filter(c => c.date === todayStr).length || 0,
-            returningClients: clientsData.filter(c => c.visits > 1).length || 0,
-            uniqueWarehousePositions: this.data.warehouse.length || 0,
-            totalWarehouseItems: this.data.warehouse.reduce((sum, item) => sum + this.parseMoney(item.quantity), 0),
-        };
-
-        for(const [id, value] of Object.entries(cardValues)) {
-            const el = get(`#${id}`);
-            const finalValue = (value === null || value === undefined) ? '0' : String(value);
-            if (el && el.textContent !== finalValue) {
-                el.textContent = finalValue;
-                el.classList.add('updated');
-                el.addEventListener('animationend', () => el.classList.remove('updated'), { once: true });
-            }
-        }
-        
-        get('#totalProfit').classList.toggle('positive', netProfit >= 0); get('#totalProfit').classList.toggle('negative', netProfit < 0);
-        get('#profitToday').classList.toggle('positive', profitToday >= 0); get('#profitToday').classList.toggle('negative', profitToday < 0);
-        
-        this.updateSpecialClientCards(clientsData);
-    }
-
-    sanitizeHTML(str) {
-        const temp = document.createElement('div');
-        temp.textContent = str;
-        return temp.innerHTML;
-    }
-    
-    updateSpecialClientCards(clientsData) {
-        if (clientsData.length === 0) {
-            this.updateClientCard('bestClientInfo', null, () => 'Нет данных');
-            this.updateClientCard('topClientVisits', null, () => 'Нет данных');
-            this.updateClientCard('newestClient', null, () => 'Нет данных');
-            return;
-        }
-
-        const bestByProfit = [...clientsData].sort((a,b) => b.profit - a.profit || b.visits - a.visits)[0];
-        const bestByVisits = [...clientsData].sort((a,b) => b.visits - a.visits || b.profit - a.profit)[0];
-        const newestClient = [...clientsData].sort((a,b) => (b.date || '').localeCompare(a.date || ''))[0];
-        
-        const formatClient = c => `<span class="highlight-text">${this.sanitizeHTML(c.name || 'Безымянный')}</span><br>Сумма: <span class="highlight-text">${this.renderMoney(c.profit)}</span> | Посещений: ${c.visits}`;
-        const formatVisits = c => `<span class="highlight-text">${this.sanitizeHTML(c.name || 'Безымянный')}</span><br>Посещений: <span class="highlight-text">${c.visits}</span> | Сумма: ${this.renderMoney(c.profit)}`;
-        const formatNewest = c => `<span class="highlight-text">${this.sanitizeHTML(c.name || 'Безымянный')}</span><br>Добавлен: ${c.date}`;
-
-        this.updateClientCard('bestClientInfo', bestByProfit, formatClient);
-        this.updateClientCard('topClientVisits', bestByVisits, formatVisits);
-        this.updateClientCard('newestClient', newestClient, formatNewest);
-    }
-
-    updateClientCard(cardId, client, formatter) {
-        const card = get(`#${cardId}Card`);
-        const valueEl = get(`#${cardId}`);
-        if(card && valueEl) {
-            card.classList.remove('hidden');
-            card.dataset.clientId = client ? client.id : '';
-            valueEl.innerHTML = client ? formatter(client) : 'Нет данных';
-        }
-    }
-
-    goToBestClient(clientId) {
-        if (!clientId) return;
-        this.switchTab('clients', () => {
-            const targetRow = get(`#clientsTable tbody tr[data-id="${clientId}"]`);
-            if (targetRow) {
-                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                targetRow.classList.add('highlight');
-                setTimeout(() => targetRow.classList.remove('highlight'), 2000);
-            }
-        });
-    }
-
-    validateData(data) {
-        return data && typeof data === 'object' && (data.settings || data.income || data.expenses || data.clients || data.debts || data.todos || data.serviceTemplates || data.warehouse);
-    }
-    
-    migrateData(data) {
-        if (!data || typeof data !== 'object') return this.getDefaultData();
-        const defaultData = this.getDefaultData();
-        if (data.settings && data.settings.version) delete data.settings.version;
-        Object.keys(defaultData).forEach(key => {
-            if (!data.hasOwnProperty(key) && Array.isArray(defaultData[key])) {
-                data[key] = [];
-            }
-        });
-        if (!data.settings || typeof data.settings !== 'object') {
-            data.settings = defaultData.settings;
-        } else {
-            data.settings = {...defaultData.settings, ...data.settings};
-        }
-        return data;
-    }
-
-    loadData() {
-        let savedData = localStorage.getItem('tireServiceData_v4') || localStorage.getItem('tireServiceData_v3');
-        if (savedData) {
-            try { 
-                this.loadState(JSON.parse(savedData), true);
-                this.showToast('Данные загружены', 'success');
-            } catch (e) { 
-                this.loadState(this.getDefaultData(), true);
-                this.showToast('Данные повреждены, загружен стандартный набор', 'danger'); 
-            }
-        } else { 
-            this.loadState(this.getDefaultData(), true); 
-        }
-    }
-    
-    exportData(keysToExport = null) {
-        let dataToExport;
-        if (keysToExport) {
-            dataToExport = {};
-            keysToExport.forEach(key => {
-                if (this.data.hasOwnProperty(key)) {
-                    dataToExport[key] = this.data[key];
-                }
-            });
-        } else {
-            dataToExport = this.data;
-        }
-        const json = JSON.stringify(dataToExport, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `tire_service_data_${new Date().toISOString().slice(0, 10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        this.showToast('Данные экспортированы', 'success');
-    }
-
-    triggerImport(mode) {
-        get('#importChoiceModal').classList.remove('visible');
-        const fileInput = get('#importFileInput');
-        fileInput.dataset.importMode = mode;
-        fileInput.click();
-    }
-    
-    async handleFileImport(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const mode = e.target.dataset.importMode;
-        const confirmText = mode === 'replace' 
-            ? "ЗАМЕНИТЬ все текущие данные данными из файла? Это действие необратимо."
-            : "Объединить данные из файла с текущими?";
-        const confirmClass = mode === 'replace' ? 'danger' : 'success';
-
-        if (this.data.settings.confirmImport && !await this.confirmAction({ text: confirmText, confirmClass: confirmClass })) {
-            e.target.value = '';
-            return;
-        }
-
-        get('#loadingOverlay').classList.add('visible');
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            try {
-                const parsed = JSON.parse(event.target.result);
-                if (!this.validateData(parsed)) {
-                    this.showToast('Неверный формат файла импорта.', 'danger');
-                    return;
-                }
-                
-                const migrated = this.migrateData(parsed);
-
-                this.updateState(data => {
-                    if (mode === 'replace') {
-                        const settings = data.settings;
-                        const defaultData = this.getDefaultData();
-                        Object.keys(defaultData).forEach(key => {
-                            if (Array.isArray(defaultData[key])) data[key] = [];
-                        });
-                        data.settings = settings;
-                    }
-                    
-                    let newItemsCount = 0;
-                    Object.keys(migrated).forEach(key => {
-                        if (key === 'settings') {
-                            data.settings = { ...data.settings, ...migrated.settings };
-                        } else if (Array.isArray(data[key]) && Array.isArray(migrated[key])) {
-                            if (mode === 'replace') {
-                                data[key] = migrated[key];
-                            } else {
-                                const existingIds = new Set(data[key].map(i => i.id).filter(Boolean));
-                                const newItems = migrated[key].filter(newItem => newItem.id && !existingIds.has(newItem.id));
-                                if (newItems.length > 0) {
-                                    data[key].push(...newItems);
-                                    newItemsCount += newItems.length;
-                                }
-                            }
-                        }
-                    });
-
-                    if(mode === 'replace') this.showToast('Данные успешно заменены.', 'success');
-                    else this.showToast(`Данные объединены. Добавлено ${newItemsCount} новых записей.`, 'success');
-
-                }, true);
-
-            } catch (err) {
-                this.showToast('Ошибка чтения файла импорта.', 'danger');
-                console.error(err);
-            } finally {
-                get('#loadingOverlay').classList.remove('visible');
-                e.target.value = '';
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    showPartialExportModal() {
-        get('#exportChoiceModal').classList.remove('visible');
-        const container = get('#partialExportCheckboxes');
-        const categories = {
-            income: 'Доходы', expenses: 'Расходы', clients: 'Клиенты',
-            debts: 'Долги', todos: 'Заметки', serviceTemplates: 'Шаблоны', 
-            warehouse: 'Склад', settings: 'Настройки'
-        };
-        container.innerHTML = Object.entries(categories).map(([key, label]) => 
-            `<label class="checkbox-label" style="justify-content: flex-start;"><input type="checkbox" data-export-key="${key}" checked><span>${label}</span></label>`
-        ).join('');
-        get('#partialExportModal').classList.add('visible');
-    }
-
-    exportPartialData() {
-        const selectedKeys = [...getAll('#partialExportCheckboxes input:checked')].map(input => input.dataset.exportKey);
-        if (selectedKeys.length === 0) {
-            this.showToast('Выберите хотя бы одну категорию для экспорта', 'warning');
-            return;
-        }
-        this.exportData(selectedKeys);
-        get('#partialExportModal').classList.remove('visible');
-    }
-    
-    async clearAllData() { 
-        if (await this.confirmAction({text: 'Вы уверены? Это действие необратимо.'})) {
-            const settings = this.data.settings;
-            this.updateState(data => {
-                Object.keys(data).forEach(key => { if(Array.isArray(data[key])) data[key] = [] });
-                data.settings = settings;
-            }); 
-            this.showToast('Все данные удалены (настройки сохранены)', 'warning');
-        }
-    }
-
-    copySummary() { 
-        this.updateAllCalculations(); let text = 'Сводка:\n'; 
-        getAll('.summary-category').forEach(cat => { 
-            text += `\n--- ${cat.querySelector('h2').textContent.replace('Настроить', '').trim()} ---\n`; 
-            cat.querySelectorAll('.result-card:not(.hidden)').forEach(card => {
-                 const label = card.querySelector('.label')?.textContent.trim() || '';
-                 const value = card.querySelector('.value')?.textContent.trim() || '';
-                 text += `${label}: ${value.replace(/\s+/g, ' ')}\n`; 
-            }); 
-        }); 
-        this.copyToClipboard(text.trim()); 
-    }
-    
-    copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => this.showToast('Скопировано!', 'success'), () => this.showToast('Ошибка копирования', 'danger')); }
-    
-    applySettings() {
-        const s = this.data.settings;
-        document.body.className = '';
-        if (s.theme === 'light') document.body.classList.add('light-theme');
-        if (!s.animations) document.body.classList.add('animations-disabled');
-        if (s.tableDensity && s.tableDensity !== 'normal') document.body.classList.add(`table-density-${s.tableDensity}`);
-        if (s.fontSize && s.fontSize !== 'normal') document.body.classList.add(`font-size-${s.fontSize}`);
-        document.documentElement.style.setProperty('--primary', s.primaryColor);
-        
-        get('#primaryColorPicker').value = s.primaryColor;
-        get('#currencySymbol').value = s.currency;
-        get('#defaultItemCountInput').value = s.defaultItemCount;
-        this.updateSettingsUI('#theme-switcher', 'theme', s.theme);
-        this.updateSettingsUI('#animation-switcher', 'anim', s.animations ? 'on' : 'off');
-        this.updateSettingsUI('#density-switcher', 'density', s.tableDensity);
-        this.updateSettingsUI('#font-size-switcher', 'size', s.fontSize);
-        this.updateSettingsUI('#confirm-delete-switcher', 'confirm', s.confirmDelete ? 'on' : 'off');
-        this.updateSettingsUI('#best-client-metric-switcher', 'metric', s.bestClientMetric);
-        this.updateSettingsUI('#show-paid-debts-switcher', 'show', s.showPaidDebts ? 'on' : 'off');
-        this.updateSettingsUI('#auto-capitalize-switcher', 'capitalize', s.autoCapitalize ? 'on' : 'off');
-        this.updateSettingsUI('#confirm-import-switcher', 'import', s.confirmImport ? 'on' : 'off');
-        get('#defaultTabSelect').value = s.defaultTab;
-        get('#autoBackupSelect').value = s.autoBackup;
-    }
-    
-    updateSetting(key, value, recordHistory = true) { this.updateState(data => { data.settings[key] = value; }, recordHistory); }
-    updateSettingsUI(containerId, dataAttr, value) { getAll(`${containerId} button`).forEach(btn => btn.classList.toggle('active', btn.dataset[dataAttr] == value)); }
-    
-    async resetSettings() { 
-        if(await this.confirmAction({text: 'Сбросить все настройки к значениям по умолчанию?'})) {
-            this.updateState(data => { data.settings = this.getDefaultData().settings; });
-        }
-    }
-
-    switchTab(tabName, callback, record = true) {
-        get('.tab.active')?.classList.remove('active');
-        get('.tab-content.active')?.classList.remove('active');
-        const newTab = get(`.tab[data-tab="${tabName}"]`);
-        const newContent = get(`#${tabName}`);
-        if (newTab) newTab.classList.add('active');
-        if (newContent) newContent.classList.add('active');
-        if (record) this.updateSetting('activeTab', tabName, false);
-        if (callback) setTimeout(callback, 50);
-    }
-
-    addOrUpdateServiceTemplate() {
-        const nameInput = get('#templateName');
-        const priceInput = get('#templatePrice');
-        const countInput = get('#templateCount');
-        const typeInput = get('#templateType');
-        const name = nameInput.value.trim();
-        const price = this.parseMoney(priceInput.value);
-        const count = parseInt(countInput.value) || 1;
-        
-        if (!name || price <= 0) { this.showToast('Введите корректное название и цену', 'danger'); return; }
-        
-        const isDuplicate = this.data.serviceTemplates.some((t, i) => t.name.toLowerCase() === name.toLowerCase() && i !== this.editingTemplateIndex);
-        if (isDuplicate) { this.showToast('Шаблон с таким названием уже существует', 'danger'); return; }
-
-        this.updateState(data => {
-            if (this.editingTemplateIndex !== null) { data.serviceTemplates[this.editingTemplateIndex] = { name, price, count, type: typeInput.value };
-            } else { data.serviceTemplates.push({ name, price, count, type: typeInput.value }); }
-        });
-        this.resetTemplateForm();
-    }
-    
-    editServiceTemplate(index) {
-        const template = this.data.serviceTemplates[index];
-        if (!template) return;
-        this.editingTemplateIndex = index;
-        get('#templateName').value = template.name;
-        get('#templatePrice').value = template.price;
-        get('#templateCount').value = template.count;
-        get('#templateType').value = template.type;
-        get('#addServiceTemplateBtn').textContent = 'Сохранить';
-        get('#addServiceTemplateBtn').classList.add('success');
-        get('#cancelEditTemplateBtn').style.display = 'inline-flex';
-        get('#templateName').focus();
-    }
-
-    resetTemplateForm() {
-        this.editingTemplateIndex = null;
-        get('#templateName').value = ''; get('#templatePrice').value = '';
-        get('#templateCount').value = '1'; get('#templateType').value = 'income';
-        const btn = get('#addServiceTemplateBtn');
-        btn.textContent = 'Добавить'; btn.classList.remove('success');
-        get('#cancelEditTemplateBtn').style.display = 'none';
-    }
-
-    async deleteServiceTemplate(index) { 
-        if (this.data.settings.confirmDelete && !await this.confirmAction({text: "Удалить этот шаблон?"})) return;
-        this.updateState(data => { data.serviceTemplates.splice(index, 1); }); 
-    }
-
-    renderServiceTemplates() { 
-        const list = get('#service-templates-list');
-        const incomeDatalist = get('#service-templates-datalist-income');
-        const expenseDatalist = get('#service-templates-datalist-expense');
-        list.innerHTML = ''; incomeDatalist.innerHTML = ''; expenseDatalist.innerHTML = '';
-        (this.data.serviceTemplates || []).forEach((template, index) => {
-            list.innerHTML += `<div class="template-item ${template.type === 'income' ? 'income-template' : 'expense-template'}" data-index="${index}"><span>${template.name} - ${template.count}шт x ${this.renderMoney(template.price)}</span><div class="template-actions"><button class="btn-action btn-edit" title="Редактировать"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button><button class="btn-action btn-delete" title="Удалить">&times;</button></div></div>`;
-            const option = `<option value="${template.name}">`;
-            template.type === 'income' ? incomeDatalist.innerHTML += option : expenseDatalist.innerHTML += option;
-        }); 
-    }
-
-    sortData(tableKey) {
-        const sortState = this.data.settings.sort[tableKey];
-        if (!sortState || !sortState.key) return;
-        this.data[tableKey].sort((a, b) => {
-            let valA = a[sortState.key], valB = b[sortState.key];
-            if (['amount', 'count', 'price', 'totalAmount', 'quantity'].includes(sortState.key)) { valA = this.parseMoney(valA); valB = this.parseMoney(valB);
-            } else if (typeof valA === 'string') { valA = valA.toLowerCase(); valB = String(valB || '').toLowerCase(); }
-            const result = valA < valB ? -1 : valA > valB ? 1 : 0;
-            return sortState.dir === 'asc' ? result : -result;
-        });
-    }
-
-    sortTable(tableKey, newKey) {
-        const sortState = this.data.settings.sort[tableKey];
-        const newDir = (sortState.key === newKey && sortState.dir === 'desc') ? 'asc' : 'desc';
-        this.updateState(data => { data.settings.sort[tableKey] = { key: newKey, dir: newDir }; }, false);
-    }
-
-    updateSortHeaders() {
-        getAll('th[data-sort-key]').forEach(th => { th.classList.remove('sort-asc', 'sort-desc'); th.setAttribute('aria-sort', 'none'); });
-        Object.entries(this.data.settings.sort).forEach(([key, sortState]) => {
-            if (sortState && sortState.key) {
-                const header = get(`#${key}Table th[data-sort-key="${sortState.key}"]`);
-                if (header) {
-                    header.classList.add(`sort-${sortState.dir}`);
-                    header.setAttribute('aria-sort', sortState.dir === 'asc' ? 'ascending' : 'descending');
-                }
-            }
-        });
-    }
-    
-    renderDashboard() {
-        const renderContainer = (containerId, cards, visibleKeys) => {
-            const container = get(containerId);
-            container.innerHTML = Object.entries(cards).map(([id, card], index) => {
-                const isVisible = visibleKeys.includes(id); if (!isVisible) return '';
-                const specialClass = card.specialClass || '';
-                return `<div class="result-card ${specialClass}" id="${id}Card" data-card-id="${id}" style="animation-delay: ${index*0.05}s;"><div class="label">${card.label}</div><div class="value" id="${id}">0</div></div>`;
-            }).join('');
-        };
-        renderContainer('#dashboardCardsContainer', this.dashboardCards, this.data.settings.visibleDashboardCards);
-        renderContainer('#dashboardClientCardsContainer', this.clientCards, this.data.settings.visibleClientCards);
-    }
-
-    showDashboardSettingsModal() {
-        const populateCheckboxes = (containerId, cardDefs, visibleKeys) => {
-            const container = get(containerId);
-            container.innerHTML = Object.entries(cardDefs).map(([id, card]) => `<label class="checkbox-label"><input type="checkbox" data-card-id="${id}" ${visibleKeys.includes(id) ? 'checked' : ''}><span>${card.label}</span></label>`).join('');
-        };
-        populateCheckboxes('#main-cards-settings', this.dashboardCards, this.data.settings.visibleDashboardCards);
-        populateCheckboxes('#client-cards-settings', this.clientCards, this.data.settings.visibleClientCards);
-        get('#dashboardSettingsModal').classList.add('visible');
-    }
-
-    saveDashboardSettings() {
-        const getSelected = (containerId) => [...getAll(`${containerId} input:checked`)].map(input => input.dataset.cardId);
-        this.updateState(d => {
-            d.settings.visibleDashboardCards = getSelected('#main-cards-settings');
-            d.settings.visibleClientCards = getSelected('#client-cards-settings');
-        });
-        get('#dashboardSettingsModal').classList.remove('visible');
-        this.showToast('Настройки главной страницы сохранены', 'success');
-    }
-    
-    renderTodos() {
-        const list = get('#todoList');
-        const sortedTodos = (this.data.todos || []).sort((a,b) => a.completed - b.completed || (b.id || '').localeCompare(a.id || ''));
-        list.innerHTML = sortedTodos.map(todo => `<div class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}"><label class="switch" style="margin-top: 5px;"><input type="checkbox" ${todo.completed ? 'checked' : ''}><span class="slider round"></span></label><textarea class="todo-text" rows="1">${this.sanitizeHTML(todo.text)}</textarea><button class="btn-action btn-delete" title="Удалить" style="margin-top: 5px;">&times;</button></div>`).join('');
-        list.querySelectorAll('.todo-text').forEach(this.autoResizeTextarea);
-    }
-    
-    addTodo() { const input = get('#newTodoInput'); const text = input.value.trim(); if(!text) return; this.updateState(d => { if(!d.todos) d.todos = []; d.todos.unshift({id: this.uuid(), text: text, completed: false }); }); input.value = ''; }
-    handleTodoChange(textarea) { const id = textarea.closest('.todo-item').dataset.id; this.updateState(d => { const todo = d.todos.find(t => t.id === id); if(todo) todo.text = textarea.value; }); this.showSavedToast(); }
-    autoResizeTextarea(textarea) { textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px'; }
-    toggleTodo(id) { this.updateState(d => { const todo = d.todos.find(t => t.id === id); if(todo) todo.completed = !todo.completed; }); this.showSavedToast(); }
-    deleteTodo(id) { this.updateState(d => { d.todos = d.todos.filter(t => t.id !== id); }); }
-    
-    generateReport() {
-        const start = get('#reportStartDate').value, end = get('#reportEndDate').value;
-        if(!start || !end) { this.showToast('Выберите период', 'danger'); return; }
-        const filteredIncome = this.data.income.filter(i => i.date >= start && i.date <= end);
-        const filteredExpenses = this.data.expenses.filter(e => e.date >= start && e.date <= end);
-        const totalIncome = filteredIncome.reduce((s, i) => s + this.parseMoney(i.totalAmount), 0);
-        const totalExpenses = filteredExpenses.reduce((s, i) => s + this.parseMoney(i.totalAmount), 0);
-        const netProfit = totalIncome - totalExpenses;
-        const topService = Object.entries(filteredIncome.reduce((acc, item) => { acc[item.service] = (acc[item.service] || 0) + 1; return acc; }, {})).sort((a,b) => b[1] - a[1])[0];
-        get('#reportResults').innerHTML = `<div class="report-section"><h3>Отчет за период с ${start} по ${end}</h3><div class="report-grid"><div class="report-item"><div class="report-item-label">Доход</div><div class="report-item-value positive">${this.renderMoney(totalIncome)}</div></div><div class="report-item"><div class="report-item-label">Расход</div><div class="report-item-value negative">${this.renderMoney(totalExpenses)}</div></div><div class="report-item"><div class="report-item-label">Прибыль</div><div class="report-item-value ${netProfit >= 0 ? 'positive' : 'negative'}">${this.renderMoney(netProfit)}</div></div><div class="report-item"><div class="report-item-label">Кол-во чеков</div><div class="report-item-value">${filteredIncome.length}</div></div><div class="report-item"><div class="report-item-label">Средний чек</div><div class="report-item-value">${this.renderMoney(filteredIncome.length > 0 ? totalIncome/filteredIncome.length : 0)}</div></div><div class="report-item"><div class="report-item-label">Топ услуга</div><div class="report-item-value">${topService ? `${topService[0]} (${topService[1]} раз)` : 'Нет'}</div></div></div></div>`;
-    }
-
-    handleCalculatorInput(key) {
-        let state = this.miniCalculatorState;
-        if (/\d/.test(key)) { this.inputDigit(key, state); }
-        else if (key === '.') { this.inputDecimal(state); }
-        else if (['+', '-', '*', '/'].includes(key)) { this.handleOperator(key, state); }
-        else if (key === '=') { this.handleEquals(state); }
-        else if (key === 'clear') { this.resetCalculator(state); }
-        else if (key === 'backspace') { this.backspace(state); }
-        else if (key === 'percent') { this.handlePercent(state); }
-        this.updateCalculatorDisplay();
-    }
-    inputDigit(digit, state) { if (state.waitingForSecondOperand) { state.displayValue = digit; state.waitingForSecondOperand = false; } else { state.displayValue = state.displayValue === '0' ? digit : state.displayValue + digit; } }
-    inputDecimal(state) { if (state.waitingForSecondOperand) { state.displayValue = '0.'; state.waitingForSecondOperand = false; return; } if (!state.displayValue.includes('.')) { state.displayValue += '.'; } }
-    handleOperator(nextOperator, state) {
-        const { firstOperand, displayValue, operator } = state; const inputValue = parseFloat(displayValue);
-        if (operator && state.waitingForSecondOperand) { state.operator = nextOperator; return; }
-        if (firstOperand === null) { state.firstOperand = inputValue; } 
-        else if (operator) { const result = this.calculate(firstOperand, inputValue, operator); state.displayValue = `${parseFloat(result.toFixed(7))}`; state.firstOperand = result; }
-        state.waitingForSecondOperand = true; state.operator = nextOperator;
-    }
-    calculate(first, second, op) { if (op === '+') return first + second; if (op === '-') return first - second; if (op === '*') return first * second; if (op === '/') return second !== 0 ? first / second : 'Ошибка'; return second; }
-    handleEquals(state) { const { firstOperand, displayValue, operator } = state; if (firstOperand === null || operator === null) return; const result = this.calculate(firstOperand, parseFloat(displayValue), operator); state.displayValue = `${parseFloat(result.toFixed(7))}`; state.firstOperand = null; state.operator = null; state.waitingForSecondOperand = false; }
-    resetCalculator(state) { state.displayValue = '0'; state.firstOperand = null; state.waitingForSecondOperand = false; state.operator = null; }
-    backspace(state) { state.displayValue = state.displayValue.slice(0, -1) || '0'; }
-    handlePercent(state) { state.displayValue = `${parseFloat(state.displayValue) / 100}`; }
-    updateCalculatorDisplay() {
-        const display = get('#mini-calculator-display');
-        let value = this.miniCalculatorState.displayValue;
-        const baseFontSize = 2; 
-        const threshold = 12;
-        display.style.fontSize = value.length > threshold ? `${Math.max(baseFontSize/2, baseFontSize - (value.length - threshold) * 0.15)}em` : `${baseFontSize}em`;
-        display.textContent = value;
-    }
-
-    toggleMiniCalc() { get('#miniCalcContainer').classList.toggle('visible'); }
-    setupMiniCalcListeners() {
-        const calc = get('#miniCalcContainer');
-        const header = get('#miniCalcHeader');
-        get('#miniCalcCloseBtn').addEventListener('click', () => this.toggleMiniCalc());
-        calc.querySelector('.calculator-keys').addEventListener('click', e => e.target.matches('button') && this.handleCalculatorInput(e.target.dataset.key));
-
-        let isDragging = false, offsetX, offsetY;
-        header.addEventListener('mousedown', e => { isDragging = true; offsetX = e.clientX - calc.offsetLeft; offsetY = e.clientY - calc.offsetTop; calc.style.transition = 'none'; });
-        document.addEventListener('mousemove', e => { if (isDragging) { calc.style.left = `${e.clientX - offsetX}px`; calc.style.top = `${e.clientY - offsetY}px`; } });
-        document.addEventListener('mouseup', () => { isDragging = false; calc.style.transition = ''; });
-    }
-
-    handleAutoBackup() {
-        const backupSetting = this.data.settings.autoBackup;
-        if (backupSetting === '0' || !backupSetting) return;
-
-        let interval;
-        if (backupSetting === 'hourly') {
-            interval = 60 * 60 * 1000;
-        } else {
-            const days = parseInt(backupSetting);
-            if (isNaN(days)) return;
-            interval = days * 24 * 60 * 60 * 1000;
-        }
-
-        const now = new Date().getTime();
-        const lastBackup = parseInt(localStorage.getItem('tireServiceBackupTimestamp_v4') || '0');
-
-        if (now - lastBackup > interval) {
-            const currentData = localStorage.getItem('tireServiceData_v4');
-            if (currentData) {
-                localStorage.setItem('tireServiceBackupData_v4', currentData);
-                localStorage.setItem('tireServiceBackupTimestamp_v4', now.toString());
-                this.showToast('Создана автоматическая резервная копия', 'info');
-            }
-        }
-    }
-    
-    async saveBackupNow() {
-        if (!await this.confirmAction({text: 'Создать новую резервную копию? Это перезапишет предыдущую.', confirmClass: 'info'})) return;
-        try {
-            const currentData = localStorage.getItem('tireServiceData_v4');
-            if (currentData) {
-                localStorage.setItem('tireServiceBackupData_v4', currentData);
-                localStorage.setItem('tireServiceBackupTimestamp_v4', new Date().getTime().toString());
-                this.showToast('Резервная копия успешно сохранена!', 'success');
-            } else {
-                 this.showToast('Нет данных для сохранения.', 'warning');
-            }
-        } catch (e) {
-            this.showToast('Ошибка при создании резервной копии.', 'danger');
-            console.error(e);
-        }
-    }
-
-    async restoreFromBackup() {
-        const backupData = localStorage.getItem('tireServiceBackupData_v4');
-        if (!backupData) {
-            this.showToast('Резервная копия не найдена', 'warning');
-            return;
-        }
-
-        const lastBackupTimestamp = parseInt(localStorage.getItem('tireServiceBackupTimestamp_v4') || '0');
-        const backupDate = new Date(lastBackupTimestamp).toLocaleString();
-        
-        if (await this.confirmAction({text: `Восстановить данные из резервной копии от ${backupDate}? Текущие данные будут полностью заменены.`, confirmClass: 'warning'})) {
-            try {
-                const parsed = JSON.parse(backupData);
-                this.loadState(parsed, true);
-                this.showToast('Данные успешно восстановлены из копии', 'success');
-            } catch (e) {
-                this.showToast('Ошибка восстановления: файл копии поврежден', 'danger');
-            }
-        }
-    }
-
-    performGlobalPhoneSearch(query) {
-        const resultsContainer = get('#globalSearchResults');
-        const searchTerm = query.trim();
-
-        if (!searchTerm) {
-            resultsContainer.innerHTML = '';
-            return;
-        }
-
-        const results = [];
-        const cleanQuery = searchTerm.replace(/[\s-()+]/g, '');
-
-        if (cleanQuery) {
-            this.data.clients.forEach(client => {
-                const clientPhone = (client.phone || '').replace(/[\s-()+]/g, '');
-                if (clientPhone.includes(cleanQuery)) {
-                    results.push({ type: 'clients', label: 'Клиент', data: client });
-                }
-            });
-
-            this.data.debts.forEach(debt => {
-                const debtPhone = (debt.phone || '').replace(/[\s-()+]/g, '');
-                if (debtPhone.includes(cleanQuery)) {
-                    results.push({ type: 'debts', label: 'Долг', data: debt });
-                }
-            });
-        }
-        this.renderGlobalSearchResults(results, searchTerm);
-    }
-
-    renderGlobalSearchResults(results, searchTerm) {
-        const container = get('#globalSearchResults');
-        if (results.length === 0) {
-            container.innerHTML = `<div class="search-result-wrapper"><h2>Поиск по номеру</h2><p style="padding: 15px 0;">Ничего не найдено.</p></div>`;
-            return;
-        }
-        
-        const highlight = (text) => text.replace(new RegExp(searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), (match) => `<mark>${match}</mark>`);
-
-        container.innerHTML = `<div class="search-result-wrapper"><h2>Результаты поиска по номеру</h2>` + results.map(res => {
-            const { type, label, data } = res;
-            let details = '';
-            if (type === 'clients') {
-                details = `<p><strong>Имя:</strong> ${data.name || 'N/A'}</p><p><strong>Телефон:</strong> ${highlight(data.phone || 'N/A')}</p><p><strong>Гос. номер:</strong> ${data.plate || 'N/A'}</p>`;
-            } else if (type === 'debts') {
-                details = `<p><strong>Кто должен:</strong> ${data.name || 'N/A'}</p><p><strong>Телефон:</strong> ${highlight(data.phone || 'N/A')}</p><p><strong>Сумма:</strong> ${this.renderMoney(data.amount)}</p><p><strong>Статус:</strong> ${data.isPaid ? 'Оплачен' : 'Не оплачен'}</p>`;
-            }
-
-            return `
-                <div class="search-result-card">
-                    <div class="search-result-header">
-                        <span class="search-result-title">${label}</span>
-                        <button class="button info" data-goto-type="${type}" data-goto-id="${data.id}">Перейти</button>
-                    </div>
-                    <div class="search-result-body">
-                        ${details}
-                    </div>
-                </div>`;
-        }).join('') + `</div>`;
-    }
-    
-    handleSearchResultClick(event) {
-        const button = event.target.closest('button[data-goto-id]');
-        if (!button) return;
-
-        const { gotoType, gotoId } = button.dataset;
-        
-        this.switchTab(gotoType, () => {
-            const targetRow = get(`#${gotoType}Table tbody tr[data-id="${gotoId}"]`);
-            if (targetRow) {
-                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                getAll(`#${gotoType}Table tbody tr`).forEach(r => r.classList.remove('highlight', 'keyboard-focus'));
-                targetRow.classList.add('highlight');
-                setTimeout(() => targetRow.classList.remove('highlight'), 2500);
-            }
-        });
-    }
-}
 
 document.addEventListener('DOMContentLoaded', () => {
+    const get = (selector) => document.querySelector(selector);
+    const getAll = (selector) => document.querySelectorAll(selector);
+
+    class TireServiceApp {
+        constructor() {
+            this.MAX_HISTORY_STATES = 30;
+            this.data = this.getDefaultData();
+            this.historyStack = [];
+            this.historyIndex = -1;
+            this.editingTemplateIndex = null;
+            this.miniCalculatorState = { displayValue: '0', firstOperand: null, waitingForSecondOperand: false, operator: null };
+            this.elements = {};
+            this.dashboardCards = {
+                totalProfit: { label: '💰 Чистая прибыль' }, totalIncome: { label: '📈 Общий доход' }, totalExpenses: { label: '📉 Общий расход' },
+                profitToday: { label: '🤑 Прибыль за сегодня' }, incomeToday: { label: '💲 Доход за сегодня' }, totalDebt: { label: '💸 Общая сумма долгов' },
+                avgIncome: { label: '🧾 Средний чек (доход)' }, avgExpense: { label: '🛒 Средний чек (расход)' }, topService: { label: '⭐ Топ услуга' },
+                incomeCount: { label: '📝 Кол-во доходов' }, expenseCount: { label: '🛒 Кол-во расходов' }, transactionsToday: { label: '🔄 Операций сегодня' },
+                uniqueWarehousePositions: { label: '📦 Позиций на складе' }, totalWarehouseItems: { label: '🔢 Всего единиц на складе' },
+            };
+            this.clientCards = {
+                totalClients: { label: '👥 Всего клиентов' }, totalVisits: { label: '🚗 Всего посещений' }, avgClientCheck: { label: '📊 Средний чек клиента' },
+                newClientsToday: { label: '👋 Новых клиентов сегодня'}, bestClientInfo: { label: '👑 Лучший клиент по сумме' }, topClientVisits: { label: '🏆 Клиент по визитам' },
+                returningClients: { label: '🔁 Постоянные клиенты' }, newestClient: { label: '✨ Последний клиент' },
+            };
+            this.showSavedToast = this.debounce(() => this.showToast('Сохранено', 'success', 1500), 1000);
+        }
+
+        init() {
+            this.cacheDOMElements();
+            this.populateDefaultTabSelect();
+            this.setupEventListeners();
+            this.loadData();
+            this.handleAutoBackup();
+            
+            window.addEventListener('load', () => {
+                 setTimeout(() => {
+                    this.elements.preloader.style.opacity = '0';
+                    this.elements.preloader.addEventListener('transitionend', () => this.elements.preloader.style.display = 'none');
+                }, 300);
+            });
+        }
+        
+        cacheDOMElements() {
+            const selectors = {
+                preloader: '#preloader', tabs: '.tabs', undoBtn: '#undoBtn', redoBtn: '#redoBtn', miniCalcBtn: '#miniCalcBtn', addIncomeRowBtn: '#addIncomeRowBtn',
+                addExpenseRowBtn: '#addExpenseRowBtn', addClientRowBtn: '#addClientRowBtn', addWarehouseRowBtn: '#addWarehouseRowBtn',
+                addDebtRowBtn: '#addDebtRowBtn', addServiceTemplateBtn: '#addServiceTemplateBtn', cancelEditTemplateBtn: '#cancelEditTemplateBtn',
+                incomeTableBody: '#incomeTable tbody', expensesTableBody: '#expensesTable tbody', clientsTableBody: '#clientsTable tbody',
+                debtsTableBody: '#debtsTable tbody', warehouseTableBody: '#warehouseTable tbody', incomeSearch: '#incomeSearch',
+                expensesSearch: '#expensesSearch', clientSearch: '#clientSearch', debtSearch: '#debtSearch', warehouseSearch: '#warehouseSearch',
+                importDataBtn: '#importDataBtn', exportDataBtn: '#exportDataBtn', importFileInput: '#importFileInput',
+                importChoiceModal: '#importChoiceModal', importMergeBtn: '#importMergeBtn', importReplaceBtn: '#importReplaceBtn',
+                importCancelBtn: '#importCancelBtn', exportChoiceModal: '#exportChoiceModal', exportAllBtn: '#exportAllBtn',
+                exportPartialBtn: '#exportPartialBtn', exportCancelBtn: '#exportCancelBtn', partialExportModal: '#partialExportModal',
+                exportSelectedBtn: '#exportSelectedBtn', exportBackBtn: '#exportBackBtn', clearAllDataBtn: '#clearAllDataBtn',
+                copySummaryBtn: '#copySummaryBtn', dashboardClientCardsContainer: '#dashboardClientCardsContainer', customizeDashboardBtn: '#customizeDashboardBtn',
+                settingsContainer: '#settings', resetSettingsBtn: '#resetSettingsBtn', restoreBackupBtn: '#restoreBackupBtn', saveBackupNowBtn: '#saveBackupNowBtn',
+                primaryColorPicker: '#primaryColorPicker', currencySymbol: '#currencySymbol', defaultTabSelect: '#defaultTabSelect',
+                autoBackupSelect: '#autoBackupSelect', defaultItemCountInput: '#defaultItemCountInput', stepperStepInput: '#stepperStepInput',
+                serviceTemplatesList: '#service-templates-list', showFaqBtn: '#showFaqBtn', faqModal: '#faqModal', faqCloseBtn: '#faqCloseBtn',
+                addTodoBtn: '#addTodoBtn', newTodoInput: '#newTodoInput', todoList: '#todoList', generateReportBtn: '#generateReportBtn',
+                reportStartDate: '#reportStartDate', reportEndDate: '#reportEndDate', reportResults: '#reportResults', saveDashboardSettingsBtn: '#saveDashboardSettingsBtn',
+                cancelDashboardSettingsBtn: '#cancelDashboardSettingsBtn', dashboardSettingsModal: '#dashboardSettingsModal', globalPhoneSearch: '#globalPhoneSearch',
+                globalSearchResults: '#globalSearchResults', miniCalcContainer: '#miniCalcContainer', miniCalcHeader: '#miniCalcHeader',
+                miniCalcCloseBtn: '#miniCalcCloseBtn', miniCalcKeys: '#miniCalcContainer .calculator-keys', miniCalcDisplay: '#mini-calculator-display',
+                confirmModal: '#confirmModal', modalConfirmBtn: '#modalConfirmBtn', modalCancelBtn: '#modalCancelBtn', modalText: '#modalText',
+                loadingOverlay: '#loadingOverlay',
+                templateName: '#templateName', templatePrice: '#templatePrice', templateCount: '#templateCount', templateType: '#templateType',
+            };
+            for(const key in selectors) {
+                this.elements[key] = get(selectors[key]);
+            }
+            this.elements.allSortableHeaders = getAll('th[data-sort-key]');
+            this.elements.allTabs = getAll('.tab');
+        }
+
+        getDefaultData() {
+            return {
+                income: [], expenses: [], clients: [], debts: [], serviceTemplates: [], todos: [], warehouse: [],
+                settings: {
+                    theme: 'dark', currency: '₽', primaryColor: '#58A6FF', animations: true, tableDensity: 'normal', 
+                    fontSize: 'normal', confirmDelete: true, bestClientMetric: 'profit', showPaidDebts: true, 
+                    activeTab: 'total', defaultTab: 'total', autoBackup: '7', autoCapitalize: true,
+                    defaultItemCount: 1, stepperStep: 1, confirmImport: true,
+                    visibleDashboardCards: ['totalProfit', 'totalIncome', 'totalExpenses', 'profitToday', 'incomeToday', 'totalDebt', 'topService', 'transactionsToday', 'uniqueWarehousePositions', 'totalWarehouseItems'],
+                    visibleClientCards: ['totalClients', 'totalVisits', 'avgClientCheck', 'newClientsToday', 'bestClientInfo', 'topClientVisits', 'returningClients'],
+                    incomeFilter: '', expensesFilter: '', clientsFilter: '', debtsFilter: '', warehouseFilter: '',
+                    sort: {
+                        income: {key: 'date', dir: 'desc'}, expenses: {key: 'date', dir: 'desc'},
+                        clients: {key: 'date', dir: 'desc'}, debts: {key: 'date', dir: 'desc'},
+                        warehouse: {key: 'name', dir: 'asc'}
+                    }
+                }
+            };
+        }
+        
+        uuid() {
+            return (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() :
+                'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+        }
+
+        getTodayDate() {
+            const date = new Date();
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+            return date.toISOString().slice(0, 10);
+        }
+
+        setupEventListeners() {
+            document.addEventListener('keydown', e => {
+                if (e.ctrlKey && e.key === 'z') { e.preventDefault(); this.undo(); }
+                if (e.ctrlKey && e.key === 'y') { e.preventDefault(); this.redo(); }
+                if (e.key === 'Escape') {
+                    const visibleModal = get('.modal-overlay.visible');
+                    if (visibleModal) visibleModal.classList.remove('visible');
+                    if(this.elements.miniCalcContainer.classList.contains('visible')) this.elements.miniCalcContainer.classList.remove('visible');
+                }
+            });
+
+            this.elements.tabs.addEventListener('click', e => {
+                const tab = e.target.closest('.tab');
+                if (tab) this.switchTab(tab.dataset.tab);
+            });
+            
+            this.elements.undoBtn.addEventListener('click', () => this.undo());
+            this.elements.redoBtn.addEventListener('click', () => this.redo());
+            this.elements.miniCalcBtn.addEventListener('click', () => this.toggleMiniCalc());
+
+            this.elements.addIncomeRowBtn.addEventListener('click', () => this.addIncomeRow());
+            this.elements.addExpenseRowBtn.addEventListener('click', () => this.addExpenseRow());
+            this.elements.addClientRowBtn.addEventListener('click', () => this.addClientRow());
+            this.elements.addWarehouseRowBtn.addEventListener('click', () => this.addWarehouseRow());
+            this.elements.addDebtRowBtn.addEventListener('click', () => this.addDebtRow());
+            this.elements.addServiceTemplateBtn.addEventListener('click', () => this.addOrUpdateServiceTemplate());
+            this.elements.cancelEditTemplateBtn.addEventListener('click', () => this.resetTemplateForm());
+            
+            ['income', 'expenses', 'clients', 'debts', 'warehouse'].forEach(key => {
+                const tableBody = this.elements[`${key}TableBody`];
+                tableBody.addEventListener('input', e => this.handleTableLiveUpdate(e, key));
+                tableBody.addEventListener('change', e => this.handleTableChangeCommit(e, key));
+                tableBody.addEventListener('click', e => this.handleTableClick(e, key));
+            });
+            
+            this.elements.allSortableHeaders.forEach(th => th.addEventListener('click', e => {
+                const tableId = e.target.closest('table').id;
+                const tableKey = tableId.replace('Table', '');
+                this.sortTable(tableKey, e.target.dataset.sortKey);
+            }));
+
+            const setupSearch = (input, key) => {
+                input.addEventListener('input', this.debounce(e => {
+                    this.updateSetting(`${key}Filter`, e.target.value, false);
+                    this.renderAllTables();
+                }, 300));
+            };
+            setupSearch(this.elements.incomeSearch, 'income');
+            setupSearch(this.elements.expensesSearch, 'expenses');
+            setupSearch(this.elements.clientSearch, 'clients');
+            setupSearch(this.elements.debtSearch, 'debts');
+            setupSearch(this.elements.warehouseSearch, 'warehouse');
+
+            this.elements.importDataBtn.addEventListener('click', () => this.elements.importChoiceModal.classList.add('visible'));
+            this.elements.exportDataBtn.addEventListener('click', () => this.elements.exportChoiceModal.classList.add('visible'));
+            this.elements.importFileInput.addEventListener('change', e => this.handleFileImport(e));
+            this.elements.importMergeBtn.addEventListener('click', () => this.triggerImport('merge'));
+            this.elements.importReplaceBtn.addEventListener('click', () => this.triggerImport('replace'));
+            this.elements.importCancelBtn.addEventListener('click', () => this.elements.importChoiceModal.classList.remove('visible'));
+            this.elements.exportAllBtn.addEventListener('click', () => { this.exportData(null); this.elements.exportChoiceModal.classList.remove('visible'); });
+            this.elements.exportPartialBtn.addEventListener('click', () => this.showPartialExportModal());
+            this.elements.exportCancelBtn.addEventListener('click', () => this.elements.exportChoiceModal.classList.remove('visible'));
+            this.elements.exportSelectedBtn.addEventListener('click', () => this.exportPartialData());
+            this.elements.exportBackBtn.addEventListener('click', () => {
+                this.elements.partialExportModal.classList.remove('visible');
+                this.elements.exportChoiceModal.classList.add('visible');
+            });
+
+            this.elements.clearAllDataBtn.addEventListener('click', () => this.clearAllData());
+            this.elements.copySummaryBtn.addEventListener('click', () => this.copySummary());
+            this.elements.dashboardClientCardsContainer.addEventListener('click', e => {
+                const card = e.target.closest('.result-card');
+                if (card && (card.id === 'bestClientInfoCard' || card.id === 'topClientVisitsCard' || card.id === 'newestClientCard')) {
+                    this.goToBestClient(card.dataset.clientId);
+                }
+            });
+            this.elements.customizeDashboardBtn.addEventListener('click', () => this.showDashboardSettingsModal());
+            
+            this.elements.settingsContainer.addEventListener('click', e => {
+                const button = e.target.closest('button');
+                if (!button) return;
+                const switcher = button.closest('.setting-controls');
+                if (!switcher) return;
+                const settingMap = {
+                    'theme-switcher': { key: 'theme', attr: 'theme' },
+                    'animation-switcher': { key: 'animations', attr: 'anim', transform: v => v === 'on' },
+                    'density-switcher': { key: 'tableDensity', attr: 'density' },
+                    'font-size-switcher': { key: 'fontSize', attr: 'size' },
+                    'confirm-delete-switcher': { key: 'confirmDelete', attr: 'confirm', transform: v => v === 'on' },
+                    'best-client-metric-switcher': { key: 'bestClientMetric', attr: 'metric' },
+                    'show-paid-debts-switcher': { key: 'showPaidDebts', attr: 'show', transform: v => v === 'on' },
+                    'auto-capitalize-switcher': { key: 'autoCapitalize', attr: 'capitalize', transform: v => v === 'on' },
+                    'confirm-import-switcher': { key: 'confirmImport', attr: 'import', transform: v => v === 'on' },
+                };
+                const setting = settingMap[switcher.id];
+                if (setting && button.dataset[setting.attr]) {
+                    let value = button.dataset[setting.attr];
+                    if (setting.transform) value = setting.transform(value);
+                    this.updateSetting(setting.key, value);
+                }
+            });
+            this.elements.resetSettingsBtn.addEventListener('click', () => this.resetSettings());
+            this.elements.restoreBackupBtn.addEventListener('click', () => this.restoreFromBackup());
+            this.elements.saveBackupNowBtn.addEventListener('click', () => this.saveBackupNow());
+            
+            this.elements.primaryColorPicker.addEventListener('input', this.debounce(e => this.updateSetting('primaryColor', e.target.value), 100));
+            this.elements.currencySymbol.addEventListener('input', this.debounce(e => this.updateSetting('currency', e.target.value), 300));
+            this.elements.defaultTabSelect.addEventListener('change', e => this.updateSetting('defaultTab', e.target.value));
+            this.elements.autoBackupSelect.addEventListener('change', e => this.updateSetting('autoBackup', e.target.value));
+            this.elements.defaultItemCountInput.addEventListener('input', this.debounce(e => this.updateSetting('defaultItemCount', parseInt(e.target.value) || 1), 300));
+            this.elements.stepperStepInput.addEventListener('input', this.debounce(e => this.updateSetting('stepperStep', parseFloat(e.target.value) || 1), 300));
+
+            this.elements.serviceTemplatesList.addEventListener('click', async e => {
+                const target = e.target.closest('button');
+                if (!target) return;
+                const item = target.closest('.template-item');
+                const index = parseInt(item.dataset.index);
+                if (target.classList.contains('btn-delete')) await this.deleteServiceTemplate(index);
+                if (target.classList.contains('btn-edit')) this.editServiceTemplate(index);
+            });
+            
+            this.elements.showFaqBtn.addEventListener('click', () => this.elements.faqModal.classList.add('visible'));
+            this.elements.faqCloseBtn.addEventListener('click', () => this.elements.faqModal.classList.remove('visible'));
+            this.elements.faqModal.addEventListener('click', e => { if (e.target.id === 'faqModal') this.elements.faqModal.classList.remove('visible'); });
+
+            this.elements.addTodoBtn.addEventListener('click', () => this.addTodo());
+            this.elements.newTodoInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.addTodo(); } });
+            this.elements.todoList.addEventListener('click', e => {
+                const item = e.target.closest('.todo-item');
+                if(!item) return;
+                if(e.target.type === 'checkbox') this.toggleTodo(item.dataset.id);
+                if(e.target.closest('.btn-delete')) this.deleteTodo(item.dataset.id);
+            });
+            this.elements.todoList.addEventListener('input', e => {
+                const textarea = e.target.closest('.todo-text');
+                if(textarea) this.autoResizeTextarea(textarea);
+            });
+            this.elements.todoList.addEventListener('change', e => {
+                const textarea = e.target.closest('.todo-text');
+                if(textarea) this.handleTodoChange(textarea);
+            });
+            
+            this.elements.generateReportBtn.addEventListener('click', () => this.generateReport());
+            this.elements.reportStartDate.value = new Date(new Date().setDate(1)).toISOString().slice(0,10);
+            this.elements.reportEndDate.value = this.getTodayDate();
+
+            this.elements.saveDashboardSettingsBtn.addEventListener('click', () => this.saveDashboardSettings());
+            this.elements.cancelDashboardSettingsBtn.addEventListener('click', () => this.elements.dashboardSettingsModal.classList.remove('visible'));
+            
+            this.elements.globalPhoneSearch.addEventListener('input', this.debounce(e => this.performGlobalPhoneSearch(e.target.value), 300));
+            this.elements.globalSearchResults.addEventListener('click', e => this.handleSearchResultClick(e));
+
+            this.setupMiniCalcListeners();
+        }
+
+        populateDefaultTabSelect() {
+            const select = this.elements.defaultTabSelect;
+            select.innerHTML = '';
+            this.elements.allTabs.forEach(tab => {
+                const option = document.createElement('option');
+                option.value = tab.dataset.tab;
+                option.textContent = tab.querySelector('span') ? tab.querySelector('span').textContent.trim() : tab.textContent.trim();
+                select.appendChild(option);
+            });
+        }
+        
+        confirmAction({ text, confirmText = "Да", cancelText = "Отмена", confirmClass = 'danger' }) {
+            return new Promise((resolve) => {
+                const { confirmModal, modalConfirmBtn, modalCancelBtn, modalText } = this.elements;
+                modalText.textContent = text;
+                modalConfirmBtn.textContent = confirmText;
+                modalCancelBtn.textContent = cancelText;
+                modalConfirmBtn.className = `button ${confirmClass}`;
+                modalCancelBtn.className = 'button';
+                confirmModal.classList.add('visible');
+                
+                const cleanup = (result) => {
+                    confirmModal.classList.remove('visible');
+                    confirmModal.removeEventListener('click', outsideClickHandler);
+                    modalConfirmBtn.onclick = null;
+                    modalCancelBtn.onclick = null;
+                    resolve(result);
+                };
+                const confirmHandler = () => cleanup(true);
+                const cancelHandler = () => cleanup(false);
+                const outsideClickHandler = e => { if (e.target === confirmModal) cleanup(false); };
+                
+                modalConfirmBtn.onclick = confirmHandler;
+                modalCancelBtn.onclick = cancelHandler;
+                confirmModal.addEventListener('click', outsideClickHandler);
+            });
+        }
+
+        saveData() {
+            try {
+                localStorage.setItem('tireServiceData_v4', JSON.stringify(this.data));
+            } catch(e) {
+                console.error("Failed to save data to localStorage:", e);
+                this.showToast("Ошибка сохранения: Хранилище переполнено", "danger");
+            }
+        }
+
+        updateState(updater, recordHistory = true) {
+            updater(this.data);
+            if (recordHistory) {
+                const afterStateJSON = JSON.stringify(this.data);
+                const lastStateJSON = this.historyStack.length > 0 ? JSON.stringify(this.historyStack[this.historyIndex]) : "{}";
+                if (afterStateJSON !== lastStateJSON) {
+                    this.recordHistory(JSON.parse(afterStateJSON));
+                }
+            }
+            this.saveData();
+            this.render();
+        }
+
+        deepClone(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        }
+        
+        loadState(newState, recordHistory = true) {
+            const defaultData = this.getDefaultData();
+            const migratedData = this.migrateData(newState);
+            this.data = { ...defaultData, ...migratedData, settings: { ...defaultData.settings, ...(migratedData.settings || {}) }};
+            if (recordHistory) {
+                this.historyStack = [];
+                this.historyIndex = -1;
+                this.recordHistory(this.deepClone(this.data));
+            }
+            this.render();
+        }
+
+        render() {
+            this.applySettings();
+            this.renderAllTables();
+            this.renderServiceTemplates();
+            this.renderDashboard();
+            this.updateAllCalculations();
+            this.updateHistoryButtons();
+            this.updateSortHeaders();
+            this.renderTodos();
+            
+            const { incomeFilter, expensesFilter, clientsFilter, debtsFilter, warehouseFilter } = this.data.settings;
+            this.elements.incomeSearch.value = incomeFilter || '';
+            this.elements.expensesSearch.value = expensesFilter || '';
+            this.elements.clientSearch.value = clientsFilter || '';
+            this.elements.debtSearch.value = debtsFilter || '';
+            this.elements.warehouseSearch.value = warehouseFilter || '';
+            
+            this.switchTab(this.data.settings.activeTab || 'total', null, false);
+        }
+        
+        recordHistory(stateSnapshot) {
+            this.historyStack = this.historyStack.slice(0, this.historyIndex + 1);
+            this.historyStack.push(stateSnapshot);
+            this.historyIndex = this.historyStack.length - 1;
+
+            if (this.historyStack.length > this.MAX_HISTORY_STATES) {
+                this.historyStack.shift();
+                this.historyIndex--;
+            }
+        }
+
+        undo() {
+            if (this.historyIndex > 0) {
+                this.historyIndex--;
+                this.loadState(this.deepClone(this.historyStack[this.historyIndex]), false);
+            }
+        }
+        
+        redo() {
+            if (this.historyIndex < this.historyStack.length - 1) {
+                this.historyIndex++;
+                this.loadState(this.deepClone(this.historyStack[this.historyIndex]), false);
+            }
+        }
+
+        updateHistoryButtons() {
+            this.elements.undoBtn.disabled = this.historyIndex <= 0;
+            this.elements.redoBtn.disabled = this.historyIndex >= this.historyStack.length - 1;
+        }
+
+        parseMoney(value) {
+            const stringValue = String(value || '0').replace(',', '.').replace(/[^0-9.-]/g, '');
+            const parsed = parseFloat(stringValue);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+        
+        renderMoney(value) { return `${this.parseMoney(value).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ${this.data.settings.currency || '₽'}`; }
+        
+        showToast(message, type = 'info', duration = 3000) {
+            const container = get('#toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toast.setAttribute('role', 'alert');
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, duration);
+        }
+        
+        debounce(func, delay) { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); }; }
+
+        handleTableLiveUpdate(event, tableKey) {
+            if (!['income', 'expenses'].includes(tableKey)) return;
+            const input = event.target;
+            if (input.tagName !== 'INPUT' || !input.dataset.key) return;
+            const row = input.closest('tr');
+            if (!row) return;
+        
+            const changedKey = input.dataset.key;
+            const countInput = row.querySelector('input[data-key="count"]');
+            const priceInput = row.querySelector('input[data-key="price"]');
+            const totalAmountInput = row.querySelector('input[data-key="totalAmount"]');
+        
+            const count = Math.max(1, parseInt(countInput.value) || 1);
+            const price = this.parseMoney(priceInput.value);
+            const totalAmount = this.parseMoney(totalAmountInput.value);
+        
+            if (changedKey === 'count' || changedKey === 'price') {
+                const newTotal = count * price;
+                if (this.parseMoney(totalAmountInput.value) !== newTotal) totalAmountInput.value = newTotal.toFixed(2);
+            } else if (changedKey === 'totalAmount') {
+                if (count > 0) {
+                    const newPrice = totalAmount / count;
+                    if (this.parseMoney(priceInput.value) !== newPrice) priceInput.value = newPrice.toFixed(2);
+                }
+            }
+        }
+
+        handleTableChangeCommit(event, tableKey) {
+            const input = event.target;
+            if (input.tagName !== 'INPUT') return;
+            const row = input.closest('tr');
+            if (!row) return;
+
+            const { id, subId } = row.dataset;
+            
+            this.updateState(d => {
+                const item = d[tableKey].find(i => i.id === id);
+                if (!item) return;
+
+                let targetObject = item;
+                if (tableKey === 'clients' && subId) {
+                    targetObject = (item.visits || []).find(v => v.id === subId);
+                    if (!targetObject) return;
+                }
+
+                row.querySelectorAll('input[data-key]').forEach(inputEl => {
+                    const key = inputEl.dataset.key;
+                    let value = inputEl.value;
+                    if(key === 'name' && d.settings.autoCapitalize) {
+                        value = value.charAt(0).toUpperCase() + value.slice(1);
+                    }
+                    if(['price', 'totalAmount', 'amount', 'count', 'quantity'].includes(key)) {
+                        value = this.parseMoney(value);
+                    }
+                    targetObject[key] = value;
+                });
+                
+                if (['service', 'description'].includes(input.dataset.key)) {
+                    this.applyTemplate(targetObject, d);
+                }
+            });
+            this.showSavedToast();
+        }
+        
+        applyTemplate(item, data) {
+            const templateName = item.service || item.description;
+            const templateType = item.service ? 'income' : 'expense';
+            const template = (data.serviceTemplates || []).find(t => t.name === templateName && t.type === templateType);
+            if (template) {
+                item.price = template.price;
+                item.count = template.count;
+                item.totalAmount = template.price * template.count;
+            }
+        }
+        
+        async handleTableClick(event, tableKey) {
+            const target = event.target;
+            const row = target.closest('tr');
+            if (!row) return;
+            const { id } = row.dataset;
+
+            if (target.classList.contains('btn-status')) {
+                this.updateState(d => {
+                    const item = d[tableKey].find(i => i.id === id);
+                    if (item) item.isPaid = target.checked;
+                });
+                this.showSavedToast();
+                return;
+            }
+
+            const button = target.closest('button');
+            if (!button) return;
+            
+            if (button.classList.contains('stepper-btn')) {
+                const input = button.closest('.number-input-wrapper').querySelector('input[type="number"]');
+                const step = this.data.settings.stepperStep || 1;
+                const min = input.min !== '' ? parseFloat(input.min) : -Infinity;
+                let value = this.parseMoney(input.value) + (button.classList.contains('stepper-up') ? step : -step);
+                if (value < min) value = min;
+                input.value = value;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                return;
+            }
+
+            const { subId } = row.dataset;
+            if (button.classList.contains('btn-delete')) await this.deleteRow(tableKey, id, subId, row);
+            if (button.classList.contains('btn-expand')) this.expandClientRow(id);
+        }
+
+        addIncomeRow() { this.updateState(data => { data.income.unshift({ id: this.uuid(), date: this.getTodayDate(), price: '', count: data.settings.defaultItemCount || 1, totalAmount: 0, service: '', comment: '' }); }); }
+        addExpenseRow() { this.updateState(data => { data.expenses.unshift({ id: this.uuid(), date: this.getTodayDate(), price: '', count: data.settings.defaultItemCount || 1, totalAmount: 0, description: '' }); }); }
+        addClientRow() { this.updateState(data => { data.clients.unshift({ id: this.uuid(), date: this.getTodayDate(), amount: '', phone: '', plate: '', name: '', visits: [], cars:[] }); }); }
+        addDebtRow() { this.updateState(data => { data.debts.unshift({ id: this.uuid(), date: this.getTodayDate(), amount: '', name: '', phone: '', comment: '', isPaid: false }); }); }
+        addWarehouseRow() { this.updateState(data => { data.warehouse.unshift({ id: this.uuid(), name: '', quantity: 1 }); }); }
+
+        async deleteRow(tableKey, id, subId, rowElement) {
+            if (this.data.settings.confirmDelete && !await this.confirmAction({ text: "Удалить эту запись?" })) return;
+            
+            const animateAndRemove = () => {
+                this.updateState(data => {
+                    if (tableKey === 'clients' && subId) {
+                        const client = data.clients.find(c => c.id === id);
+                        if (client) client.visits = (client.visits || []).filter(v => v.id !== subId);
+                    } else {
+                        data[tableKey] = data[tableKey].filter(item => item.id !== id);
+                    }
+                });
+            };
+            
+            if (this.data.settings.animations) {
+                rowElement.classList.add('row-exit');
+                if (tableKey === 'clients' && !subId) {
+                    getAll(`#clientsTable tbody tr[data-id="${id}"]`).forEach(r => r.classList.add('row-exit'));
+                }
+                setTimeout(animateAndRemove, 400);
+            } else {
+                animateAndRemove();
+            }
+        }
+        
+        expandClientRow(clientId) {
+            this.updateState(data => {
+                const client = data.clients.find(c => c.id === clientId);
+                if (client) {
+                    if (!client.visits) client.visits = [];
+                    const plate = client.plate || '';
+                    client.visits.push({ id: this.uuid(), date: this.getTodayDate(), amount: '', plate: plate });
+                }
+            });
+        }
+
+        getNumberInputHTML(value, placeholder, min = 0, step = 1, dataKey) {
+            return `<div class="number-input-wrapper"><input type="number" step="${step}" min="${min}" placeholder="${placeholder}" value="${value}" data-key="${dataKey}"><div class="stepper-controls"><button type="button" class="stepper-btn stepper-up" aria-label="Увеличить">▲</button><button type="button" class="stepper-btn stepper-down" aria-label="Уменьшить">▼</button></div></div>`;
+        }
+        
+        renderAllTables() {
+            ['income', 'expenses', 'clients', 'debts', 'warehouse'].forEach(key => this.sortData(key));
+
+            const getFilteredData = (key, filter, fields) => {
+                if (!filter) return this.data[key];
+                const lowerFilter = filter.toLowerCase();
+                return this.data[key].filter(item => {
+                    const hasMatch = fields.some(field => String(item[field] || '').toLowerCase().includes(lowerFilter));
+                    if (hasMatch) return true;
+                    if (key === 'clients' && item.visits) {
+                        return item.visits.some(visit => String(visit.plate || '').toLowerCase().includes(lowerFilter));
+                    }
+                    return false;
+                });
+            };
+
+            const incomeData = getFilteredData('income', this.data.settings.incomeFilter, ['service', 'comment', 'date']);
+            const expensesData = getFilteredData('expenses', this.data.settings.expensesFilter, ['description', 'date']);
+            const clientsData = getFilteredData('clients', this.data.settings.clientsFilter, ['name', 'phone', 'plate', 'date']);
+            const debtsData = getFilteredData('debts', this.data.settings.debtsFilter, ['name', 'phone', 'comment', 'date']);
+            const warehouseData = getFilteredData('warehouse', this.data.settings.warehouseFilter, ['name']);
+            
+            this.renderTable(this.elements.incomeTableBody, incomeData, this.getIncomeRowHTML);
+            this.renderTable(this.elements.expensesTableBody, expensesData, this.getExpenseRowHTML);
+            this.renderClientsTable(clientsData);
+            this.renderTable(this.elements.warehouseTableBody, warehouseData, this.getWarehouseRowHTML);
+            const debtsToRender = this.data.settings.showPaidDebts ? debtsData : debtsData.filter(d => !d.isPaid);
+            this.renderTable(this.elements.debtsTableBody, debtsToRender, this.getDebtRowHTML);
+        }
+
+        renderTable(tbody, data, rowRenderer) {
+            tbody.innerHTML = data.map(item => rowRenderer.call(this, item)).join('');
+        }
+
+        renderClientsTable(clientsData) {
+            this.elements.clientsTableBody.innerHTML = clientsData.flatMap(client => {
+                const totalVisits = 1 + (client.visits?.length || 0);
+                const clientRow = `<tr data-id="${client.id}">
+                    <td><input type="date" value="${client.date || ''}" data-key="date"></td>
+                    <td>${this.getNumberInputHTML(client.amount || '', '0', 0, 0.01, 'amount')}</td>
+                    <td><input type="tel" placeholder="+7..." value="${client.phone || ''}" pattern="\\+?[0-9\\s\\-()]+" data-key="phone"></td>
+                    <td><input type="text" placeholder="А000АА00" value="${client.plate || ''}" pattern="[А-Яа-яA-Za-z0-9]+" data-key="plate"></td>
+                    <td><input type="text" placeholder="Имя" value="${client.name || ''}" data-key="name"></td>
+                    <td><input type="number" value="${totalVisits}" readonly style="background: transparent; border: none; text-align: center;"></td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-expand" title="Добавить посещение">+</button>
+                        <button class="btn-action btn-delete" title="Удалить клиента">&times;</button>
+                    </td>
+                </tr>`;
+
+                const visitRows = (client.visits || []).sort((a, b) => (b.date || '').localeCompare(a.date || '')).map(visit =>
+                    `<tr class="sub-row" data-id="${client.id}" data-sub-id="${visit.id}">
+                        <td><input type="date" value="${visit.date || ''}" data-key="date"></td>
+                        <td>${this.getNumberInputHTML(visit.amount || '', '0', 0, 0.01, 'amount')}</td>
+                        <td>&nbsp;</td>
+                        <td><input type="text" placeholder="Гос номер" value="${visit.plate || ''}" data-key="plate"></td>
+                        <td colspan="2">&nbsp;</td>
+                        <td class="actions-cell">
+                            <button class="btn-action btn-delete" title="Удалить посещение">&times;</button>
+                        </td>
+                    </tr>`
+                ).join('');
+
+                return clientRow + visitRows;
+            }).join('');
+        }
+
+        getIncomeRowHTML(item) {
+            return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}" data-key="date"></td><td>${this.getNumberInputHTML(item.price || '', '0', 0, 0.01, 'price')}</td><td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1, 'count')}</td><td>${this.getNumberInputHTML(item.totalAmount || '0', '0', 0, 0.01, 'totalAmount')}</td><td><input type="text" placeholder="Услуга" value="${item.service || ''}" list="service-templates-datalist-income" data-key="service"></td><td><input type="text" placeholder="Комментарий" value="${item.comment || ''}" data-key="comment"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
+        }
+        getExpenseRowHTML(item) {
+            return `<tr data-id="${item.id}"><td><input type="date" value="${item.date || ''}" data-key="date"></td><td>${this.getNumberInputHTML(item.price || '', '0', 0, 0.01, 'price')}</td><td>${this.getNumberInputHTML(item.count || 1, '1', 1, 1, 'count')}</td><td>${this.getNumberInputHTML(item.totalAmount || '0', '0', 0, 0.01, 'totalAmount')}</td><td><input type="text" placeholder="Описание" value="${item.description || ''}" list="service-templates-datalist-expense" data-key="description"></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
+        }
+        getDebtRowHTML(item) {
+            const isPaid = item.isPaid || false;
+            return `<tr data-id="${item.id}" class="${isPaid ? 'paid-debt' : ''}"><td><input type="date" value="${item.date || ''}" data-key="date"></td><td>${this.getNumberInputHTML(item.amount || '', '0', 0, 0.01, 'amount')}</td><td><input type="text" placeholder="Имя" value="${item.name || ''}" data-key="name"></td><td><input type="tel" placeholder="+7..." value="${item.phone || ''}" data-key="phone"></td><td><input type="text" placeholder="Комментарий" value="${item.comment || ''}" data-key="comment"></td><td class="status-cell"><label class="switch"><input type="checkbox" class="btn-status" ${isPaid ? 'checked' : ''}><span class="slider round"></span></label></td><td class="actions-cell"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
+        }
+        getWarehouseRowHTML(item) {
+            return `<tr data-id="${item.id}"><td><input type="text" placeholder="Название товара" value="${item.name || ''}" data-key="name"></td><td style="width: 150px;">${this.getNumberInputHTML(item.quantity || 1, '1', 0, 1, 'quantity')}</td><td class="actions-cell" style="width: 100px;"><button class="btn-action btn-delete" title="Удалить">&times;</button></td></tr>`;
+        }
+
+        updateAllCalculations() {
+            const todayStr = this.getTodayDate();
+            const incomeTodayArr = this.data.income.filter(i => i.date === todayStr);
+            const expensesTodayArr = this.data.expenses.filter(e => e.date === todayStr);
+            
+            const totalIncome = this.data.income.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
+            const totalExpenses = this.data.expenses.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
+            const incomeToday = incomeTodayArr.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
+            const expensesToday = expensesTodayArr.reduce((sum, item) => sum + this.parseMoney(item.totalAmount), 0);
+
+            const netProfit = totalIncome - totalExpenses;
+            const profitToday = incomeToday - expensesToday;
+            const totalDebt = this.data.debts.reduce((sum, item) => sum + (!item.isPaid ? this.parseMoney(item.amount) : 0), 0);
+            
+            const servicesCount = this.data.income.reduce((acc, item) => {
+                if(item.service) acc[item.service] = (acc[item.service] || 0) + 1;
+                return acc;
+            }, {});
+            const topService = Object.entries(servicesCount).sort((a,b) => b[1] - a[1])[0];
+            
+            let totalVisits = 0; let totalFromClients = 0;
+            const clientsData = this.data.clients.map(client => {
+                const clientVisitsCount = 1 + (client.visits?.length || 0);
+                const clientProfit = this.parseMoney(client.amount) + (client.visits || []).reduce((sum, visit) => sum + this.parseMoney(visit.amount), 0);
+                totalVisits += clientVisitsCount;
+                totalFromClients += clientProfit;
+                return { id: client.id, name: client.name, phone: client.phone, profit: clientProfit, visits: clientVisitsCount, avgCheck: clientVisitsCount > 0 ? clientProfit / clientVisitsCount : 0, date: client.date };
+            });
+
+            const cardValues = {
+                totalIncome: this.renderMoney(totalIncome),
+                totalExpenses: this.renderMoney(totalExpenses),
+                totalProfit: this.renderMoney(netProfit),
+                totalDebt: this.renderMoney(totalDebt),
+                avgIncome: this.renderMoney(this.data.income.length > 0 ? totalIncome / this.data.income.length : 0),
+                avgExpense: this.renderMoney(this.data.expenses.length > 0 ? totalExpenses / this.data.expenses.length : 0),
+                profitToday: this.renderMoney(profitToday),
+                incomeToday: this.renderMoney(incomeToday),
+                topService: (topService ? `${topService[0]} (${topService[1]} раз)` : 'Нет данных'),
+                incomeCount: this.data.income.length,
+                expenseCount: this.data.expenses.length,
+                transactionsToday: incomeTodayArr.length + expensesTodayArr.length,
+                totalClients: clientsData.length,
+                totalVisits: totalVisits,
+                avgClientCheck: this.renderMoney(totalVisits > 0 ? totalFromClients / totalVisits : 0),
+                newClientsToday: this.data.clients.filter(c => c.date === todayStr).length,
+                returningClients: clientsData.filter(c => c.visits > 1).length,
+                uniqueWarehousePositions: this.data.warehouse.length,
+                totalWarehouseItems: this.data.warehouse.reduce((sum, item) => sum + this.parseMoney(item.quantity), 0),
+            };
+
+            for(const [id, value] of Object.entries(cardValues)) {
+                const el = get(`#${id}`);
+                if(!el) continue;
+                const finalValue = String(value);
+                if (el.textContent !== finalValue) {
+                    el.textContent = finalValue;
+                    el.classList.add('updated');
+                    el.addEventListener('animationend', () => el.classList.remove('updated'), { once: true });
+                }
+            }
+            
+            const totalProfitEl = get('#totalProfit');
+            if(totalProfitEl) {
+                totalProfitEl.classList.toggle('positive', netProfit >= 0); 
+                totalProfitEl.classList.toggle('negative', netProfit < 0);
+            }
+            const profitTodayEl = get('#profitToday');
+            if(profitTodayEl) {
+                profitTodayEl.classList.toggle('positive', profitToday >= 0); 
+                profitTodayEl.classList.toggle('negative', profitToday < 0);
+            }
+            
+            this.updateSpecialClientCards(clientsData);
+        }
+
+        sanitizeHTML(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+        
+        updateSpecialClientCards(clientsData) {
+            if (clientsData.length === 0) {
+                this.updateClientCard('bestClientInfo', null, () => 'Нет данных');
+                this.updateClientCard('topClientVisits', null, () => 'Нет данных');
+                this.updateClientCard('newestClient', null, () => 'Нет данных');
+                return;
+            }
+
+            const bestByProfit = [...clientsData].sort((a,b) => b.profit - a.profit || b.visits - a.visits)[0];
+            const bestByVisits = [...clientsData].sort((a,b) => b.visits - a.visits || b.profit - a.profit)[0];
+            const newestClient = [...clientsData].sort((a,b) => (b.date || '').localeCompare(a.date || ''))[0];
+            
+            const formatClient = c => `<span class="highlight-text">${this.sanitizeHTML(c.name || 'Безымянный')}</span><br>Сумма: <span class="highlight-text">${this.renderMoney(c.profit)}</span> | Посещений: ${c.visits}`;
+            const formatVisits = c => `<span class="highlight-text">${this.sanitizeHTML(c.name || 'Безымянный')}</span><br>Посещений: <span class="highlight-text">${c.visits}</span> | Сумма: ${this.renderMoney(c.profit)}`;
+            const formatNewest = c => `<span class="highlight-text">${this.sanitizeHTML(c.name || 'Безымянный')}</span><br>Добавлен: ${c.date}`;
+
+            this.updateClientCard('bestClientInfo', bestByProfit, formatClient);
+            this.updateClientCard('topClientVisits', bestByVisits, formatVisits);
+            this.updateClientCard('newestClient', newestClient, formatNewest);
+        }
+
+        updateClientCard(cardId, client, formatter) {
+            const card = get(`#${cardId}Card`);
+            const valueEl = get(`#${cardId}`);
+            if(card && valueEl) {
+                card.classList.remove('hidden');
+                card.dataset.clientId = client ? client.id : '';
+                valueEl.innerHTML = client ? formatter(client) : 'Нет данных';
+            }
+        }
+
+        goToBestClient(clientId) {
+            if (!clientId) return;
+            this.switchTab('clients', () => {
+                const targetRow = get(`#clientsTable tbody tr[data-id="${clientId}"]`);
+                if (targetRow) {
+                    targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetRow.classList.add('highlight');
+                    setTimeout(() => targetRow.classList.remove('highlight'), 2000);
+                }
+            });
+        }
+
+        validateData(data) {
+            return data && typeof data === 'object' && (data.settings || data.income || data.expenses || data.clients || data.debts || data.todos || data.serviceTemplates || data.warehouse);
+        }
+        
+        migrateData(data) {
+            if (!data || typeof data !== 'object') return this.getDefaultData();
+            const defaultData = this.getDefaultData();
+            if (data.settings && data.settings.version) delete data.settings.version;
+            Object.keys(defaultData).forEach(key => {
+                if (!data.hasOwnProperty(key) && Array.isArray(defaultData[key])) {
+                    data[key] = [];
+                }
+            });
+            if (!data.settings || typeof data.settings !== 'object') {
+                data.settings = defaultData.settings;
+            } else {
+                data.settings = {...defaultData.settings, ...data.settings};
+            }
+            return data;
+        }
+
+        loadData() {
+            let savedData = localStorage.getItem('tireServiceData_v4');
+            if (savedData) {
+                try { 
+                    this.loadState(JSON.parse(savedData), true);
+                    this.showToast('Данные загружены', 'success');
+                } catch (e) { 
+                    this.loadState(this.getDefaultData(), true);
+                    this.showToast('Данные повреждены, загружен стандартный набор', 'danger'); 
+                }
+            } else { 
+                this.loadState(this.getDefaultData(), true); 
+            }
+        }
+        
+        exportData(keysToExport = null) {
+            let dataToExport;
+            if (keysToExport) {
+                dataToExport = {};
+                keysToExport.forEach(key => {
+                    if (this.data.hasOwnProperty(key)) {
+                        dataToExport[key] = this.data[key];
+                    }
+                });
+            } else {
+                dataToExport = this.data;
+            }
+            const json = JSON.stringify(dataToExport, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tire_service_data_${this.getTodayDate()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            this.showToast('Данные экспортированы', 'success');
+        }
+
+        triggerImport(mode) {
+            this.elements.importChoiceModal.classList.remove('visible');
+            const fileInput = this.elements.importFileInput;
+            fileInput.dataset.importMode = mode;
+            fileInput.click();
+        }
+        
+        async handleFileImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const mode = e.target.dataset.importMode;
+            const confirmText = mode === 'replace' 
+                ? "ЗАМЕНИТЬ все текущие данные данными из файла? Это действие необратимо."
+                : "Объединить данные из файла с текущими?";
+            const confirmClass = mode === 'replace' ? 'danger' : 'success';
+
+            if (this.data.settings.confirmImport && !await this.confirmAction({ text: confirmText, confirmClass: confirmClass })) {
+                e.target.value = '';
+                return;
+            }
+
+            this.elements.loadingOverlay.classList.add('visible');
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const parsed = JSON.parse(event.target.result);
+                    if (!this.validateData(parsed)) {
+                        this.showToast('Неверный формат файла импорта.', 'danger');
+                        return;
+                    }
+                    
+                    const migrated = this.migrateData(parsed);
+
+                    this.updateState(data => {
+                        if (mode === 'replace') {
+                            const settings = data.settings;
+                            const defaultData = this.getDefaultData();
+                            Object.keys(defaultData).forEach(key => {
+                                if (Array.isArray(defaultData[key])) data[key] = [];
+                            });
+                            data.settings = settings;
+                        }
+                        
+                        let newItemsCount = 0;
+                        Object.keys(migrated).forEach(key => {
+                            if (key === 'settings') {
+                                data.settings = { ...data.settings, ...migrated.settings };
+                            } else if (Array.isArray(data[key]) && Array.isArray(migrated[key])) {
+                                if (mode === 'replace') {
+                                    data[key] = migrated[key];
+                                } else {
+                                    const existingIds = new Set(data[key].map(i => i.id).filter(Boolean));
+                                    const newItems = migrated[key].filter(newItem => newItem.id && !existingIds.has(newItem.id));
+                                    if (newItems.length > 0) {
+                                        data[key].push(...newItems);
+                                        newItemsCount += newItems.length;
+                                    }
+                                }
+                            }
+                        });
+
+                        if(mode === 'replace') this.showToast('Данные успешно заменены.', 'success');
+                        else this.showToast(`Данные объединены. Добавлено ${newItemsCount} новых записей.`, 'success');
+
+                    }, true);
+
+                } catch (err) {
+                    this.showToast('Ошибка чтения файла импорта.', 'danger');
+                    console.error(err);
+                } finally {
+                    this.elements.loadingOverlay.classList.remove('visible');
+                    e.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        showPartialExportModal() {
+            this.elements.exportChoiceModal.classList.remove('visible');
+            const container = get('#partialExportCheckboxes');
+            const categories = {
+                income: 'Доходы', expenses: 'Расходы', clients: 'Клиенты',
+                debts: 'Долги', todos: 'Заметки', serviceTemplates: 'Шаблоны', 
+                warehouse: 'Склад', settings: 'Настройки'
+            };
+            container.innerHTML = Object.entries(categories).map(([key, label]) => 
+                `<label class="checkbox-label" style="justify-content: flex-start;"><input type="checkbox" data-export-key="${key}" checked><span>${label}</span></label>`
+            ).join('');
+            this.elements.partialExportModal.classList.add('visible');
+        }
+
+        exportPartialData() {
+            const selectedKeys = [...getAll('#partialExportCheckboxes input:checked')].map(input => input.dataset.exportKey);
+            if (selectedKeys.length === 0) {
+                this.showToast('Выберите хотя бы одну категорию для экспорта', 'warning');
+                return;
+            }
+            this.exportData(selectedKeys);
+            this.elements.partialExportModal.classList.remove('visible');
+        }
+        
+        async clearAllData() { 
+            if (await this.confirmAction({text: 'Вы уверены? Это действие необратимо.'})) {
+                const settings = this.data.settings;
+                this.updateState(data => {
+                    Object.keys(data).forEach(key => { if(Array.isArray(data[key])) data[key] = [] });
+                    data.settings = settings;
+                }); 
+                this.showToast('Все данные удалены (настройки сохранены)', 'warning');
+            }
+        }
+
+        copySummary() { 
+            this.updateAllCalculations(); let text = 'Сводка:\n'; 
+            getAll('.summary-category').forEach(cat => { 
+                text += `\n--- ${cat.querySelector('h2').textContent.replace('Настроить', '').trim()} ---\n`; 
+                cat.querySelectorAll('.result-card:not(.hidden)').forEach(card => {
+                     const label = card.querySelector('.label')?.textContent.trim() || '';
+                     const value = card.querySelector('.value')?.textContent.trim() || '';
+                     text += `${label}: ${value.replace(/\s+/g, ' ')}\n`; 
+                }); 
+            }); 
+            this.copyToClipboard(text.trim()); 
+        }
+        
+        copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => this.showToast('Скопировано!', 'success'), () => this.showToast('Ошибка копирования', 'danger')); }
+        
+        applySettings() {
+            const s = this.data.settings;
+            document.body.className = '';
+            if (s.theme === 'light') document.body.classList.add('light-theme');
+            if (!s.animations) document.body.classList.add('animations-disabled');
+            if (s.tableDensity && s.tableDensity !== 'normal') document.body.classList.add(`table-density-${s.tableDensity}`);
+            if (s.fontSize && s.fontSize !== 'normal') document.body.classList.add(`font-size-${s.fontSize}`);
+            document.documentElement.style.setProperty('--primary', s.primaryColor);
+            
+            this.elements.primaryColorPicker.value = s.primaryColor;
+            this.elements.currencySymbol.value = s.currency;
+            this.elements.defaultItemCountInput.value = s.defaultItemCount;
+            this.elements.stepperStepInput.value = s.stepperStep;
+            this.updateSettingsUI('#theme-switcher', 'theme', s.theme);
+            this.updateSettingsUI('#animation-switcher', 'anim', s.animations ? 'on' : 'off');
+            this.updateSettingsUI('#density-switcher', 'density', s.tableDensity);
+            this.updateSettingsUI('#font-size-switcher', 'size', s.fontSize);
+            this.updateSettingsUI('#confirm-delete-switcher', 'confirm', s.confirmDelete ? 'on' : 'off');
+            this.updateSettingsUI('#best-client-metric-switcher', 'metric', s.bestClientMetric);
+            this.updateSettingsUI('#show-paid-debts-switcher', 'show', s.showPaidDebts ? 'on' : 'off');
+            this.updateSettingsUI('#auto-capitalize-switcher', 'capitalize', s.autoCapitalize ? 'on' : 'off');
+            this.updateSettingsUI('#confirm-import-switcher', 'import', s.confirmImport ? 'on' : 'off');
+            this.elements.defaultTabSelect.value = s.defaultTab;
+            this.elements.autoBackupSelect.value = s.autoBackup;
+        }
+        
+        updateSetting(key, value, recordHistory = true) { this.updateState(data => { data.settings[key] = value; }, recordHistory); }
+        updateSettingsUI(containerId, dataAttr, value) { getAll(`${containerId} button`).forEach(btn => btn.classList.toggle('active', btn.dataset[dataAttr] == value)); }
+        
+        async resetSettings() { 
+            if(await this.confirmAction({text: 'Сбросить все настройки к значениям по умолчанию?'})) {
+                this.updateState(data => { data.settings = this.getDefaultData().settings; });
+            }
+        }
+
+        switchTab(tabName, callback, record = true) {
+            get('.tab.active')?.classList.remove('active');
+            get('.tab-content.active')?.classList.remove('active');
+            const newTab = get(`.tab[data-tab="${tabName}"]`);
+            const newContent = get(`#${tabName}`);
+            if (newTab) newTab.classList.add('active');
+            if (newContent) newContent.classList.add('active');
+            if (record) this.updateSetting('activeTab', tabName, false);
+            if (callback) setTimeout(callback, 50);
+        }
+
+        addOrUpdateServiceTemplate() {
+            const { templateName, templatePrice, templateCount, templateType } = this.elements;
+            const name = templateName.value.trim();
+            const price = this.parseMoney(templatePrice.value);
+            const count = parseInt(templateCount.value) || 1;
+            
+            if (!name || price <= 0) { this.showToast('Введите корректное название и цену', 'danger'); return; }
+            
+            const isDuplicate = this.data.serviceTemplates.some((t, i) => t.name.toLowerCase() === name.toLowerCase() && i !== this.editingTemplateIndex);
+            if (isDuplicate) { this.showToast('Шаблон с таким названием уже существует', 'danger'); return; }
+
+            this.updateState(data => {
+                if (this.editingTemplateIndex !== null) { data.serviceTemplates[this.editingTemplateIndex] = { name, price, count, type: templateType.value };
+                } else { data.serviceTemplates.push({ name, price, count, type: templateType.value }); }
+            });
+            this.resetTemplateForm();
+        }
+        
+        editServiceTemplate(index) {
+            const template = this.data.serviceTemplates[index];
+            if (!template) return;
+            this.editingTemplateIndex = index;
+            this.elements.templateName.value = template.name;
+            this.elements.templatePrice.value = template.price;
+            this.elements.templateCount.value = template.count;
+            this.elements.templateType.value = template.type;
+            this.elements.addServiceTemplateBtn.textContent = 'Сохранить';
+            this.elements.addServiceTemplateBtn.classList.add('success');
+            this.elements.cancelEditTemplateBtn.style.display = 'inline-flex';
+            this.elements.templateName.focus();
+        }
+
+        resetTemplateForm() {
+            this.editingTemplateIndex = null;
+            this.elements.templateName.value = ''; 
+            this.elements.templatePrice.value = '';
+            this.elements.templateCount.value = '1'; 
+            this.elements.templateType.value = 'income';
+            const btn = this.elements.addServiceTemplateBtn;
+            btn.textContent = 'Добавить'; 
+            btn.classList.remove('success');
+            this.elements.cancelEditTemplateBtn.style.display = 'none';
+        }
+
+        async deleteServiceTemplate(index) { 
+            if (this.data.settings.confirmDelete && !await this.confirmAction({text: "Удалить этот шаблон?"})) return;
+            this.updateState(data => { data.serviceTemplates.splice(index, 1); }); 
+        }
+
+        renderServiceTemplates() { 
+            const list = this.elements.serviceTemplatesList;
+            const incomeDatalist = get('#service-templates-datalist-income');
+            const expenseDatalist = get('#service-templates-datalist-expense');
+            list.innerHTML = ''; incomeDatalist.innerHTML = ''; expenseDatalist.innerHTML = '';
+            (this.data.serviceTemplates || []).forEach((template, index) => {
+                list.innerHTML += `<div class="template-item ${template.type === 'income' ? 'income-template' : 'expense-template'}" data-index="${index}"><span>${template.name} - ${template.count}шт x ${this.renderMoney(template.price)}</span><div class="template-actions"><button class="btn-action btn-edit" title="Редактировать"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button><button class="btn-action btn-delete" title="Удалить">&times;</button></div></div>`;
+                const option = `<option value="${template.name}">`;
+                template.type === 'income' ? incomeDatalist.innerHTML += option : expenseDatalist.innerHTML += option;
+            }); 
+        }
+
+        sortData(tableKey) {
+            const sortState = this.data.settings.sort[tableKey];
+            if (!sortState || !sortState.key) return;
+            this.data[tableKey].sort((a, b) => {
+                let valA = a[sortState.key], valB = b[sortState.key];
+                if (['amount', 'count', 'price', 'totalAmount', 'quantity'].includes(sortState.key)) { valA = this.parseMoney(valA); valB = this.parseMoney(valB);
+                } else if (typeof valA === 'string') { valA = valA.toLowerCase(); valB = String(valB || '').toLowerCase(); }
+                const result = valA < valB ? -1 : valA > valB ? 1 : 0;
+                return sortState.dir === 'asc' ? result : -result;
+            });
+        }
+
+        sortTable(tableKey, newKey) {
+            const sortState = this.data.settings.sort[tableKey];
+            const newDir = (sortState.key === newKey && sortState.dir === 'desc') ? 'asc' : 'desc';
+            this.updateState(data => { data.settings.sort[tableKey] = { key: newKey, dir: newDir }; }, false);
+        }
+
+        updateSortHeaders() {
+            this.elements.allSortableHeaders.forEach(th => { th.classList.remove('sort-asc', 'sort-desc'); th.setAttribute('aria-sort', 'none'); });
+            Object.entries(this.data.settings.sort).forEach(([key, sortState]) => {
+                if (sortState && sortState.key) {
+                    const header = get(`#${key}Table th[data-sort-key="${sortState.key}"]`);
+                    if (header) {
+                        header.classList.add(`sort-${sortState.dir}`);
+                        header.setAttribute('aria-sort', sortState.dir === 'asc' ? 'ascending' : 'descending');
+                    }
+                }
+            });
+        }
+        
+        renderDashboard() {
+            const renderContainer = (containerId, cards, visibleKeys) => {
+                const container = get(containerId);
+                container.innerHTML = Object.entries(cards).map(([id, card], index) => {
+                    if (!visibleKeys.includes(id)) return '';
+                    const specialClass = card.specialClass || '';
+                    return `<div class="result-card ${specialClass}" id="${id}Card" data-card-id="${id}" style="animation-delay: ${index*0.05}s;"><div class="label">${card.label}</div><div class="value" id="${id}">0</div></div>`;
+                }).join('');
+            };
+            renderContainer('#dashboardCardsContainer', this.dashboardCards, this.data.settings.visibleDashboardCards);
+            renderContainer('#dashboardClientCardsContainer', this.clientCards, this.data.settings.visibleClientCards);
+        }
+
+        showDashboardSettingsModal() {
+            const populateCheckboxes = (containerId, cardDefs, visibleKeys) => {
+                const container = get(containerId);
+                container.innerHTML = Object.entries(cardDefs).map(([id, card]) => `<label class="checkbox-label"><input type="checkbox" data-card-id="${id}" ${visibleKeys.includes(id) ? 'checked' : ''}><span>${card.label}</span></label>`).join('');
+            };
+            populateCheckboxes('#main-cards-settings', this.dashboardCards, this.data.settings.visibleDashboardCards);
+            populateCheckboxes('#client-cards-settings', this.clientCards, this.data.settings.visibleClientCards);
+            this.elements.dashboardSettingsModal.classList.add('visible');
+        }
+
+        saveDashboardSettings() {
+            const getSelected = (containerId) => [...getAll(`${containerId} input:checked`)].map(input => input.dataset.cardId);
+            this.updateState(d => {
+                d.settings.visibleDashboardCards = getSelected('#main-cards-settings');
+                d.settings.visibleClientCards = getSelected('#client-cards-settings');
+            });
+            this.elements.dashboardSettingsModal.classList.remove('visible');
+            this.showToast('Настройки главной страницы сохранены', 'success');
+        }
+        
+        renderTodos() {
+            const sortedTodos = (this.data.todos || []).sort((a,b) => a.completed - b.completed || (b.id || '').localeCompare(a.id || ''));
+            this.elements.todoList.innerHTML = sortedTodos.map(todo => `<div class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}"><label class="switch" style="margin-top: 5px;"><input type="checkbox" ${todo.completed ? 'checked' : ''}><span class="slider round"></span></label><textarea class="todo-text" rows="1">${this.sanitizeHTML(todo.text)}</textarea><button class="btn-action btn-delete" title="Удалить" style="margin-top: 5px;">&times;</button></div>`).join('');
+            this.elements.todoList.querySelectorAll('.todo-text').forEach(this.autoResizeTextarea);
+        }
+        
+        addTodo() { const text = this.elements.newTodoInput.value.trim(); if(!text) return; this.updateState(d => { if(!d.todos) d.todos = []; d.todos.unshift({id: this.uuid(), text: text, completed: false }); }); this.elements.newTodoInput.value = ''; }
+        handleTodoChange(textarea) { const id = textarea.closest('.todo-item').dataset.id; this.updateState(d => { const todo = d.todos.find(t => t.id === id); if(todo) todo.text = textarea.value; }); this.showSavedToast(); }
+        autoResizeTextarea(textarea) { textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px'; }
+        toggleTodo(id) { this.updateState(d => { const todo = d.todos.find(t => t.id === id); if(todo) todo.completed = !todo.completed; }); this.showSavedToast(); }
+        deleteTodo(id) { this.updateState(d => { d.todos = d.todos.filter(t => t.id !== id); }); }
+        
+        generateReport() {
+            const start = this.elements.reportStartDate.value, end = this.elements.reportEndDate.value;
+            if(!start || !end) { this.showToast('Выберите период', 'danger'); return; }
+            const filteredIncome = this.data.income.filter(i => i.date >= start && i.date <= end);
+            const filteredExpenses = this.data.expenses.filter(e => e.date >= start && e.date <= end);
+            const totalIncome = filteredIncome.reduce((s, i) => s + this.parseMoney(i.totalAmount), 0);
+            const totalExpenses = filteredExpenses.reduce((s, i) => s + this.parseMoney(i.totalAmount), 0);
+            const netProfit = totalIncome - totalExpenses;
+            const topService = Object.entries(filteredIncome.reduce((acc, item) => { if(item.service) acc[item.service] = (acc[item.service] || 0) + 1; return acc; }, {})).sort((a,b) => b[1] - a[1])[0];
+            this.elements.reportResults.innerHTML = `<div class="report-section"><h3>Отчет за период с ${start} по ${end}</h3><div class="report-grid"><div class="report-item"><div class="report-item-label">Доход</div><div class="report-item-value positive">${this.renderMoney(totalIncome)}</div></div><div class="report-item"><div class="report-item-label">Расход</div><div class="report-item-value negative">${this.renderMoney(totalExpenses)}</div></div><div class="report-item"><div class="report-item-label">Прибыль</div><div class="report-item-value ${netProfit >= 0 ? 'positive' : 'negative'}">${this.renderMoney(netProfit)}</div></div><div class="report-item"><div class="report-item-label">Кол-во чеков</div><div class="report-item-value">${filteredIncome.length}</div></div><div class="report-item"><div class="report-item-label">Средний чек</div><div class="report-item-value">${this.renderMoney(filteredIncome.length > 0 ? totalIncome/filteredIncome.length : 0)}</div></div><div class="report-item"><div class="report-item-label">Топ услуга</div><div class="report-item-value">${topService ? `${topService[0]} (${topService[1]} раз)` : 'Нет'}</div></div></div></div>`;
+        }
+
+        handleCalculatorInput(key) {
+            let state = this.miniCalculatorState;
+            if (/\d/.test(key)) { this.inputDigit(key, state); }
+            else if (key === '.') { this.inputDecimal(state); }
+            else if (['+', '-', '*', '/'].includes(key)) { this.handleOperator(key, state); }
+            else if (key === '=') { this.handleEquals(state); }
+            else if (key === 'clear') { this.resetCalculator(state); }
+            else if (key === 'backspace') { this.backspace(state); }
+            else if (key === 'percent') { this.handlePercent(state); }
+            this.updateCalculatorDisplay();
+        }
+        inputDigit(digit, state) { if (state.waitingForSecondOperand) { state.displayValue = digit; state.waitingForSecondOperand = false; } else { state.displayValue = state.displayValue === '0' ? digit : state.displayValue + digit; } }
+        inputDecimal(state) { if (state.waitingForSecondOperand) { state.displayValue = '0.'; state.waitingForSecondOperand = false; return; } if (!state.displayValue.includes('.')) { state.displayValue += '.'; } }
+        handleOperator(nextOperator, state) {
+            const { firstOperand, displayValue, operator } = state; const inputValue = parseFloat(displayValue);
+            if (operator && state.waitingForSecondOperand) { state.operator = nextOperator; return; }
+            if (firstOperand === null) { state.firstOperand = inputValue; } 
+            else if (operator) { const result = this.calculate(firstOperand, inputValue, operator); state.displayValue = `${parseFloat(result.toFixed(7))}`; state.firstOperand = result; }
+            state.waitingForSecondOperand = true; state.operator = nextOperator;
+        }
+        calculate(first, second, op) { if (op === '+') return first + second; if (op === '-') return first - second; if (op === '*') return first * second; if (op === '/') return second !== 0 ? first / second : 'Ошибка'; return second; }
+        handleEquals(state) { const { firstOperand, displayValue, operator } = state; if (firstOperand === null || operator === null) return; const result = this.calculate(firstOperand, parseFloat(displayValue), operator); state.displayValue = `${parseFloat(result.toFixed(7))}`; state.firstOperand = null; state.operator = null; state.waitingForSecondOperand = false; }
+        resetCalculator(state) { state.displayValue = '0'; state.firstOperand = null; state.waitingForSecondOperand = false; state.operator = null; }
+        backspace(state) { state.displayValue = state.displayValue.slice(0, -1) || '0'; }
+        handlePercent(state) { state.displayValue = `${parseFloat(state.displayValue) / 100}`; }
+        updateCalculatorDisplay() {
+            const display = this.elements.miniCalcDisplay;
+            let value = this.miniCalculatorState.displayValue;
+            const baseFontSize = 2, threshold = 12;
+            display.style.fontSize = value.length > threshold ? `${Math.max(baseFontSize/2, baseFontSize - (value.length - threshold) * 0.15)}em` : `${baseFontSize}em`;
+            display.textContent = value;
+        }
+
+        toggleMiniCalc() { this.elements.miniCalcContainer.classList.toggle('visible'); }
+        setupMiniCalcListeners() {
+            const { miniCalcContainer, miniCalcHeader, miniCalcCloseBtn, miniCalcKeys } = this.elements;
+            miniCalcCloseBtn.addEventListener('click', () => this.toggleMiniCalc());
+            miniCalcKeys.addEventListener('click', e => e.target.matches('button') && this.handleCalculatorInput(e.target.dataset.key));
+            let isDragging = false, offsetX, offsetY;
+            miniCalcHeader.addEventListener('mousedown', e => { isDragging = true; offsetX = e.clientX - miniCalcContainer.offsetLeft; offsetY = e.clientY - miniCalcContainer.offsetTop; miniCalcContainer.style.transition = 'none'; });
+            document.addEventListener('mousemove', e => { if (isDragging) { miniCalcContainer.style.left = `${e.clientX - offsetX}px`; miniCalcContainer.style.top = `${e.clientY - offsetY}px`; } });
+            document.addEventListener('mouseup', () => { isDragging = false; miniCalcContainer.style.transition = ''; });
+        }
+
+        handleAutoBackup() {
+            const backupSetting = this.data.settings.autoBackup;
+            if (backupSetting === '0' || !backupSetting) return;
+            const interval = backupSetting === 'hourly' ? 3600000 : parseInt(backupSetting) * 86400000;
+            if (isNaN(interval)) return;
+            const now = Date.now();
+            const lastBackup = parseInt(localStorage.getItem('tireServiceBackupTimestamp_v4') || '0');
+            if (now - lastBackup > interval) {
+                const currentData = localStorage.getItem('tireServiceData_v4');
+                if (currentData) {
+                    localStorage.setItem('tireServiceBackupData_v4', currentData);
+                    localStorage.setItem('tireServiceBackupTimestamp_v4', now.toString());
+                    this.showToast('Создана автоматическая резервная копия', 'info');
+                }
+            }
+        }
+        
+        async saveBackupNow() {
+            if (!await this.confirmAction({text: 'Создать новую резервную копию? Это перезапишет предыдущую.', confirmClass: 'info'})) return;
+            try {
+                const currentData = localStorage.getItem('tireServiceData_v4');
+                if (currentData) {
+                    localStorage.setItem('tireServiceBackupData_v4', currentData);
+                    localStorage.setItem('tireServiceBackupTimestamp_v4', Date.now().toString());
+                    this.showToast('Резервная копия успешно сохранена!', 'success');
+                } else {
+                     this.showToast('Нет данных для сохранения.', 'warning');
+                }
+            } catch (e) {
+                this.showToast('Ошибка при создании резервной копии.', 'danger');
+                console.error(e);
+            }
+        }
+
+        async restoreFromBackup() {
+            const backupData = localStorage.getItem('tireServiceBackupData_v4');
+            if (!backupData) {
+                this.showToast('Резервная копия не найдена', 'warning');
+                return;
+            }
+            const lastBackupTimestamp = parseInt(localStorage.getItem('tireServiceBackupTimestamp_v4') || '0');
+            const backupDate = new Date(lastBackupTimestamp).toLocaleString();
+            if (await this.confirmAction({text: `Восстановить данные из резервной копии от ${backupDate}? Текущие данные будут полностью заменены.`, confirmClass: 'warning'})) {
+                try {
+                    const parsed = JSON.parse(backupData);
+                    this.loadState(parsed, true);
+                    this.showToast('Данные успешно восстановлены из копии', 'success');
+                } catch (e) {
+                    this.showToast('Ошибка восстановления: файл копии поврежден', 'danger');
+                }
+            }
+        }
+
+        performGlobalPhoneSearch(query) {
+            const searchTerm = query.trim();
+            if (!searchTerm) {
+                this.elements.globalSearchResults.innerHTML = '';
+                return;
+            }
+            const results = [];
+            const cleanQuery = searchTerm.replace(/[\s-()+]/g, '');
+            if (cleanQuery) {
+                this.data.clients.forEach(client => {
+                    const clientPhone = (client.phone || '').replace(/[\s-()+]/g, '');
+                    if (clientPhone.includes(cleanQuery)) {
+                        results.push({ type: 'clients', label: 'Клиент', data: client });
+                    }
+                });
+                this.data.debts.forEach(debt => {
+                    const debtPhone = (debt.phone || '').replace(/[\s-()+]/g, '');
+                    if (debtPhone.includes(cleanQuery)) {
+                        results.push({ type: 'debts', label: 'Долг', data: debt });
+                    }
+                });
+            }
+            this.renderGlobalSearchResults(results, searchTerm);
+        }
+
+        renderGlobalSearchResults(results, searchTerm) {
+            const container = this.elements.globalSearchResults;
+            if (results.length === 0) {
+                container.innerHTML = `<div class="search-result-wrapper"><h2>Поиск по номеру</h2><p style="padding: 15px 0;">Ничего не найдено.</p></div>`;
+                return;
+            }
+            const highlight = (text) => this.sanitizeHTML(text).replace(new RegExp(searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), (match) => `<mark>${match}</mark>`);
+            container.innerHTML = `<div class="search-result-wrapper"><h2>Результаты поиска по номеру</h2>` + results.map(res => {
+                const { type, label, data } = res;
+                let details = '';
+                if (type === 'clients') {
+                    details = `<p><strong>Имя:</strong> ${this.sanitizeHTML(data.name) || 'N/A'}</p><p><strong>Телефон:</strong> ${highlight(data.phone || 'N/A')}</p><p><strong>Гос. номер:</strong> ${this.sanitizeHTML(data.plate) || 'N/A'}</p>`;
+                } else if (type === 'debts') {
+                    details = `<p><strong>Кто должен:</strong> ${this.sanitizeHTML(data.name) || 'N/A'}</p><p><strong>Телефон:</strong> ${highlight(data.phone || 'N/A')}</p><p><strong>Сумма:</strong> ${this.renderMoney(data.amount)}</p><p><strong>Статус:</strong> ${data.isPaid ? 'Оплачен' : 'Не оплачен'}</p>`;
+                }
+                return `<div class="search-result-card"><div class="search-result-header"><span class="search-result-title">${label}</span><button class="button info" data-goto-type="${type}" data-goto-id="${data.id}">Перейти</button></div><div class="search-result-body">${details}</div></div>`;
+            }).join('') + `</div>`;
+        }
+        
+        handleSearchResultClick(event) {
+            const button = event.target.closest('button[data-goto-id]');
+            if (!button) return;
+            const { gotoType, gotoId } = button.dataset;
+            this.switchTab(gotoType, () => {
+                const targetRow = get(`#${gotoType}Table tbody tr[data-id="${gotoId}"]`);
+                if (targetRow) {
+                    targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    getAll(`#${gotoType}Table tbody tr`).forEach(r => r.classList.remove('highlight', 'keyboard-focus'));
+                    targetRow.classList.add('highlight');
+                    setTimeout(() => targetRow.classList.remove('highlight'), 2500);
+                }
+            });
+        }
+    }
     const app = new TireServiceApp();
     app.init();
 });
 </script>
 </body>
 </html>
-
