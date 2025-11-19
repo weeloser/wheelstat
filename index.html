@@ -15,158 +15,177 @@
     --primary-glow: rgba(59, 130, 246, 0.4);
     --bg-body: #0f172a;
     --bg-card: rgba(30, 41, 59, 0.7);
-    --bg-card-hover: rgba(51, 65, 85, 0.8);
+    --bg-card-hover: rgba(51, 65, 85, 0.9);
+    --bg-input: rgba(15, 23, 42, 0.5);
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    --border: rgba(148, 163, 184, 0.1);
+    --border: rgba(148, 163, 184, 0.15);
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
-    --radius: 16px;
-    --nav-height: 70px;
+    --radius: 18px;
+    --nav-height: 76px;
     --sidebar-width: 280px;
-    --header-height: 70px;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --glass: blur(12px) saturate(180%);
+    --header-height: 72px;
+    --transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --glass: blur(16px) saturate(180%);
+    --font-scale: 1;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; font-size: 15px; background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 20%); }
+body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; font-size: calc(15px * var(--font-scale)); background-image: radial-gradient(circle at 5% 10%, rgba(var(--primary-rgb), 0.15) 0%, transparent 25%), radial-gradient(circle at 95% 90%, rgba(16, 185, 129, 0.08) 0%, transparent 25%); transition: background 0.5s ease; }
 body.light-theme {
-    --bg-body: #f1f5f9;
-    --bg-card: rgba(255, 255, 255, 0.8);
-    --bg-card-hover: rgba(255, 255, 255, 1);
-    --text-main: #0f172a;
+    --bg-body: #f0f4f8;
+    --bg-card: rgba(255, 255, 255, 0.85);
+    --bg-card-hover: #ffffff;
+    --bg-input: rgba(241, 245, 249, 0.8);
+    --text-main: #1e293b;
     --text-muted: #64748b;
-    --border: rgba(148, 163, 184, 0.2);
-    background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+    --border: rgba(148, 163, 184, 0.25);
 }
-body.compact-mode { font-size: 13px; --radius: 12px; }
+body.no-anim * { animation: none !important; transition: none !important; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-input, select, textarea, button { font-family: inherit; border: none; background: transparent; color: inherit; }
+input, select, textarea, button { font-family: inherit; border: none; background: transparent; color: inherit; font-size: inherit; }
 button { cursor: pointer; user-select: none; }
 .app-container { display: flex; width: 100%; height: 100%; position: relative; z-index: 1; }
-.sidebar { width: var(--sidebar-width); background: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); z-index: 20; transition: var(--transition); }
-.logo-area { height: var(--header-height); display: flex; align-items: center; padding: 0 24px; font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; color: var(--text-main); border-bottom: 1px solid var(--border); gap: 12px; }
-.logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 10px; display: grid; place-items: center; color: white; box-shadow: 0 4px 12px var(--primary-glow); }
-.nav-menu { flex: 1; overflow-y: auto; padding: 20px 12px; display: flex; flex-direction: column; gap: 6px; }
-.nav-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; color: var(--text-muted); text-decoration: none; border-radius: 12px; transition: var(--transition); font-weight: 500; position: relative; overflow: hidden; }
-.nav-item:hover { background: rgba(59, 130, 246, 0.08); color: var(--primary-light); }
-.nav-item.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), transparent); color: var(--primary); border-left: 3px solid var(--primary); }
-.nav-item svg { width: 22px; height: 22px; stroke-width: 2px; transition: var(--transition); }
-.nav-item.active svg { transform: scale(1.1); stroke: var(--primary); }
+.sidebar { width: var(--sidebar-width); background: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); z-index: 20; transition: width 0.3s ease; }
+.logo-area { height: var(--header-height); display: flex; align-items: center; padding: 0 28px; font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; color: var(--text-main); border-bottom: 1px solid var(--border); gap: 14px; }
+.logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 12px; display: grid; place-items: center; color: white; box-shadow: 0 8px 16px var(--primary-glow); position: relative; overflow: hidden; }
+.logo-icon::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(rgba(255,255,255,0.2), transparent); }
+.nav-menu { flex: 1; overflow-y: auto; padding: 24px 16px; display: flex; flex-direction: column; gap: 8px; }
+.nav-item { display: flex; align-items: center; gap: 16px; padding: 14px 18px; color: var(--text-muted); text-decoration: none; border-radius: 14px; transition: all 0.2s ease; font-weight: 600; position: relative; overflow: hidden; }
+.nav-item:hover { background: rgba(255, 255, 255, 0.03); color: var(--text-main); }
+.nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 20px var(--primary-glow); }
+.nav-item.active svg { stroke: white; transform: scale(1.1); }
+.nav-item svg { width: 22px; height: 22px; stroke-width: 2px; transition: transform 0.3s ease; }
 .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-.top-header { height: var(--header-height); background: var(--bg-card); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 10; }
-.header-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
-.header-actions { display: flex; gap: 12px; }
-.icon-btn { width: 42px; height: 42px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-main); display: grid; place-items: center; font-size: 1.2rem; transition: var(--transition); }
-.icon-btn:hover { background: var(--bg-card-hover); border-color: var(--primary); color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.icon-btn:active { transform: scale(0.95); }
-.content-scroll { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 100px; scroll-behavior: smooth; }
-.tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.top-header { height: var(--header-height); background: var(--bg-card); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 10; }
+.header-title { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.8px; opacity: 0; animation: slideInLeft 0.5s forwards 0.1s; }
+.header-actions { display: flex; gap: 14px; }
+.icon-btn { width: 46px; height: 46px; border-radius: 14px; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); display: grid; place-items: center; font-size: 1.25rem; transition: all 0.2s ease; }
+.icon-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); background: var(--bg-card-hover); }
+.icon-btn:active { transform: scale(0.92); }
+.content-scroll { flex: 1; overflow-y: auto; padding: 32px; padding-bottom: 120px; scroll-behavior: smooth; mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%); -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%); }
+.tab-content { display: none; }
 .tab-content.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(15px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 30px; }
-.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; position: relative; overflow: hidden; transition: var(--transition); backdrop-filter: blur(5px); }
-.stat-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-.stat-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary), transparent); opacity: 0.5; }
-.stat-card.success::after { background: linear-gradient(90deg, var(--success), transparent); }
-.stat-card.danger::after { background: linear-gradient(90deg, var(--danger), transparent); }
-.stat-card.warning::after { background: linear-gradient(90deg, var(--warning), transparent); }
-.stat-label { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-.stat-value { font-size: 2rem; font-weight: 800; color: var(--text-main); letter-spacing: -1px; }
-.controls-bar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; background: var(--bg-card); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-.btn { padding: 12px 24px; border-radius: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--primary); color: white; font-size: 0.95rem; transition: var(--transition); position: relative; overflow: hidden; }
-.btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(255,255,255,0.1), transparent); opacity: 0; transition: 0.2s; }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--primary-glow); }
-.btn:hover::before { opacity: 1; }
-.btn:active { transform: translateY(0); }
-.btn.success { background: var(--success); --primary-glow: rgba(16, 185, 129, 0.4); }
+.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 28px; position: relative; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; backdrop-filter: blur(10px); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; transform: scale(0.95); }
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+.stat-card:nth-child(5) { animation-delay: 0.25s; }
+.stat-card:nth-child(6) { animation-delay: 0.3s; }
+.stat-card:hover { transform: translateY(-6px) scale(1.02) !important; border-color: var(--primary); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); }
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top right, rgba(255,255,255,0.05), transparent 60%); opacity: 0; transition: opacity 0.3s; }
+.stat-card:hover::before { opacity: 1; }
+.stat-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+.stat-value { font-size: 2.2rem; font-weight: 800; color: var(--text-main); letter-spacing: -1px; line-height: 1; }
+.controls-bar { display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; align-items: center; background: var(--bg-card); padding: 12px; border-radius: 20px; border: 1px solid var(--border); animation: slideInUp 0.5s forwards; }
+.btn { padding: 14px 28px; border-radius: 14px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: var(--primary); color: white; font-size: 1rem; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; letter-spacing: 0.3px; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--primary-glow); }
+.btn:active { transform: scale(0.96); }
+.btn.ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+.btn.ghost:hover { border-color: var(--text-main); color: var(--text-main); background: rgba(255,255,255,0.05); box-shadow: none; }
 .btn.danger { background: var(--danger); --primary-glow: rgba(239, 68, 68, 0.4); }
 .btn.warning { background: var(--warning); --primary-glow: rgba(245, 158, 11, 0.4); }
-.btn.ghost { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); }
-.btn.ghost:hover { border-color: var(--text-muted); color: var(--text-main); background: rgba(255,255,255,0.1); box-shadow: none; }
-.search-input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px 16px; border-radius: 12px; color: var(--text-main); min-width: 220px; transition: var(--transition); font-size: 0.95rem; }
-.search-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.3); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-.data-table-container { border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-card); overflow: hidden; transition: var(--transition); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-.data-table { width: 100%; border-collapse: collapse; }
-.data-table th { text-align: left; padding: 16px; background: rgba(0,0,0,0.2); color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
-.data-table th:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
-.data-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; transition: background 0.2s; }
-.data-table tr:last-child td { border-bottom: none; }
+.btn.success { background: var(--success); --primary-glow: rgba(16, 185, 129, 0.4); }
+.search-input { flex: 1; background: var(--bg-input); border: 1px solid transparent; padding: 14px 20px; border-radius: 14px; color: var(--text-main); min-width: 240px; transition: all 0.3s ease; font-weight: 500; }
+.search-input:focus { background: var(--bg-card); border-color: var(--primary); box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1); }
+.data-table-container { border-radius: 24px; border: 1px solid var(--border); background: var(--bg-card); overflow: hidden; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1); animation: fadeIn 0.6s forwards; }
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table th { text-align: left; padding: 20px 24px; background: rgba(0,0,0,0.15); color: var(--text-muted); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; transition: color 0.2s; }
+.data-table th:hover { color: var(--text-main); }
+.data-table td { padding: 16px 24px; border-bottom: 1px solid var(--border); vertical-align: middle; transition: background 0.2s; }
+.data-table tr { transition: transform 0.2s, background 0.2s; opacity: 0; animation: slideInRight 0.4s forwards; }
 .data-table tr:hover td { background: rgba(255,255,255,0.02); }
-.data-table tr.highlight td { background: rgba(59, 130, 246, 0.15); animation: highlightFade 2s forwards; }
-@keyframes highlightFade { 0% { background: rgba(59, 130, 246, 0.2); } 100% { background: transparent; } }
-.table-input { background: transparent; border: 1px solid transparent; color: inherit; padding: 8px 10px; border-radius: 8px; width: 100%; transition: var(--transition); font-size: 0.95rem; }
-.table-input:hover { background: rgba(255,255,255,0.03); border-color: var(--border); }
-.table-input:focus { background: var(--bg-body); border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
-.btn-trash { background: transparent; border: none; color: var(--text-muted); padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: var(--transition); opacity: 0.6; }
-.btn-trash:hover { background: rgba(239, 68, 68, 0.1); color: var(--danger); opacity: 1; transform: scale(1.1); }
-.btn-trash svg { width: 20px; height: 20px; }
-.badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
-.badge.paid { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
-.badge.unpaid { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
-.todo-item { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px; transition: var(--transition); }
-.todo-item:hover { border-color: var(--primary); transform: translateX(4px); }
-.todo-item.completed { opacity: 0.5; text-decoration: line-through; transform: none; }
-.settings-group { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; animation: fadeIn 0.5s ease; }
-.settings-group h3 { margin-bottom: 20px; color: var(--primary); font-size: 1.1rem; }
-.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border); }
-.toggle-switch { position: relative; width: 52px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; }
-.toggle-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.data-table tr:last-child td { border-bottom: none; }
+.table-input { background: transparent; border: 1px solid transparent; color: inherit; padding: 8px 12px; border-radius: 8px; width: 100%; transition: all 0.2s; font-weight: 500; }
+.table-input:hover { background: var(--bg-input); }
+.table-input:focus { background: var(--bg-input); border-color: var(--primary); box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2); }
+.btn-trash { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.2s; background: transparent; }
+.btn-trash:hover { background: rgba(239, 68, 68, 0.15); color: var(--danger); transform: scale(1.1) rotate(5deg); }
+.badge { padding: 8px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; }
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.badge.paid { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+.badge.unpaid { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+.todo-item { display: flex; align-items: center; gap: 18px; padding: 18px 24px; background: var(--bg-card); border-radius: 18px; border: 1px solid var(--border); margin-bottom: 12px; transition: all 0.3s ease; opacity: 0; animation: slideInUp 0.4s forwards; }
+.todo-item:hover { border-color: var(--primary); transform: translateX(6px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.todo-item.completed { opacity: 0.6; text-decoration: line-through; transform: none; box-shadow: none; border-color: transparent; }
+.settings-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+.settings-group { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 28px; animation: popIn 0.5s forwards; }
+.settings-group h3 { margin-bottom: 24px; color: var(--primary); font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border); }
+.setting-row:last-child { border-bottom: none; }
+.toggle-switch { position: relative; width: 56px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 20px; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--border); }
+.toggle-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: white; border-radius: 50%; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 .toggle-switch.active { background: var(--primary); border-color: var(--primary); }
-.toggle-switch.active::after { left: 27px; }
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: var(--transition); }
+.toggle-switch.active::after { left: 29px; }
+.color-picker { display: flex; gap: 10px; }
+.color-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform 0.2s; position: relative; }
+.color-btn.active { border-color: var(--text-main); transform: scale(1.1); }
+.color-btn::after { content: ''; position: absolute; inset: 2px; border-radius: 50%; background: var(--color); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .modal-overlay.visible { opacity: 1; pointer-events: auto; }
-.modal { background: #1e293b; border: 1px solid var(--border); border-radius: 24px; padding: 32px; width: 90%; max-width: 480px; transform: scale(0.9) translateY(20px); transition: var(--transition); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+.modal { background: #1e293b; border: 1px solid var(--border); border-radius: 32px; padding: 40px; width: 90%; max-width: 460px; transform: scale(0.9) translateY(20px); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 40px 80px -20px rgba(0,0,0,0.6); }
 .modal-overlay.visible .modal { transform: scale(1) translateY(0); }
-.modal h2 { margin-bottom: 16px; color: var(--text-main); font-size: 1.5rem; }
-.modal p { color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
-.mini-calc { position: fixed; bottom: 100px; right: 30px; width: 300px; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; z-index: 90; box-shadow: 0 20px 60px rgba(0,0,0,0.4); display: none; overflow: hidden; animation: popUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.modal h2 { margin-bottom: 16px; color: var(--text-main); font-size: 1.6rem; font-weight: 800; }
+.modal p { color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; font-size: 1.05rem; }
+.mini-calc { position: fixed; bottom: 110px; right: 30px; width: 320px; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(24px); border: 1px solid var(--border); border-radius: 28px; z-index: 90; box-shadow: 0 30px 80px rgba(0,0,0,0.5); display: none; overflow: hidden; animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: bottom right; }
 .mini-calc.visible { display: block; }
-@keyframes popUp { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-.calc-header { background: linear-gradient(90deg, var(--primary), var(--primary-dark)); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; cursor: grab; font-weight: 600; }
-.calc-display { background: rgba(0,0,0,0.3); padding: 24px; text-align: right; font-size: 2rem; font-weight: 300; font-family: monospace; color: white; word-break: break-all; }
-.calc-pad { display: grid; grid-template-columns: repeat(4, 1fr); padding: 10px; gap: 8px; }
-.calc-btn { border-radius: 10px; font-size: 1.2rem; height: 56px; background: rgba(255,255,255,0.05); transition: 0.1s; }
-.calc-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
-.calc-btn.op { color: var(--primary-light); font-weight: 600; background: rgba(59, 130, 246, 0.1); }
-.calc-btn.eq { background: var(--primary); color: white; grid-column: span 4; font-weight: 700; margin-top: 8px; }
-.toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 200; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
-.toast { background: var(--bg-card); backdrop-filter: blur(10px); padding: 16px 24px; border-radius: 12px; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.3); animation: slideInToast 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); border-left: 4px solid var(--primary); font-weight: 500; pointer-events: auto; }
-@keyframes slideInToast { from { transform: translateX(100%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
+.calc-header { background: linear-gradient(90deg, var(--primary), var(--primary-dark)); color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; cursor: grab; font-weight: 700; letter-spacing: 0.5px; }
+.calc-display { background: rgba(0,0,0,0.3); padding: 24px; text-align: right; font-size: 2.4rem; font-weight: 300; font-family: monospace; color: white; letter-spacing: -1px; }
+.calc-pad { display: grid; grid-template-columns: repeat(4, 1fr); padding: 12px; gap: 10px; }
+.calc-btn { border-radius: 16px; font-size: 1.4rem; height: 64px; background: rgba(255,255,255,0.04); transition: all 0.1s; }
+.calc-btn:active { transform: scale(0.92); background: rgba(255,255,255,0.1); }
+.calc-btn.op { color: var(--primary-light); font-weight: 700; background: rgba(var(--primary-rgb), 0.15); }
+.calc-btn.eq { background: var(--primary); color: white; grid-column: span 4; font-weight: 800; margin-top: 4px; box-shadow: 0 8px 20px var(--primary-glow); }
+.toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 200; display: flex; flex-direction: column; gap: 16px; pointer-events: none; }
+.toast { background: var(--bg-card); backdrop-filter: blur(16px); padding: 18px 28px; border-radius: 18px; box-shadow: 0 20px 50px -10px rgba(0,0,0,0.4); animation: slideInToast 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; align-items: center; gap: 14px; border: 1px solid var(--border); border-left: 5px solid var(--primary); font-weight: 600; pointer-events: auto; transform-origin: right center; }
+
+@keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideInToast { from { opacity: 0; transform: translateX(100%) scale(0.8); } to { opacity: 1; transform: translateX(0) scale(1); } }
 
 @media (max-width: 768px) {
     body { flex-direction: column; }
-    .sidebar { position: fixed; bottom: 0; left: 0; width: 100%; height: calc(var(--nav-height) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); flex-direction: row; border-right: none; border-top: 1px solid var(--border); background: rgba(15, 23, 42, 0.85); z-index: 100; justify-content: space-evenly; align-items: center; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); }
+    .sidebar { position: fixed; bottom: 0; left: 0; width: 100%; height: calc(84px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); flex-direction: row; border-right: none; border-top: 1px solid var(--border); background: rgba(15, 23, 42, 0.95); box-shadow: 0 -10px 40px rgba(0,0,0,0.3); justify-content: space-around; align-items: center; padding-top: 8px; z-index: 100; }
     .logo-area { display: none; }
-    .nav-menu { flex-direction: row; overflow-x: auto; width: 100%; padding: 0; gap: 0; height: 100%; align-items: center; }
-    .nav-item { flex-direction: column; gap: 5px; padding: 8px 4px; flex: 1; border-radius: 0; font-size: 0.65rem; justify-content: center; text-align: center; background: transparent !important; border-left: none !important; color: var(--text-muted); opacity: 0.6; }
-    .nav-item.active { color: var(--primary); opacity: 1; }
-    .nav-item.active svg { transform: translateY(-3px); }
-    .nav-item span { display: block; font-weight: 600; }
-    .main-content { height: 100%; padding-bottom: calc(var(--nav-height) + 20px); }
-    .top-header { padding: 0 16px; height: 60px; }
-    .header-title { font-size: 1.2rem; }
-    .content-scroll { padding: 16px; padding-bottom: 120px; }
-    .dashboard-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .stat-card { padding: 16px; }
-    .stat-value { font-size: 1.4rem; }
-    .controls-bar { padding: 12px; gap: 10px; flex-direction: column; align-items: stretch; }
-    .btn { width: 100%; }
+    .nav-menu { flex-direction: row; overflow-x: auto; width: 100%; padding: 0 8px; gap: 4px; height: auto; align-items: center; scrollbar-width: none; }
+    .nav-menu::-webkit-scrollbar { display: none; }
+    .nav-item { flex-direction: column; gap: 6px; padding: 10px 4px; flex: 1; border-radius: 12px; font-size: 0.65rem; justify-content: center; text-align: center; background: transparent !important; border-left: none !important; color: var(--text-muted); opacity: 0.6; min-width: 60px; box-shadow: none !important; }
+    .nav-item.active { color: var(--primary); opacity: 1; background: rgba(255,255,255,0.05) !important; }
+    .nav-item.active svg { transform: translateY(-2px) scale(1.1); stroke: var(--primary); }
+    .nav-item svg { width: 24px; height: 24px; }
+    .main-content { height: 100%; padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+    .top-header { padding: 0 20px; height: 64px; }
+    .header-title { font-size: 1.3rem; }
+    .content-scroll { padding: 20px; padding-bottom: 140px; }
+    .dashboard-grid { grid-template-columns: 1fr; gap: 16px; }
+    .stat-card { padding: 20px; border-radius: 20px; }
+    .stat-value { font-size: 1.8rem; }
+    .controls-bar { padding: 16px; flex-direction: column; align-items: stretch; gap: 12px; }
+    .btn { width: 100%; justify-content: center; padding: 16px; }
+    .search-input { width: 100%; padding: 16px; }
     
+    .data-table-container { background: transparent; border: none; box-shadow: none; overflow: visible; }
     .data-table thead { display: none; }
     .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
-    .data-table tr { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 16px; padding: 16px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    .data-table td { display: grid; grid-template-columns: 1fr 1.5fr; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--border); text-align: right; gap: 10px; }
-    .data-table td:last-child { border-bottom: none; display: flex; justify-content: flex-end; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .data-table tr { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 16px; padding: 0; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; }
+    .data-table td { display: grid; grid-template-columns: 1fr 1.5fr; align-items: center; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: right; gap: 16px; height: auto; }
+    .data-table td:last-child { border-bottom: none; display: flex; justify-content: flex-end; padding: 12px 20px; background: rgba(0,0,0,0.1); }
     .data-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-align: left; text-transform: uppercase; letter-spacing: 0.5px; }
-    .table-input { text-align: right; width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border); padding: 10px; border-radius: 8px; }
-    .table-input:focus { background: var(--bg-body); }
+    .table-input { text-align: right; width: 100%; background: transparent; border: none; padding: 0; font-size: 1rem; color: var(--text-main); font-weight: 600; }
+    .table-input:focus { background: transparent; box-shadow: none; color: var(--primary); }
+    .table-input::placeholder { text-align: right; opacity: 0.3; }
     
-    .mini-calc { top: 50%; left: 50%; transform: translate(-50%, -50%) !important; width: 90%; max-width: 340px; bottom: auto; right: auto; animation: popUp 0.3s; }
-    .toast-container { left: 16px; right: 16px; bottom: 90px; }
+    .mini-calc { top: 50%; left: 50%; transform: translate(-50%, -50%) !important; width: 92%; max-width: 360px; bottom: auto; right: auto; animation: popIn 0.3s; border-radius: 30px; }
+    .toast-container { left: 20px; right: 20px; bottom: 100px; align-items: center; }
+    .toast { width: 100%; justify-content: center; }
+    .settings-container { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -175,7 +194,7 @@ button { cursor: pointer; user-select: none; }
 <div class="app-container">
     <aside class="sidebar">
         <div class="logo-area">
-            <div class="logo-icon">⚡</div>
+            <div class="logo-icon">🚀</div>
             ShinaPro
         </div>
         <nav class="nav-menu">
@@ -378,36 +397,55 @@ button { cursor: pointer; user-select: none; }
             </div>
 
             <div id="settings" class="tab-content">
-                <div class="settings-group">
-                    <h3>Внешний вид</h3>
-                    <div class="setting-row">
-                        <span>Темная тема</span>
-                        <div class="toggle-switch active" id="themeToggle"></div>
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3>🎨 Внешний вид</h3>
+                        <div class="setting-row">
+                            <span>Темная тема</span>
+                            <div class="toggle-switch active" id="themeToggle"></div>
+                        </div>
+                        <div class="setting-row">
+                            <span>Цвет акцента</span>
+                            <div class="color-picker" id="colorPicker">
+                                <div class="color-btn" data-color="#3b82f6" style="--color: #3b82f6"></div>
+                                <div class="color-btn" data-color="#8b5cf6" style="--color: #8b5cf6"></div>
+                                <div class="color-btn" data-color="#10b981" style="--color: #10b981"></div>
+                                <div class="color-btn" data-color="#f59e0b" style="--color: #f59e0b"></div>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <span>Анимации</span>
+                            <div class="toggle-switch active" id="animToggle"></div>
+                        </div>
+                         <div class="setting-row">
+                            <span>Масштаб интерфейса</span>
+                            <select class="table-input" id="scaleSelect" style="width:auto; text-align:right;">
+                                <option value="0.9">Мелкий</option>
+                                <option value="1" selected>Норма</option>
+                                <option value="1.1">Крупный</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="setting-row">
-                        <span>Компактный вид</span>
-                        <div class="toggle-switch" id="compactToggle"></div>
+                    <div class="settings-group">
+                        <h3>⚙️ Функции</h3>
+                        <div class="setting-row">
+                            <span>Символ валюты</span>
+                            <input type="text" class="table-input" id="currencyInput" value="₽" style="width: 60px; text-align: center; background: var(--bg-input);">
+                        </div>
+                        <div class="setting-row">
+                            <span>Подтверждать удаление</span>
+                            <div class="toggle-switch active" id="confirmToggle"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="settings-group">
-                    <h3>Финансы</h3>
-                    <div class="setting-row">
-                        <span>Символ валюты</span>
-                        <input type="text" class="table-input" id="currencyInput" value="₽" style="width: 80px; text-align: center; background: rgba(0,0,0,0.2);">
+                    <div class="settings-group">
+                        <h3>📋 Шаблоны услуг</h3>
+                        <div style="display:flex; gap:10px; margin-bottom:16px;">
+                            <input type="text" id="tplName" class="search-input" placeholder="Название">
+                            <input type="number" id="tplPrice" class="search-input" placeholder="Цена" style="width: 100px; flex:none;">
+                            <button class="btn success" onclick="app.addTemplate()">+</button>
+                        </div>
+                        <div id="templateList"></div>
                     </div>
-                    <div class="setting-row">
-                        <span>Подтверждение действий</span>
-                        <div class="toggle-switch active" id="confirmToggle"></div>
-                    </div>
-                </div>
-                <div class="settings-group">
-                    <h3>Шаблоны услуг</h3>
-                    <div style="display:grid; grid-template-columns: 2fr 1fr auto; gap:10px; margin-bottom:15px;">
-                        <input type="text" id="tplName" class="search-input" placeholder="Название">
-                        <input type="number" id="tplPrice" class="search-input" placeholder="Цена">
-                        <button class="btn success" onclick="app.addTemplate()">+</button>
-                    </div>
-                    <div id="templateList"></div>
                 </div>
             </div>
         </div>
@@ -445,10 +483,10 @@ button { cursor: pointer; user-select: none; }
 <div class="modal-overlay" id="confirmModal">
     <div class="modal">
         <h2>Подтверждение</h2>
-        <p id="confirmText">Вы уверены, что хотите выполнить это действие? Это нельзя будет отменить (без кнопки отмены).</p>
+        <p id="confirmText">Действие необратимо. Продолжить?</p>
         <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:12px;">
             <button class="btn ghost" onclick="app.closeModal()">Отмена</button>
-            <button class="btn danger" id="confirmBtnAction">Выполнить</button>
+            <button class="btn danger" id="confirmBtnAction">Да, выполнить</button>
         </div>
     </div>
 </div>
@@ -487,17 +525,26 @@ class App {
     constructor() {
         try {
             const stored = localStorage.getItem('tireData');
-            this.data = stored ? JSON.parse(stored) : {
-                income: [], expenses: [], clients: [], warehouse: [], debts: [], todos: [], templates: [], 
-                settings: { theme: 'dark', compact: false, currency: '₽', confirm: true }
-            };
+            this.data = stored ? JSON.parse(stored) : this.getDefaultData();
         } catch (e) {
-            this.data = { income: [], expenses: [], clients: [], warehouse: [], debts: [], todos: [], templates: [], settings: { theme: 'dark', compact: false, currency: '₽', confirm: true } };
+            this.data = this.getDefaultData();
         }
+        // Migrate old settings structure if needed
+        if(!this.data.settings.color) this.data.settings.color = '#3b82f6';
+        if(!this.data.settings.scale) this.data.settings.scale = '1';
+        if(this.data.settings.anim === undefined) this.data.settings.anim = true;
+
         this.history = [];
         this.historyStep = -1;
         this.currentSort = { key: null, dir: 1 };
         this.init();
+    }
+
+    getDefaultData() {
+        return {
+            income: [], expenses: [], clients: [], warehouse: [], debts: [], todos: [], templates: [], 
+            settings: { theme: 'dark', currency: '₽', confirm: true, color: '#3b82f6', scale: '1', anim: true }
+        };
     }
 
     init() {
@@ -529,7 +576,7 @@ class App {
             this.updateDashboard();
             this.updateDataList();
         } catch (e) {
-            this.showToast('Ошибка сохранения данных!');
+            this.showToast('Ошибка сохранения!');
         }
     }
 
@@ -558,12 +605,28 @@ class App {
     applySettings() {
         const s = this.data.settings;
         if(!s) return; 
+        
         document.body.classList.toggle('light-theme', s.theme === 'light');
-        document.body.classList.toggle('compact-mode', s.compact);
+        document.body.classList.toggle('no-anim', !s.anim);
+        
         $('#themeToggle').classList.toggle('active', s.theme === 'dark');
-        $('#compactToggle').classList.toggle('active', s.compact);
         $('#confirmToggle').classList.toggle('active', s.confirm);
+        $('#animToggle').classList.toggle('active', s.anim);
         $('#currencyInput').value = s.currency || '₽';
+        $('#scaleSelect').value = s.scale || '1';
+
+        // Apply Color
+        document.documentElement.style.setProperty('--primary', s.color);
+        const r = parseInt(s.color.substr(1,2), 16), g = parseInt(s.color.substr(3,2), 16), b = parseInt(s.color.substr(5,2), 16);
+        document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
+        
+        // Apply Scale
+        document.documentElement.style.setProperty('--font-scale', s.scale);
+
+        // Update color picker UI
+        $$('.color-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.color === s.color);
+        });
     }
 
     renderAll() {
@@ -608,9 +671,11 @@ class App {
         const searchInput = $(`#${type === 'income' ? 'income' : type === 'expenses' ? 'expense' : 'warehouse'}Search`);
         const term = searchInput ? searchInput.value.toLowerCase() : '';
         
-        const html = dataArr.filter(item => Object.values(item).some(v => String(v).toLowerCase().includes(term))).map(item => {
+        const html = dataArr.filter(item => Object.values(item).some(v => String(v).toLowerCase().includes(term))).map((item, i) => {
+            const delay = i < 10 ? `style="animation-delay: ${i * 0.05}s"` : '';
+            
             if(type === 'warehouse') return `
-                <tr data-id="${item.id}">
+                <tr data-id="${item.id}" ${delay}>
                     <td data-label="Название"><input class="table-input" value="${item.name}" onchange="app.update('${type}', '${item.id}', 'name', this.value)" placeholder="Название"></td>
                     <td data-label="Остаток"><input type="number" class="table-input" value="${item.qty}" onchange="app.update('${type}', '${item.id}', 'qty', this.value)" placeholder="0"></td>
                     <td data-label="Действия"><button class="btn-trash" onclick="app.del('${type}', '${item.id}')">${this.getTrashIcon()}</button></td>
@@ -618,12 +683,12 @@ class App {
             
             const isInc = type === 'income';
             return `
-            <tr data-id="${item.id}">
+            <tr data-id="${item.id}" ${delay}>
                 <td data-label="Дата"><input type="date" class="table-input" value="${item.date}" onchange="app.update('${type}', '${item.id}', 'date', this.value)"></td>
-                <td data-label="${isInc?'Услуга':'Описание'}"><input type="text" list="${isInc?'serviceList':''}" class="table-input" value="${isInc?item.service:item.desc}" onchange="app.update('${type}', '${item.id}', '${isInc?'service':'desc'}', this.value)" placeholder="${isInc?'Вид услуги':'Описание расхода'}"></td>
-                <td data-label="Цена"><input type="number" class="table-input" value="${item.price}" onchange="app.updateCalc('${type}', '${item.id}', 'price', this.value)" placeholder="0.00"></td>
+                <td data-label="${isInc?'Услуга':'Описание'}"><input type="text" list="${isInc?'serviceList':''}" class="table-input" value="${isInc?item.service:item.desc}" onchange="app.update('${type}', '${item.id}', '${isInc?'service':'desc'}', this.value)" placeholder="${isInc?'Услуга':'Описание'}"></td>
+                <td data-label="Цена"><input type="number" class="table-input" value="${item.price}" onchange="app.updateCalc('${type}', '${item.id}', 'price', this.value)" placeholder="0"></td>
                 <td data-label="Кол-во"><input type="number" class="table-input" value="${item.qty}" onchange="app.updateCalc('${type}', '${item.id}', 'qty', this.value)" placeholder="1"></td>
-                <td data-label="Итого"><input type="number" class="table-input" value="${item.total}" readonly style="opacity:0.8; font-weight:600; border:none;"></td>
+                <td data-label="Итого"><input type="number" class="table-input" value="${item.total}" readonly style="opacity:0.8; font-weight:700; border:none; color:var(--primary);"></td>
                 <td data-label="Действия"><button class="btn-trash" onclick="app.del('${type}', '${item.id}')">${this.getTrashIcon()}</button></td>
             </tr>`;
         }).join('');
@@ -634,13 +699,13 @@ class App {
     renderClients() {
         const tbody = $('#clientsTable tbody');
         const term = $('#clientSearch').value.toLowerCase();
-        const html = this.data.clients.filter(c => (c.name+c.phone+c.plate).toLowerCase().includes(term)).map(c => `
-            <tr data-id="${c.id}">
+        const html = this.data.clients.filter(c => (c.name+c.phone+c.plate).toLowerCase().includes(term)).map((c, i) => `
+            <tr data-id="${c.id}" style="animation-delay: ${i * 0.05}s">
                 <td data-label="Дата"><input type="date" class="table-input" value="${c.date}" onchange="app.update('clients', '${c.id}', 'date', this.value)"></td>
-                <td data-label="Имя"><input class="table-input" value="${c.name}" onchange="app.update('clients', '${c.id}', 'name', this.value)" placeholder="Имя клиента"></td>
+                <td data-label="Имя"><input class="table-input" value="${c.name}" onchange="app.update('clients', '${c.id}', 'name', this.value)" placeholder="Имя"></td>
                 <td data-label="Телефон"><input class="table-input" value="${c.phone}" onchange="app.update('clients', '${c.id}', 'phone', this.value)" placeholder="Телефон"></td>
-                <td data-label="Авто"><input class="table-input" value="${c.plate}" onchange="app.update('clients', '${c.id}', 'plate', this.value)" placeholder="Госномер"></td>
-                <td data-label="Визитов"><span class="badge">${c.visits || 1}</span></td>
+                <td data-label="Авто"><input class="table-input" value="${c.plate}" onchange="app.update('clients', '${c.id}', 'plate', this.value)" placeholder="Номер авто"></td>
+                <td data-label="Визитов"><span class="badge" style="background:rgba(255,255,255,0.1);color:var(--text-main)">${c.visits || 1}</span></td>
                 <td data-label="Действия"><button class="btn-trash" onclick="app.del('clients', '${c.id}')">${this.getTrashIcon()}</button></td>
             </tr>
         `).join('');
@@ -650,12 +715,12 @@ class App {
     renderDebts() {
         const tbody = $('#debtsTable tbody');
         const term = $('#debtSearch').value.toLowerCase();
-        const html = this.data.debts.filter(d => (d.name+d.phone).toLowerCase().includes(term)).map(d => `
-            <tr style="${d.paid ? 'opacity:0.6' : ''}" data-id="${d.id}">
+        const html = this.data.debts.filter(d => (d.name+d.phone).toLowerCase().includes(term)).map((d, i) => `
+            <tr style="animation-delay: ${i * 0.05}s; ${d.paid ? 'opacity:0.6' : ''}" data-id="${d.id}">
                 <td data-label="Дата"><input type="date" class="table-input" value="${d.date}" onchange="app.update('debts', '${d.id}', 'date', this.value)"></td>
                 <td data-label="Имя"><input class="table-input" value="${d.name}" onchange="app.update('debts', '${d.id}', 'name', this.value)" placeholder="Имя"></td>
                 <td data-label="Телефон"><input class="table-input" value="${d.phone}" onchange="app.update('debts', '${d.id}', 'phone', this.value)" placeholder="Телефон"></td>
-                <td data-label="Сумма"><input type="number" class="table-input" value="${d.amount}" onchange="app.update('debts', '${d.id}', 'amount', this.value)" placeholder="0.00"></td>
+                <td data-label="Сумма"><input type="number" class="table-input" value="${d.amount}" onchange="app.update('debts', '${d.id}', 'amount', this.value)" placeholder="0"></td>
                 <td data-label="Статус"><button class="badge ${d.paid?'paid':'unpaid'}" style="border:none;cursor:pointer;width:100%" onclick="app.toggleDebt('${d.id}')">${d.paid?'Оплачен':'Не оплачен'}</button></td>
                 <td data-label="Действия"><button class="btn-trash" onclick="app.del('debts', '${d.id}')">${this.getTrashIcon()}</button></td>
             </tr>
@@ -664,10 +729,10 @@ class App {
     }
 
     renderTodos() {
-        $('#todoList').innerHTML = this.data.todos.map(t => `
-            <div class="todo-item ${t.done ? 'completed' : ''}">
-                <input type="checkbox" ${t.done ? 'checked' : ''} onchange="app.toggleTodo('${t.id}')" style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer;">
-                <span style="flex:1;word-break:break-word;">${t.text}</span>
+        $('#todoList').innerHTML = this.data.todos.map((t, i) => `
+            <div class="todo-item ${t.done ? 'completed' : ''}" style="animation-delay: ${i * 0.05}s">
+                <input type="checkbox" ${t.done ? 'checked' : ''} onchange="app.toggleTodo('${t.id}')" style="width:22px;height:22px;accent-color:var(--primary);cursor:pointer;">
+                <span style="flex:1;word-break:break-word;font-weight:500;">${t.text}</span>
                 <button class="btn-trash" onclick="app.delTodo('${t.id}')">${this.getTrashIcon()}</button>
             </div>
         `).join('');
@@ -675,10 +740,10 @@ class App {
 
     renderTemplates() {
         $('#templateList').innerHTML = this.data.templates.map((t, idx) => `
-            <div class="todo-item" style="justify-content:space-between; padding:10px 16px;">
+            <div class="todo-item" style="justify-content:space-between; padding:14px 20px; animation-delay: ${idx*0.05}s">
                 <div style="display:flex;flex-direction:column;">
-                    <span style="font-weight:600">${t.name}</span>
-                    <span style="font-size:0.85rem;color:var(--text-muted)">${t.price} ${this.data.settings.currency}</span>
+                    <span style="font-weight:700">${t.name}</span>
+                    <span style="font-size:0.9rem;color:var(--text-muted)">${t.price} ${this.data.settings.currency}</span>
                 </div>
                 <button class="btn-trash" onclick="app.delTemplate(${idx})">${this.getTrashIcon()}</button>
             </div>
@@ -706,9 +771,7 @@ class App {
                 this.data.clients = this.data.clients.filter(c => c.id !== id); 
                 this.renderClients();
                 this.saveState();
-                this.showToast(`Клиент объединен с ${exist.name}!`);
-                const row = $(`tr[data-id="${exist.id}"]`);
-                if(row) { row.scrollIntoView({behavior:'smooth'}); row.classList.add('highlight'); setTimeout(()=>row.classList.remove('highlight'),2000); }
+                this.showToast(`Объединено с ${exist.name}`);
                 return;
             }
         }
@@ -773,7 +836,7 @@ class App {
         const t = document.createElement('div'); t.className = 'toast'; 
         t.innerHTML = `<span>✓</span> ${msg}`; 
         $('#toastArea').appendChild(t); 
-        setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(100%)'; setTimeout(()=>t.remove(), 300); }, 2500); 
+        setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(100%) scale(0.8)'; setTimeout(()=>t.remove(), 300); }, 2500); 
     }
 
     setupListeners() {
@@ -790,9 +853,18 @@ class App {
         $('#closeCalc').onclick = () => $('#miniCalc').classList.remove('visible');
         
         $('#themeToggle').onclick = () => { this.data.settings.theme = this.data.settings.theme === 'dark' ? 'light' : 'dark'; this.applySettings(); this.saveState(); };
-        $('#compactToggle').onclick = () => { this.data.settings.compact = !this.data.settings.compact; this.applySettings(); this.saveState(); };
         $('#confirmToggle').onclick = () => { this.data.settings.confirm = !this.data.settings.confirm; this.applySettings(); this.saveState(); };
+        $('#animToggle').onclick = () => { this.data.settings.anim = !this.data.settings.anim; this.applySettings(); this.saveState(); };
         $('#currencyInput').onchange = (e) => { this.data.settings.currency = e.target.value; this.renderAll(); this.saveState(); };
+        $('#scaleSelect').onchange = (e) => { this.data.settings.scale = e.target.value; this.applySettings(); this.saveState(); };
+
+        $$('.color-btn').forEach(btn => {
+            btn.onclick = () => {
+                this.data.settings.color = btn.dataset.color;
+                this.applySettings();
+                this.saveState();
+            }
+        });
 
         $('#undoBtn').onclick = () => this.undo();
         $('#redoBtn').onclick = () => this.redo();
